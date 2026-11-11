@@ -81,6 +81,23 @@ struct PhoneLinkTests {
     }
 
     @Test
+    func `연결된 채 통로가 다시 열리면 SYNC 없이 켜짐 신호만 다시 보낸다`() throws {
+        // given
+        let fixture = Fixture()
+        try fixture.connect(state(stateSequence: 1))
+        fixture.phoneLink.onScreenVisibilityChanged(true)
+        fixture.sent.removeAll()
+
+        // when -> 폰이 잠깐 멀어졌다 돌아온다
+        fixture.phoneLink.onChannelOpened()
+
+        // then
+        #expect(fixture.sent.contains { $0.isVisible == true })
+        #expect(!fixture.sent.contains { $0.sync != nil })
+        #expect(!fixture.phoneLink.state.isLocked)
+    }
+
+    @Test
     func `보낸 적 없는 syncId의 SYNCED는 버린다`() {
         // given
         let fixture = Fixture()
@@ -643,6 +660,22 @@ struct PhoneLinkTests {
     }
 
     @Test
+    func `업데이트가 필요하면 통로가 다시 열려도 아무것도 보내지 않는다`() throws {
+        // given
+        let fixture = Fixture()
+        try fixture.connect(state(stateSequence: 1))
+        fixture.phoneLink.onScreenVisibilityChanged(true)
+        fixture.phoneLink.onReceived(updateRequired(requestId: nil))
+        fixture.sent.removeAll()
+
+        // when
+        fixture.phoneLink.onChannelOpened()
+
+        // then
+        #expect(fixture.sent.isEmpty)
+    }
+
+    @Test
     func `업데이트가 필요한 채 다시 열면 SYNC를 다시 보낸다`() throws {
         // given
         let fixture = Fixture()
@@ -808,6 +841,22 @@ struct PhoneLinkTests {
 
         // then
         #expect(fixture.phoneLink.state.isPhoneReachable)
+    }
+
+    @Test
+    func `러닝을 접은 뒤 통로가 다시 열려도 SYNC를 보내지 않는다`() throws {
+        // given
+        let fixture = Fixture()
+        try fixture.connect(state(stateSequence: 1))
+        fixture.phoneLink.probeWhileScreenOff()
+        fixture.phoneLink.forgetRun()
+        fixture.sent.removeAll()
+
+        // when -> 폰이 돌아온다
+        fixture.phoneLink.onChannelOpened()
+
+        // then
+        #expect(!fixture.sent.contains { $0.sync != nil })
     }
 
     @Test
