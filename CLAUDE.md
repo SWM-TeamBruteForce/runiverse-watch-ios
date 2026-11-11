@@ -11,6 +11,8 @@ xcodebuild test -scheme RuniverseWatch \
 swift format lint --strict --recursive Package.swift Sources Tests DevApp                    # lint
 xcodebuild build -project DevApp/RuniverseWatchDev.xcodeproj -scheme RuniverseWatchDev \
   -destination 'platform=watchOS Simulator,name=Apple Watch Series 12 (46mm)'                # 개발용 앱 빌드
+xcodebuild test -project DevApp/RuniverseWatchDev.xcodeproj -scheme RuniverseWatchDev -parallel-testing-enabled NO \
+  -destination 'platform=watchOS Simulator,name=Apple Watch Series 12 (46mm)'                # UI 테스트
 ```
 
 ## 문서 인덱스 — 구현 전 해당 문서를 읽을 것
