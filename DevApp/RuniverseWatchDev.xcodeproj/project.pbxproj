@@ -14,9 +14,22 @@
 		D0A000000000000000000003 /* RuniverseWatchDev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RuniverseWatchDev.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		D0A000000000000000000014 /* Exceptions for "RuniverseWatchDev" folder in "RuniverseWatchDev" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D0A000000000000000000008 /* RuniverseWatchDev */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		D0A000000000000000000004 /* RuniverseWatchDev */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D0A000000000000000000014 /* Exceptions for "RuniverseWatchDev" folder in "RuniverseWatchDev" target */,
+			);
 			path = RuniverseWatchDev;
 			sourceTree = "<group>";
 		};
@@ -167,9 +180,11 @@
 		D0A000000000000000000012 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = RuniverseWatchDev/RuniverseWatchDev.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RuniverseWatchDev/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Runiverse Dev";
 				INFOPLIST_KEY_WKWatchOnly = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -187,9 +202,11 @@
 		D0A000000000000000000013 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = RuniverseWatchDev/RuniverseWatchDev.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = RuniverseWatchDev/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Runiverse Dev";
 				INFOPLIST_KEY_WKWatchOnly = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
