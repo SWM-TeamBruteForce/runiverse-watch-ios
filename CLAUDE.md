@@ -6,7 +6,9 @@ Runiverse 애플워치(watchOS) 앱의 화면·로직을 담은 Swift Package. �
 
 ```bash
 xcodebuild build -scheme RuniverseWatch -destination 'generic/platform=watchOS Simulator'   # 패키지 빌드
-swift format lint --strict --recursive Package.swift Sources DevApp                          # lint
+xcodebuild test -scheme RuniverseWatch \
+  -destination 'platform=watchOS Simulator,name=Apple Watch Series 12 (46mm)'                # 단위 테스트
+swift format lint --strict --recursive Package.swift Sources Tests DevApp                    # lint
 xcodebuild build -project DevApp/RuniverseWatchDev.xcodeproj -scheme RuniverseWatchDev \
   -destination 'platform=watchOS Simulator,name=Apple Watch Series 12 (46mm)'                # 개발용 앱 빌드
 ```
