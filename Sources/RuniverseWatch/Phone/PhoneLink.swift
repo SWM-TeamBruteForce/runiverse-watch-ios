@@ -58,10 +58,15 @@ typealias PhoneSchedule = @MainActor (Duration, @escaping @MainActor () -> Void)
 @MainActor
 @Observable
 final class PhoneLink {
-    private(set) var state = PhoneLinkState()
+    private(set) var state = PhoneLinkState() {
+        didSet { onStateChanged?(state) }
+    }
 
     /// 콤보 순간을 받는 곳이다. 비어 있으면 버린다 — 지난 콤보를 뒤늦게 울리지 않는다.
     @ObservationIgnored var onCombo: ((WatchComboTriggered) -> Void)?
+
+    /// 상태가 바뀔 때마다 부른다. 바꾸는 도중이라 여기서 PhoneLink를 다시 부르지 않는다.
+    @ObservationIgnored var onStateChanged: ((PhoneLinkState) -> Void)?
 
     private let send: (WatchMessage) -> Void
     private let watchVersion: String
