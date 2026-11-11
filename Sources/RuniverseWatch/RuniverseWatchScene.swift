@@ -48,8 +48,7 @@ private struct RootView: View {
             // TODO: 러닝 화면 — 러닝 화면을 만들 때 교체한다
             Text(verbatim: "러닝 중")
         case .updateRequired:
-            // TODO: 업데이트 필요 화면 — 업데이트 필요 화면을 만들 때 교체한다
-            Text(verbatim: "업데이트 필요")
+            UpdateRequiredView()
         case .runSummary:
             // TODO: 결과 요약 — 결과 요약을 만들 때 교체한다
             Text(verbatim: "러닝 완료")

@@ -30,6 +30,36 @@
           }
         }
       }
+    },
+    "update_cannot_connect" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "폰 연결 불가"
+          }
+        }
+      }
+    },
+    "update_open_store" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "업데이트"
+          }
+        }
+      }
+    },
+    "update_required" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "워치 앱 업데이트 필요"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
