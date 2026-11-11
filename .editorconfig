@@ -1,0 +1,34 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.swift]
+indent_style = space
+indent_size = 4
+max_line_length = 120
+
+[*.pbxproj]
+# Xcode가 탭으로 다시 쓴다
+indent_style = tab
+
+[*.{yml,yaml,json}]
+indent_style = space
+indent_size = 2
+ij_yaml_spaces_within_brackets = false
+
+[.swift-format]
+indent_style = space
+indent_size = 2
+
+[*.md]
+indent_style = space
+indent_size = 2
+max_line_length = off
+# 전역 규칙 예외 — 줄 끝 공백 2개가 마크다운 강제 개행
+trim_trailing_whitespace = false
+ij_markdown_wrap_text_if_long = false
+ij_markdown_format_tables = false
