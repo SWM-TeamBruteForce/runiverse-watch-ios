@@ -1052,6 +1052,56 @@ struct PhoneLinkTests {
         #expect(fixture.phoneLink.state.isPhoneReachable)
         #expect(!fixture.sent.contains { $0.sync != nil })
     }
+
+    @Test
+    func `폰이 워치 앱을 켜면 SYNCED를 받을 때까지 폰이 켠 러닝을 기다린다`() throws {
+        // given
+        let fixture = Fixture()
+        fixture.phoneLink.start()
+        let sync = try #require(fixture.sent.first?.sync)
+
+        // when
+        fixture.phoneLink.onLaunchedByPhone()
+
+        // then
+        #expect(fixture.phoneLink.state.isAwaitingLaunchedRun)
+
+        // when -> 폰이 답한다
+        fixture.phoneLink.onReceived(synced(sync.syncId, state(stateSequence: 1)))
+
+        // then
+        #expect(!fixture.phoneLink.state.isAwaitingLaunchedRun)
+    }
+
+    @Test
+    func `앱이 살아 있을 때 폰이 켜면 이어 받은 상태로 기다림이 풀린다`() throws {
+        // given
+        let fixture = Fixture()
+        try fixture.connect(idleState(stateSequence: 1))
+        fixture.phoneLink.onLaunchedByPhone()
+
+        // when -> 출발 직후라 방 번호가 아직 없어 SYNC 없이 이어 받는다
+        fixture.phoneLink.onReceived(stateUpdated(state(stateSequence: 2, runningRoomId: nil)))
+
+        // then
+        let linkState = fixture.phoneLink.state
+        #expect(!linkState.isAwaitingLaunchedRun)
+        #expect(linkState.isRunActive)
+    }
+
+    @Test
+    func `폰이 버전을 거절했으면 폰이 켜도 기다리지 않는다`() {
+        // given
+        let fixture = Fixture()
+        fixture.phoneLink.start()
+        fixture.phoneLink.onReceived(updateRequired(requestId: nil))
+
+        // when
+        fixture.phoneLink.onLaunchedByPhone()
+
+        // then
+        #expect(!fixture.phoneLink.state.isAwaitingLaunchedRun)
+    }
 }
 
 @MainActor
