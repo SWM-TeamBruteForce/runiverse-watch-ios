@@ -27,6 +27,7 @@ xcodebuild build -project DevApp/RuniverseWatchDev.xcodeproj -scheme RuniverseWa
   RuniverseWatchAppDelegate   폰이 켠 운동·앱이 죽기 전 남은 운동을 받는다. 밖에 공개하는 타입은 이 둘뿐이다
   RootScreen                  폰 상태로 띄울 화면을 고른다
   IdleView                    러닝이 없을 때 화면
+  UpdateRequiredView          폰이 워치 버전을 거절했을 때 화면
   Phone/          폰과 메시지 주고받기·연결 상태
   Workout/        러닝 중 앱을 살려 두는 운동 세션·심박 측정
   Run/            러닝 화면·장·결과 요약
