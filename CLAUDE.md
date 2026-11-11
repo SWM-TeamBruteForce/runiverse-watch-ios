@@ -6,7 +6,9 @@ Runiverse 애플워치(watchOS) 앱의 화면·로직을 담은 Swift Package. �
 
 ```bash
 xcodebuild build -scheme RuniverseWatch -destination 'generic/platform=watchOS Simulator'   # 패키지 빌드
-swift format lint --strict --recursive Package.swift Sources DevApp                          # lint
+xcodebuild test -scheme RuniverseWatch \
+  -destination 'platform=watchOS Simulator,name=Apple Watch Series 12 (46mm)'                # 단위 테스트
+swift format lint --strict --recursive Package.swift Sources Tests DevApp                    # lint
 xcodebuild build -project DevApp/RuniverseWatchDev.xcodeproj -scheme RuniverseWatchDev \
   -destination 'platform=watchOS Simulator,name=Apple Watch Series 12 (46mm)'                # 개발용 앱 빌드
 ```
@@ -15,7 +17,7 @@ xcodebuild build -project DevApp/RuniverseWatchDev.xcodeproj -scheme RuniverseWa
 
 - `docs/code-convention.md` — 네이밍·화면·물리량 단위·주석·테스트 규칙
 - `docs/git-convention.md` — 커밋·브랜치·PR 규칙
-- 갤럭시워치 레포 [`docs/phone-communication.md`](https://github.com/SWM-TeamBruteForce/runiverse-watch-android/blob/main/docs/phone-communication.md) — 폰↔워치 메시지·번호·상태 모양·보내고 받는 규칙. 애플워치도 이 문서를 쓴다
+- `docs/phone-communication.md` — 폰↔워치 메시지·번호·상태 모양·보내고 받는 규칙
 
 ## 구조
 
@@ -46,7 +48,7 @@ xcodebuild build -project DevApp/RuniverseWatchDev.xcodeproj -scheme RuniverseWa
 ## 주의사항
 
 - 워치 앱은 iOS 앱에 담겨 출시된다. 앱 버전·빌드 번호는 iOS 앱을 따르고, 이 레포의 태그는 패키지 버전이다. 한 번 쓴 태그는 옮기거나 다시 쓰지 않는다.
-- 폰과 주고받는 메시지를 바꿀 땐 갤럭시워치 레포의 통신 문서를 고치고, 폰·갤럭시·애플을 함께 바꾼다.
+- 폰과 주고받는 메시지를 바꿀 땐 두 워치 레포의 통신 문서를 같이 고치고, 폰·갤럭시·애플을 함께 바꾼다.
 - 운동 세션·진동·손목 동작은 시뮬레이터로 확인되지 않는다. 실기기로 본다.
 - 요청 없이 라이브러리를 추가하지 않는다.
 - 문제를 우회하는 해결 금지 — 테스트 약화·빈 catch·기능 삭제로 오류를 없애지 않는다.
