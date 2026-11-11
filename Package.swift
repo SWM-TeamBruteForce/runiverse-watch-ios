@@ -4,6 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "RuniverseWatch",
+    defaultLocalization: "ko",
     platforms: [.watchOS(.v10)],
     products: [
         .library(name: "RuniverseWatch", targets: ["RuniverseWatch"])
