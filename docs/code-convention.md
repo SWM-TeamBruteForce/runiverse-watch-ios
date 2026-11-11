@@ -29,7 +29,7 @@
 - 부품 파일 이름은 View 이름과 같다. `Components.swift`·`Utils.swift`는 만들지 않는다.
 - View는 `*View`로 끝낸다(`IdleView`, `ControlsView`, `RunSummaryView`). 다만 항목을 가로로 늘어놓는 줄과 눌리는 줄은 `*Row`(여러 줄이면 `*Rows`), 누르는 부품은 `*Button`으로 짓는다. 자리 계산 결과는 `*Slots`, 미리보기는 `#Preview("<대상> <경우>")`로 짓는다.
 - 모양 이름은 역할이 다른 부품이 같이 쓰는 치수에만 쓴다(`pillHeight`).
-- 보이는 문구는 `Localizable.xcstrings`에 두고, 표기 규칙(거리·격차·심박 구간)은 View 밖 함수로 두고 단위 테스트한다.
+- 보이는 문구는 `Localizable.xcstrings`에 두고 `bundle: .module`로 읽는다. 표기 규칙(거리·격차·심박 구간)은 View 밖 함수로 두고 단위 테스트한다.
 - 문자열 키는 `<쓰는 곳>_<내용>`으로 짓는다. 쓰는 곳은 `run`·`controls`·`unit`·`update`·`idle`이다.
 - 화면이 그릴 값(문구·흐림·잠금·보일지)은 View 밖 값 타입으로 계산하고, View는 그 값을 그리기만 한다.
 - 시안의 치수를 pt로 그대로 쓰고 px로 환산하지 않는다.
