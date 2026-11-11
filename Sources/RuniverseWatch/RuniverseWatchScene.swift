@@ -8,8 +8,7 @@ public struct RuniverseWatchScene: Scene {
 
     public var body: some Scene {
         WindowGroup {
-            // TODO: 뼈대 확인용 글자 — 대기 화면을 만들 때 교체한다
-            Text(verbatim: "Runiverse")
+            RootView(phoneLink: Self.phoneLink)
                 .task {
                     // 폰 상태를 받기 전에 운동 세션이 지켜보게 먼저 만든다
                     let workoutSession = Self.workoutSession
@@ -37,4 +36,25 @@ public struct RuniverseWatchScene: Scene {
         channel.activate()
         return link
     }()
+}
+
+/// 폰 상태는 여기서만 읽고, 아래 화면엔 값만 넘긴다.
+private struct RootView: View {
+    let phoneLink: PhoneLink
+
+    var body: some View {
+        switch RootScreen(phoneLink.state) {
+        case .run:
+            // TODO: 러닝 화면 — 러닝 화면을 만들 때 교체한다
+            Text(verbatim: "러닝 중")
+        case .updateRequired:
+            // TODO: 업데이트 필요 화면 — 업데이트 필요 화면을 만들 때 교체한다
+            Text(verbatim: "업데이트 필요")
+        case .runSummary:
+            // TODO: 결과 요약 — 결과 요약을 만들 때 교체한다
+            Text(verbatim: "러닝 완료")
+        case .idle(let isPhoneReachable):
+            IdleView(isPhoneReachable: isPhoneReachable)
+        }
+    }
 }
