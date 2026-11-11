@@ -27,7 +27,7 @@ public struct RuniverseWatchScene: Scene {
     static let workoutSession = WorkoutSession(phoneLink: phoneLink, tracker: HealthKitWorkoutTracker())
 
     // 화면이 닫혀도 연결을 이어 가려고 화면이 아니라 앱에 하나 둔다
-    private static let phoneLink: PhoneLink = {
+    static let phoneLink: PhoneLink = {
         let channel = PhoneChannel(
             onReceived: { phoneLink.onReceived($0) },
             onOpened: { phoneLink.onChannelOpened() }
@@ -52,8 +52,10 @@ private struct RootView: View {
         case .runSummary:
             // TODO: 결과 요약 — 결과 요약을 만들 때 교체한다
             Text(verbatim: "러닝 완료")
+        case .awaitingLaunchedRun:
+            IdleView(content: nil)
         case .idle(let isPhoneReachable):
-            IdleView(isPhoneReachable: isPhoneReachable)
+            IdleView(content: IdleContent(isPhoneReachable: isPhoneReachable))
         }
     }
 }
