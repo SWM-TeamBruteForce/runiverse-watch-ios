@@ -1,0 +1,18 @@
+### macOS ###
+.DS_Store
+
+### IDE ###
+.idea
+*.iml
+
+### Claude Code ###
+.claude/settings.local.json
+.context/
+CLAUDE.local.md
+
+### Swift Package·Xcode ###
+.build/
+.swiftpm/
+DerivedData/
+xcuserdata/
+*.xcresult
