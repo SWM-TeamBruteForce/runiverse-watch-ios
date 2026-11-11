@@ -1090,6 +1090,21 @@ struct PhoneLinkTests {
     }
 
     @Test
+    func `앱이 켜진 채 폰이 켜고 아무것도 보내지 않으면 3초 뒤 끊긴 것으로 본다`() throws {
+        // given -> 러닝이 없는 상태를 받아 3초 감시가 꺼져 있다
+        let fixture = Fixture()
+        fixture.phoneLink.onScreenVisibilityChanged(true)
+        try fixture.connect(idleState(stateSequence: 1))
+
+        // when
+        fixture.phoneLink.onLaunchedByPhone()
+        fixture.timer.advance(by: .milliseconds(3_001))
+
+        // then
+        #expect(!fixture.phoneLink.state.isPhoneReachable)
+    }
+
+    @Test
     func `폰이 버전을 거절했으면 폰이 켜도 기다리지 않는다`() {
         // given
         let fixture = Fixture()
