@@ -33,4 +33,4 @@
 
 개발 중입니다. 1차 범위는 폰 앱과 붙어서 보여 주는 러닝 중 화면과 끝난 직후 결과 요약입니다. 워치가 서버에 직접 붙는 기능(매칭·기록 보기)은 넣지 않습니다.
 
-폰과 주고받는 메시지는 갤럭시워치 레포의 [phone-communication.md](https://github.com/SWM-TeamBruteForce/runiverse-watch-android/blob/main/docs/phone-communication.md)를 같이 씁니다.
+폰과 주고받는 메시지는 [phone-communication.md](docs/phone-communication.md)에 있습니다.
