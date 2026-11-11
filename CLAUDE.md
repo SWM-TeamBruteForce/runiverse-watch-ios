@@ -23,7 +23,8 @@ xcodebuild build -project DevApp/RuniverseWatchDev.xcodeproj -scheme RuniverseWa
 
 - 라이브러리 타깃은 `RuniverseWatch` 하나, 코드는 `Sources/RuniverseWatch/`. 폴더는 아래 자리에 두고 코드가 생길 때 만든다. 자리를 새로 만들면 여기에 적는다.
   ```
-  RuniverseWatchScene   앱 타깃이 띄우는 화면 전체. 밖에 공개하는 타입은 이것뿐이다
+  RuniverseWatchScene         앱 타깃이 띄우는 화면 전체
+  RuniverseWatchAppDelegate   폰이 켠 운동·앱이 죽기 전 남은 운동을 받는다. 밖에 공개하는 타입은 이 둘뿐이다
   Phone/          폰과 메시지 주고받기·연결 상태
   Workout/        러닝 중 앱을 살려 두는 운동 세션·심박 측정
   Run/            러닝 화면·장·결과 요약
