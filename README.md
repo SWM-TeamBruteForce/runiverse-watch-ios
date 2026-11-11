@@ -15,7 +15,7 @@
 
 ## 구성
 
-워치 화면과 로직은 이 레포에 Swift Package로 둘 예정입니다.
+워치 화면과 로직은 이 레포에 Swift Package로 둡니다.
 폰 앱 레포의 `ios/`에는 워치 앱 타깃과 폰 쪽 연동 코드를 두고, 이 패키지를 SPM으로 연결합니다.
 
 - 워치 앱은 iOS 앱 안에 담겨 함께 출시됩니다. 워치만 고쳐도 iOS 앱을 새로 냅니다.
@@ -31,4 +31,6 @@
 
 ## 상태
 
-준비 중입니다. 이 문서는 폰 연동 구성을 기준으로 합니다. 폰 없이 쓸 기능 범위는 아직 정하지 않았습니다.
+개발 중입니다. 1차 범위는 폰 앱과 붙어서 보여 주는 러닝 중 화면과 끝난 직후 결과 요약입니다. 워치가 서버에 직접 붙는 기능(매칭·기록 보기)은 넣지 않습니다.
+
+폰과 주고받는 메시지는 갤럭시워치 레포의 [phone-communication.md](https://github.com/SWM-TeamBruteForce/runiverse-watch-android/blob/main/docs/phone-communication.md)를 같이 씁니다.
