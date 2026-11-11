@@ -1,0 +1,36 @@
+{
+  "sourceLanguage" : "ko",
+  "strings" : {
+    "idle_run_screen_shown_automatically" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "러닝 화면 자동 표시"
+          }
+        }
+      }
+    },
+    "idle_start_on_phone" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "폰에서 러닝 시작"
+          }
+        }
+      }
+    },
+    "run_phone_checking" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "폰 연결 확인 중"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
