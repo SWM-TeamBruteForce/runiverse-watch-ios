@@ -9,7 +9,7 @@ let package = Package(
         .library(name: "RuniverseWatch", targets: ["RuniverseWatch"])
     ],
     targets: [
-        .target(name: "RuniverseWatch"),
+        .target(name: "RuniverseWatch", resources: [.process("Resources")]),
         .testTarget(name: "RuniverseWatchTests", dependencies: ["RuniverseWatch"]),
     ]
 )
