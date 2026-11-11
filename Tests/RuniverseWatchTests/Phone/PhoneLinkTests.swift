@@ -1055,16 +1055,16 @@ struct PhoneLinkTests {
 
     @Test
     func `폰이 워치 앱을 켜면 SYNCED를 받을 때까지 폰이 켠 러닝을 기다린다`() throws {
-        // given
+        // given -> 폰이 켜면 앱 delegate가 첫 화면보다 먼저 불린다
         let fixture = Fixture()
-        fixture.phoneLink.start()
-        let sync = try #require(fixture.sent.first?.sync)
+        fixture.phoneLink.onLaunchedByPhone()
 
         // when
-        fixture.phoneLink.onLaunchedByPhone()
+        fixture.phoneLink.start()
 
         // then
         #expect(fixture.phoneLink.state.isAwaitingLaunchedRun)
+        let sync = try #require(fixture.sent.first?.sync)
 
         // when -> 폰이 답한다
         fixture.phoneLink.onReceived(synced(sync.syncId, state(stateSequence: 1)))
