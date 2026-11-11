@@ -22,7 +22,7 @@ public struct RuniverseWatchScene: Scene {
     private static let phoneLink: PhoneLink = {
         let channel = PhoneChannel(
             onReceived: { phoneLink.onReceived($0) },
-            onActivated: { phoneLink.onChannelActivated() }
+            onOpened: { phoneLink.onChannelOpened() }
         )
         let link = PhoneLink(send: channel.send)
         channel.activate()

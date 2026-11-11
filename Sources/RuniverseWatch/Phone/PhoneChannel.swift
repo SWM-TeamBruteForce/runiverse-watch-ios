@@ -6,18 +6,18 @@ import WatchConnectivity
 final class PhoneChannel: NSObject, WCSessionDelegate {
     private let session = WCSession.default
     private let onReceived: @MainActor (PhoneMessage) -> Void
-    private let onActivated: @MainActor () -> Void
+    private let onOpened: @MainActor () -> Void
 
     init(
         onReceived: @escaping @MainActor (PhoneMessage) -> Void,
-        onActivated: @escaping @MainActor () -> Void
+        onOpened: @escaping @MainActor () -> Void
     ) {
         self.onReceived = onReceived
-        self.onActivated = onActivated
+        self.onOpened = onOpened
         super.init()
     }
 
-    /// 받기를 시작한다. 활성화가 끝나면 `onActivated`를 부른다.
+    /// 받기를 시작한다. 활성화가 끝나고 폰에 닿을 때마다 `onOpened`를 부른다.
     func activate() {
         session.delegate = self
         session.activate()
@@ -52,10 +52,20 @@ final class PhoneChannel: NSObject, WCSessionDelegate {
             Self.logger.error("세션 활성화 실패: \(error, privacy: .public)")
             return
         }
-        guard activationState == .activated else { return }
-        let onActivated = onActivated
+        // 활성화 직후엔 아직 안 닿을 수 있다 — 그땐 닿는 순간 부른다
+        guard activationState == .activated, session.isReachable else { return }
+        notifyOpened()
+    }
+
+    func sessionReachabilityDidChange(_ session: WCSession) {
+        guard session.activationState == .activated, session.isReachable else { return }
+        notifyOpened()
+    }
+
+    private func notifyOpened() {
+        let onOpened = onOpened
         DispatchQueue.main.async {
-            MainActor.assumeIsolated { onActivated() }
+            MainActor.assumeIsolated { onOpened() }
         }
     }
 
