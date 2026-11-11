@@ -9,6 +9,9 @@
 - 앱이 켜질 때 `activate()`하고, 활성화가 끝나기 전엔 보내지 않는다. 워치는 끝나는 대로 SYNC와 켜짐 신호를 다시 보낸다.
 - 워치가 보내면 폰 앱이 백그라운드에서 깨어나 받는다. 폰이 보내면 워치 앱은 깨지 않아, 화면에 떠 있거나 운동 세션으로 돌 때만 받는다.
 - 연결돼 있을 때만 보낸다. 끊긴 동안 쌓아 두지 않고(`transferUserInfo`·`updateApplicationContext`는 안 쓴다), 다시 연결되면 `WATCH_SYNC`로 맞춘다.
+- 한 메시지는 65,536바이트까지 간다(시뮬레이터 실측). 넘으면 보내는 쪽에 `7009`(payload too large)가 오고 받는 쪽엔 가지 않는다 — 사진을 실은 `WATCH_SYNCED`가 가장 크다.
+- 폰은 짝지은 워치에 우리 앱이 깔려 있고 세션이 켜졌으면 보낸다. `isReachable`은 보지 않는다 — 닿지 못하면 보내기가 `7007`(not reachable)로 실패한다.
+- 폰은 러닝을 시작할 때 `HKHealthStore.startWatchApp`(달리기·실외)으로 워치 앱을 켠다. 워치 앱은 `WKBackgroundModes`에 `workout-processing`이 있어야 켜진다.
 - 화면이 켜져 있다는 건 `scenePhase`가 `.active`라는 뜻이다.
 - 모르는 `event`·필드는 무시한다. enum 값을 늘릴 땐 양쪽을 함께 바꾼다 — 모르는 값이 든 메시지는 통째로 버려진다.
 
