@@ -6,7 +6,7 @@
 
 - WatchConnectivity `WCSession.default`. 본문은 UTF-8 JSON `{"event": ..., "data": {...}}` — 서버 WebSocket과 같은 봉투다.
 - 양쪽 다 `sendMessageData`로 답 없이(`replyHandler: nil`) 보내고 `didReceiveMessageData`로 받는다.
-- 앱이 켜질 때 `activate()`하고, 활성화가 끝나기 전엔 보내지 않는다. 워치는 끝나는 대로 SYNC와 켜짐 신호를 다시 보낸다.
+- 앱이 켜질 때 `activate()`하고, 활성화가 끝나기 전엔 보내지 않는다. 워치는 활성화가 끝나고 폰에 닿을 때마다(`isReachable`) SYNCED를 기다리는 중이면 SYNC를, 화면이 켜져 있으면 켜짐 신호를 다시 보낸다.
 - 워치가 보내면 폰 앱이 백그라운드에서 깨어나 받는다. 폰이 보내면 워치 앱은 깨지 않아, 화면에 떠 있거나 운동 세션으로 돌 때만 받는다.
 - 연결돼 있을 때만 보낸다. 끊긴 동안 쌓아 두지 않고(`transferUserInfo`·`updateApplicationContext`는 안 쓴다), 다시 연결되면 `WATCH_SYNC`로 맞춘다.
 - 한 메시지는 65,536바이트까지 간다(시뮬레이터 실측). 넘으면 보내는 쪽에 `7009`(payload too large)가 오고 받는 쪽엔 가지 않는다 — 사진을 실은 `WATCH_SYNCED`가 가장 크다.
