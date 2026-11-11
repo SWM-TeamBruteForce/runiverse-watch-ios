@@ -120,8 +120,8 @@ final class PhoneLink {
         state.dismissedResult = phoneState.resultKey
     }
 
-    /// 통로가 열렸을 때 부른다 — 열리기 전에 보낸 SYNC·켜짐 신호는 버려졌다.
-    func onChannelActivated() {
+    /// 통로가 열릴 때마다 부른다 — 열리기 전에 보낸 SYNC·켜짐 신호는 버려졌다.
+    func onChannelOpened() {
         if state.isSyncing { requestSync() }
         if isScreenVisible, !state.isUpdateRequired {
             visibilityTimer?.cancel()

@@ -50,7 +50,7 @@ struct PhoneLinkTests {
         fixture.sent.removeAll()
 
         // when
-        fixture.phoneLink.onChannelActivated()
+        fixture.phoneLink.onChannelOpened()
 
         // then
         #expect(fixture.sent.count == 1)
@@ -73,7 +73,7 @@ struct PhoneLinkTests {
         fixture.sent.removeAll()
 
         // when
-        fixture.phoneLink.onChannelActivated()
+        fixture.phoneLink.onChannelOpened()
 
         // then
         #expect(fixture.sent.contains { $0.isVisible == true })
