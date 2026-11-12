@@ -16,6 +16,9 @@ enum RootScreen: Equatable {
             self = .awaitingPhone
         } else if let finishedRun = linkState.finishedRun {
             self = .runSummary(finishedRun)
+        } else if linkState.isSyncing, linkState.isPhoneReachable {
+            // 폰이 답하기 전엔 폰 앱이 떠 있는지 몰라, 끊김 판정 전까지 문구 없이 그린다
+            self = .awaitingPhone
         } else {
             self = .idle(isPhoneReachable: linkState.isPhoneReachable)
         }

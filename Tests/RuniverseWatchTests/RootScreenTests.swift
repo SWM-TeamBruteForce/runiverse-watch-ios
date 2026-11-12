@@ -62,6 +62,29 @@ struct RootScreenTests {
         #expect(RootScreen(PhoneLinkState(phoneState: idle)) == .idle(isPhoneReachable: true))
         #expect(RootScreen(PhoneLinkState(isPhoneReachable: false)) == .idle(isPhoneReachable: false))
     }
+
+    @Test
+    func `SYNC 답을 기다리는 동안 러닝이 없으면 그림 화면이고 끊김 판정이 나면 대기 화면이다`() {
+        // given -> 앱을 다시 열면 전에 받은 상태가 남은 채 SYNC한다
+        let idle = PhoneState(phoneInstanceId: "p1", stateSequence: 1, statusVersion: 0, lastRequestId: nil, run: nil)
+        let syncing = PhoneLinkState(isSyncing: true)
+        let reopened = PhoneLinkState(phoneState: idle, isSyncing: true)
+        let lost = PhoneLinkState(isPhoneReachable: false, isSyncing: true)
+
+        // when & then
+        #expect(RootScreen(syncing) == .awaitingPhone)
+        #expect(RootScreen(reopened) == .awaitingPhone)
+        #expect(RootScreen(lost) == .idle(isPhoneReachable: false))
+    }
+
+    @Test
+    func `SYNC 답을 기다리는 동안에도 받은 결과는 결과 요약이다`() {
+        // given
+        let linkState = PhoneLinkState(phoneState: state(status: .finished), isSyncing: true)
+
+        // when & then
+        #expect(RootScreen(linkState) == .runSummary(run(status: .finished)))
+    }
 }
 
 private func state(status: RunStatus) -> PhoneState {
