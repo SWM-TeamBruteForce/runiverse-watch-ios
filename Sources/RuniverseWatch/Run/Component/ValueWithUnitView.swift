@@ -65,7 +65,25 @@ struct ValueWithUnitView: View {
         )
     }
 
-    private static let valueToUnitGap: CGFloat = 2
+    /// 덩어리 폭(pt)이다. 칸 폭을 가장 넓은 값으로 잴 때 쓴다.
+    nonisolated static func width(
+        _ value: String,
+        unit: String?,
+        valueSize: CGFloat,
+        valueWeight: SUITFont.Weight = .semiBold,
+        monospacesDigits: Bool = false
+    ) -> CGFloat {
+        let valueWidth = SUITFont.width(
+            of: value,
+            size: valueSize,
+            weight: valueWeight,
+            monospacesDigits: monospacesDigits
+        )
+        guard let unit else { return valueWidth }
+        return valueWidth + valueToUnitGap + SUITFont.width(of: unit, size: WatchFontSizes.supporting, weight: .medium)
+    }
+
+    nonisolated private static let valueToUnitGap: CGFloat = 2
 }
 
 #Preview("숫자와 단위 내 기록") {
