@@ -62,12 +62,13 @@ struct RunView: View {
         }
     }
 
-    // 파티원 장에선 좌우로 안 넘어간다 — scrollDisabled로는 TabView 넘기기가 안 막힌다
+    // 첫 화면 칸에서 파티원 장을 볼 때만 좌우를 막는다 — scrollDisabled로는 TabView 넘기기가 안 막힌다
+    // 내 기록 장에선 화면 밖 세로 장이 어디 있든 첫 화면으로 돌아갈 수 있어야 한다
     private var horizontalSelection: Binding<RunPage> {
         Binding(
             get: { page },
             set: { newPage in
-                if verticalPage == .overview { page = newPage }
+                if page != .overview || verticalPage == .overview { page = newPage }
             }
         )
     }
