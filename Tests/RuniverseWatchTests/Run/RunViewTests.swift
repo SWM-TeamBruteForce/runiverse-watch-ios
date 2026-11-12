@@ -48,6 +48,13 @@ struct RunViewTests {
     }
 
     @Test
+    func `조작 장에선 세로 장이 파티원 장이어도 첫 화면으로 돌아간다`() {
+        // when & then
+        #expect(RunPage.controls.canMoveSideways(verticalPage: .player(userId: players[0].userId)))
+        #expect(RunPage.controls.canMoveSideways(verticalPage: .overview))
+    }
+
+    @Test
     func `내 기록 장에선 세로 장이 파티원 장이어도 첫 화면으로 돌아간다`() {
         // when & then
         #expect(RunPage.myRecord.canMoveSideways(verticalPage: .player(userId: players[0].userId)))

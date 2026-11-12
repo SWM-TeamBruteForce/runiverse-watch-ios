@@ -71,6 +71,16 @@ struct RunFormatTests {
     }
 
     @Test
+    func `남은 거리는 1000m 미만이면 m, 그 위는 소수 한 자리 km로 올린다`() {
+        // when & then
+        #expect(RunFormat.formatRemainingDistance(420) == FormattedDistance(value: "420", unit: .meter))
+        #expect(RunFormat.formatRemainingDistance(999) == FormattedDistance(value: "999", unit: .meter))
+        #expect(RunFormat.formatRemainingDistance(1000) == FormattedDistance(value: "1.0", unit: .kilometer))
+        #expect(RunFormat.formatRemainingDistance(1001) == FormattedDistance(value: "1.1", unit: .kilometer))
+        #expect(RunFormat.formatRemainingDistance(42_195) == FormattedDistance(value: "42.2", unit: .kilometer))
+    }
+
+    @Test
     func `페이스는 분과 초로 쓰고, 없거나 60분을 넘으면 비운다`() {
         // when & then
         #expect(RunFormat.formatPace(332) == "5'32\"")
