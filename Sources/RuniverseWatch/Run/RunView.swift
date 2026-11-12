@@ -47,7 +47,8 @@ struct RunView: View {
         // 갤럭시처럼 가로 장 표시 점은 두지 않는다
         .tabViewStyle(.page(indexDisplayMode: .never))
         // 세로 점은 갤럭시처럼 장이 뜰 때와 넘긴 뒤에만 잠깐 보인다
-        .task(id: verticalPage) {
+        // 첫 화면으로 돌아오거나 파티원 장이 생길 때도 다시 보여야 해서 셋을 같이 본다
+        .task(id: PageDotsTrigger(page: page, verticalPage: verticalPage, playerCount: run.players.count)) {
             arePageDotsShown = true
             try? await Task.sleep(for: Self.pageDotsHideDelay)
             guard !Task.isCancelled else { return }
@@ -89,6 +90,12 @@ private enum RunPage {
 private enum RunVerticalPage: Hashable {
     case overview
     case player(userId: String)
+}
+
+private struct PageDotsTrigger: Hashable {
+    let page: RunPage
+    let verticalPage: RunVerticalPage
+    let playerCount: Int
 }
 
 /// 세로 장 위치 점이다. 링 안쪽 오른쪽 끝, 화면 세로 가운데에 둔다.
