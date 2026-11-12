@@ -8,7 +8,7 @@ public struct RuniverseWatchScene: Scene {
 
     public var body: some Scene {
         WindowGroup {
-            RootView(phoneLink: Self.phoneLink)
+            RootView(phoneLink: Self.phoneLink, workoutSession: Self.workoutSession)
                 .task {
                     // 폰 상태를 받기 전에 운동 세션이 지켜보게 먼저 만든다
                     let workoutSession = Self.workoutSession
@@ -49,12 +49,18 @@ public struct RuniverseWatchScene: Scene {
 /// 폰 상태는 여기서만 읽고, 아래 화면엔 값만 넘긴다.
 private struct RootView: View {
     let phoneLink: PhoneLink
+    let workoutSession: WorkoutSession
 
     var body: some View {
         switch RootScreen(phoneLink.state) {
-        case .run:
-            // TODO: 러닝 화면 — 러닝 화면을 만들 때 교체한다
-            Text(verbatim: "러닝 중")
+        case .run(let run):
+            // TODO: 장 넘기기 — 내 기록 장을 만들 때 장을 넘기는 러닝 화면으로 교체한다
+            RunOverviewView(
+                run: run,
+                isPhoneReachable: phoneLink.state.isPhoneReachable,
+                heartRateBpm: workoutSession.heartRateBpm,
+                birthday: phoneLink.state.birthday
+            )
         case .updateRequired:
             UpdateRequiredView()
         case .runSummary:
