@@ -35,7 +35,7 @@ struct ProgressRingSlots: Equatable {
     init(screen: WatchScreen) {
         screenWidth = screen.screenWidth
         screenHeight = screen.screenHeight
-        cornerRadius = screen.screenWidth * Self.screenCornerFraction - Self.centerInset
+        cornerRadius = screen.cornerRadius - Self.centerInset
         startY = screen.safeAreaTop
         endX = screen.screenWidth / 2
     }
@@ -61,9 +61,6 @@ struct ProgressRingSlots: Equatable {
 
     static let strokeWidth: CGFloat = 5
     static let centerInset: CGFloat = 6
-
-    // 화면 모서리 반지름의 화면 폭에 대한 몫이다 — 시안 그림에서 잰 추정값이다
-    private static let screenCornerFraction: CGFloat = 0.165
 }
 
 private struct ProgressRingTrack: Shape {

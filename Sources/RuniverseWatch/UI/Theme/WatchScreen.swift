@@ -10,6 +10,12 @@ struct WatchScreen: Equatable {
 }
 
 extension WatchScreen {
+    /// 화면 모서리 반지름이다.
+    var cornerRadius: CGFloat { screenWidth * Self.cornerToWidthRatio }
+
+    // 시안 그림에서 잰 추정값이다
+    private static let cornerToWidthRatio: CGFloat = 0.165
+
     /// 안전 영역을 따르는 GeometryReader에서 잰다.
     init(_ proxy: GeometryProxy) {
         let insets = proxy.safeAreaInsets
