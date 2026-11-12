@@ -126,8 +126,8 @@ struct PlayerCellContent: Equatable, Identifiable {
     let colorSlot: Int
     /// 사진 대신 원 안에 쓰는 첫 글자다. 상태 아이콘이 가운데를 차지하면 없다.
     let initial: String?
-    /// 달리는 중이 아니면 사진에 덮개와 상태 아이콘을 얹는다.
-    let status: RunStatus
+    /// 사진에 덮개와 함께 얹을 상태다. 달리는 중이면 없다.
+    let statusIcon: RunStatus?
     let isCombo: Bool
     let avatarAlpha: Double
     let gapLabel: GapLabel?
@@ -137,7 +137,7 @@ struct PlayerCellContent: Equatable, Identifiable {
         id = player.userId
         colorSlot = player.colorSlot
         initial = player.status == .running ? String(player.nickname.prefix(1)) : nil
-        status = player.status
+        statusIcon = player.status == .running ? nil : player.status
         // 폰이 콤보 없음과 막 붙음을 둘 다 0으로 보내 1 이상일 때만 고리를 두른다
         isCombo = player.comboCount > 0
         let hasStaleValues = player.hasStaleValues(in: run, isPhoneReachable: isPhoneReachable)
@@ -305,11 +305,11 @@ private struct PlayerAvatarView: View {
             if let initial = player.initial {
                 AlignedTextView(initial, size: WatchFontSizes.supporting, weight: .bold, color: .white)
             }
-            if player.status != .running {
+            if let statusIcon = player.statusIcon {
                 Circle()
                     .fill(Color.black.opacity(Self.statusOverlayAlpha))
                     .frame(width: avatarSize, height: avatarSize)
-                StatusIconView(status: player.status)
+                StatusIconView(status: statusIcon)
                     .frame(width: avatarSize * Self.statusIconFraction, height: avatarSize * Self.statusIconFraction)
             }
             if player.isCombo {
