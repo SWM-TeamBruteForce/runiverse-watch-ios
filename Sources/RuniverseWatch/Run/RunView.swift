@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// 러닝 중 화면이다. 첫 화면에서 왼쪽으로 쓸면 내 기록 장이 나온다.
+/// 러닝 중 화면이다. 첫 화면에서 왼쪽으로 쓸면 내 기록 장, 위로 쓸거나 크라운을 돌리면 파티원 장이 나온다.
 struct RunView: View {
     let run: RunState
     let isPhoneReachable: Bool
@@ -8,15 +8,33 @@ struct RunView: View {
     let birthday: String?
 
     @State private var page = RunPage.overview
+    @State private var verticalPage = RunVerticalPage.overview
+    @State private var arePageDotsShown = true
 
     var body: some View {
-        TabView(selection: $page) {
-            RunOverviewView(
-                run: run,
-                isPhoneReachable: isPhoneReachable,
-                heartRateBpm: heartRateBpm,
-                birthday: birthday
-            )
+        TabView(selection: horizontalSelection) {
+            TabView(selection: $verticalPage) {
+                RunOverviewView(
+                    run: run,
+                    isPhoneReachable: isPhoneReachable,
+                    heartRateBpm: heartRateBpm,
+                    birthday: birthday
+                )
+                .tag(RunVerticalPage.overview)
+                ForEach(run.players, id: \.userId) { player in
+                    PartyView(run: run, player: player, isPhoneReachable: isPhoneReachable)
+                        .tag(RunVerticalPage.player(userId: player.userId))
+                }
+            }
+            .tabViewStyle(.verticalPage)
+            // 시스템 세로 점은 화면 끝 진행 링 위에 그려져, 끄고 링 안쪽에 직접 그린다
+            .scrollIndicators(.hidden)
+            .overlay {
+                if !run.players.isEmpty {
+                    VerticalPageDotsView(count: run.players.count + 1, currentIndex: verticalPageIndex)
+                        .opacity(arePageDotsShown ? 1 : 0)
+                }
+            }
             .tag(RunPage.overview)
             MyRecordView(
                 run: run,
@@ -28,12 +46,77 @@ struct RunView: View {
         }
         // 갤럭시처럼 가로 장 표시 점은 두지 않는다
         .tabViewStyle(.page(indexDisplayMode: .never))
+        // 세로 점은 갤럭시처럼 장이 뜰 때와 넘긴 뒤에만 잠깐 보인다
+        .task(id: verticalPage) {
+            arePageDotsShown = true
+            try? await Task.sleep(for: Self.pageDotsHideDelay)
+            guard !Task.isCancelled else { return }
+            withAnimation { arePageDotsShown = false }
+        }
+        // 보던 파티원이 명단에서 빠지면 첫 화면으로 돌아온다 — 안 그러면 좌우로 못 넘어간다
+        .onChange(of: run.players.map(\.userId)) { _, userIds in
+            if case .player(let userId) = verticalPage, !userIds.contains(userId) {
+                verticalPage = .overview
+            }
+        }
     }
+
+    // 파티원 장에선 좌우로 안 넘어간다 — scrollDisabled로는 TabView 넘기기가 안 막힌다
+    private var horizontalSelection: Binding<RunPage> {
+        Binding(
+            get: { page },
+            set: { newPage in
+                if verticalPage == .overview { page = newPage }
+            }
+        )
+    }
+
+    private var verticalPageIndex: Int {
+        guard case .player(let userId) = verticalPage,
+            let index = run.players.firstIndex(where: { $0.userId == userId })
+        else { return 0 }
+        return index + 1
+    }
+
+    private static let pageDotsHideDelay = Duration.seconds(2)
 }
 
 private enum RunPage {
     case overview
     case myRecord
+}
+
+private enum RunVerticalPage: Hashable {
+    case overview
+    case player(userId: String)
+}
+
+/// 세로 장 위치 점이다. 링 안쪽 오른쪽 끝, 화면 세로 가운데에 둔다.
+private struct VerticalPageDotsView: View {
+    let count: Int
+    let currentIndex: Int
+
+    var body: some View {
+        ScreenLayoutView { screen in
+            VStack(spacing: Self.dotSpacing - Self.dotDiameter) {
+                ForEach(0..<count, id: \.self) { index in
+                    Circle()
+                        .fill(Color.white.opacity(index == currentIndex ? 1 : Self.inactiveDotAlpha))
+                        .frame(width: Self.dotDiameter, height: Self.dotDiameter)
+                }
+            }
+            // 점도 글자처럼 링 안쪽 여백 안에 둔다
+            .position(
+                x: screen.screenWidth - RunDimensions.textEdgeMargin - Self.dotDiameter / 2,
+                y: screen.screenHeight / 2
+            )
+        }
+        .allowsHitTesting(false)
+    }
+
+    private static let dotDiameter: CGFloat = 3
+    private static let dotSpacing: CGFloat = 6
+    private static let inactiveDotAlpha = 0.35
 }
 
 #Preview("러닝 화면 파티") {
