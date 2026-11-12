@@ -26,8 +26,8 @@ struct PhoneLinkState: Equatable {
     var dismissedResult: ResultKey?
     /// 폰이 이 워치 버전을 거절했다 — 앱을 다시 열 때까지 폰에 새로 보내지 않는다.
     var isUpdateRequired = false
-    /// 폰이 러닝을 시작하며 워치 앱을 켰고, 그 뒤 폰 상태를 아직 못 받았다.
-    var isAwaitingLaunchedRun = false
+    /// 러닝이 있을 것으로 본 뒤 폰 상태를 아직 못 받았다.
+    var isAwaitingRun = false
 
     var isLocked: Bool { isSyncing || pendingRequestId != nil }
 
@@ -121,11 +121,11 @@ final class PhoneLink {
         state = PhoneLinkState()
     }
 
-    /// 폰이 러닝을 시작하며 워치 앱을 켰다. 폰 상태를 받으면 풀린다.
-    func onLaunchedByPhone() {
+    /// 폰이 러닝을 시작하며 워치 앱을 켰거나, 러닝 중에 죽은 앱이 다시 떴다. 폰 상태를 받으면 풀린다.
+    func onRunExpected() {
         // 폰이 이 버전을 거절해 이 러닝을 받을 수 없다
         guard !state.isUpdateRequired else { return }
-        state.isAwaitingLaunchedRun = true
+        state.isAwaitingRun = true
         // 3초 감시가 꺼져 있을 수 있고 폰은 켜짐 신호 전엔 화면이 꺼진 줄 알아, 화면이 켜질 때처럼 다시 건다
         if isScreenVisible { applyScreenVisibility() }
         // 이어 받을 상태가 없으면 폰이 보내는 상태를 버려, SYNC로 새로 받는다
@@ -270,7 +270,7 @@ final class PhoneLink {
         }
 
         state.phoneState = incoming
-        state.isAwaitingLaunchedRun = false
+        state.isAwaitingRun = false
         if let pendingRequestId = state.pendingRequestId, incoming.lastRequestId == pendingRequestId {
             commandTimer?.cancel()
             state.pendingRequestId = nil

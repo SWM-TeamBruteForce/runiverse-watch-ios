@@ -43,7 +43,7 @@ xcodebuild test -project DevApp/RuniverseWatchDev.xcodeproj -scheme RuniverseWat
 - `Run/`에는 화면 파일만 둔다. 장 전용 파일이 둘 이상이면 `Controls/`처럼 장 폴더를 만들고, 참조는 `Run/ → Controls/ → Common/ → Component/` 한 방향으로만 한다.
 - 단위 테스트는 `Tests/RuniverseWatchTests/`에 Sources와 같은 폴더로, UI 테스트는 개발용 앱 프로젝트의 UI 테스트 타깃에 둔다.
 - 화면은 폰 상태로 `switch` 분기한다. 폰 상태는 맨 위 화면 한 곳에서만 읽고, 아래로는 값과 동작 함수만 넘긴다.
-- `DevApp/`은 워치만 시뮬레이터로 볼 때 쓰는 개발용 앱이다. 출시되는 앱 타깃은 폰 앱 레포 `ios/`에 있고, 진입점과 앱 타깃에만 둘 수 있는 것(권한·Info.plist·아이콘)만 둔다.
+- `DevApp/`은 워치만 시뮬레이터로 볼 때 쓰는 개발용 앱이다. 출시되는 앱 타깃은 폰 앱 레포 `ios/`에 있고, 진입점과 앱 타깃에만 둘 수 있는 것(권한·Info.plist·아이콘)만 둔다. 러닝 화면은 실행 인자 `-fakeRun <경우>`로 가짜 폰을 켜서 본다(`Phone/FakePhone.swift`, DEBUG 빌드만).
 - `swift-tools-version`은 폰 앱 배포 CI의 Xcode가 읽는 버전까지만 올린다.
 
 ## 범위

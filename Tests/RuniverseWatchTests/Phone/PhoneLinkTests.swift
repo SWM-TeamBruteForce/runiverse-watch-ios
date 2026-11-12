@@ -1054,23 +1054,23 @@ struct PhoneLinkTests {
     }
 
     @Test
-    func `폰이 워치 앱을 켜면 SYNCED를 받을 때까지 폰이 켠 러닝을 기다린다`() throws {
+    func `폰이 워치 앱을 켜면 SYNCED를 받을 때까지 러닝을 기다린다`() throws {
         // given -> 앱 delegate가 첫 화면보다 먼저 불린 경우다
         let fixture = Fixture()
-        fixture.phoneLink.onLaunchedByPhone()
+        fixture.phoneLink.onRunExpected()
 
         // when
         fixture.phoneLink.start()
 
         // then
-        #expect(fixture.phoneLink.state.isAwaitingLaunchedRun)
+        #expect(fixture.phoneLink.state.isAwaitingRun)
         let sync = try #require(fixture.sent.first?.sync)
 
         // when -> 폰이 답한다
         fixture.phoneLink.onReceived(synced(sync.syncId, state(stateSequence: 1)))
 
         // then
-        #expect(!fixture.phoneLink.state.isAwaitingLaunchedRun)
+        #expect(!fixture.phoneLink.state.isAwaitingRun)
     }
 
     @Test
@@ -1078,14 +1078,14 @@ struct PhoneLinkTests {
         // given
         let fixture = Fixture()
         try fixture.connect(idleState(stateSequence: 1))
-        fixture.phoneLink.onLaunchedByPhone()
+        fixture.phoneLink.onRunExpected()
 
         // when -> 출발 직후라 방 번호가 아직 없어 SYNC 없이 이어 받는다
         fixture.phoneLink.onReceived(stateUpdated(state(stateSequence: 2, runningRoomId: nil)))
 
         // then
         let linkState = fixture.phoneLink.state
-        #expect(!linkState.isAwaitingLaunchedRun)
+        #expect(!linkState.isAwaitingRun)
         #expect(linkState.isRunActive)
     }
 
@@ -1097,7 +1097,7 @@ struct PhoneLinkTests {
         try fixture.connect(idleState(stateSequence: 1))
 
         // when
-        fixture.phoneLink.onLaunchedByPhone()
+        fixture.phoneLink.onRunExpected()
         fixture.timer.advance(by: .milliseconds(3_001))
 
         // then
@@ -1112,7 +1112,7 @@ struct PhoneLinkTests {
         try fixture.connect(idleState(stateSequence: 1))
 
         // when
-        fixture.phoneLink.onLaunchedByPhone()
+        fixture.phoneLink.onRunExpected()
 
         // then
         #expect(fixture.sent.contains { $0.isVisible == true })
@@ -1128,7 +1128,7 @@ struct PhoneLinkTests {
         fixture.sent.removeAll()
 
         // when
-        fixture.phoneLink.onLaunchedByPhone()
+        fixture.phoneLink.onRunExpected()
 
         // then
         #expect(fixture.sent.contains { $0.sync != nil })
@@ -1142,10 +1142,10 @@ struct PhoneLinkTests {
         fixture.phoneLink.onReceived(updateRequired(requestId: nil))
 
         // when
-        fixture.phoneLink.onLaunchedByPhone()
+        fixture.phoneLink.onRunExpected()
 
         // then
-        #expect(!fixture.phoneLink.state.isAwaitingLaunchedRun)
+        #expect(!fixture.phoneLink.state.isAwaitingRun)
     }
 }
 

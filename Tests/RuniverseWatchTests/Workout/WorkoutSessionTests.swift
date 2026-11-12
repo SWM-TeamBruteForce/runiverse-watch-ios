@@ -258,6 +258,42 @@ struct WorkoutSessionTests {
     }
 
     @Test
+    func `심박이 15초 동안 새로 안 오면 마지막 값을 지운다`() throws {
+        // given
+        let fixture = Fixture()
+        try fixture.connect(state(stateSequence: 1))
+        fixture.tracker.deliver(148)
+
+        // when
+        fixture.timer.advance(by: .seconds(14))
+
+        // then
+        #expect(fixture.session.heartRateBpm == 148)
+
+        // when
+        fixture.timer.advance(by: .seconds(1))
+
+        // then
+        #expect(fixture.session.heartRateBpm == nil)
+    }
+
+    @Test
+    func `15초 안에 새 심박이 오면 그때부터 다시 센다`() throws {
+        // given
+        let fixture = Fixture()
+        try fixture.connect(state(stateSequence: 1))
+        fixture.tracker.deliver(148)
+        fixture.timer.advance(by: .seconds(10))
+
+        // when
+        fixture.tracker.deliver(150)
+        fixture.timer.advance(by: .seconds(10))
+
+        // then -> 첫 심박에서 20초가 지났지만 새 심박에선 10초다
+        #expect(fixture.session.heartRateBpm == 150)
+    }
+
+    @Test
     func `끝낸 뒤 늦게 온 심박은 버린다`() throws {
         // given
         let fixture = Fixture()

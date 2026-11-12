@@ -1,3 +1,4 @@
+import SwiftUI
 import Testing
 import UIKit
 
@@ -5,13 +6,29 @@ import UIKit
 
 struct SUITFontTests {
 
-    @Test
-    func `글꼴을 처음 쓰면 패키지 번들의 SUIT가 등록된다`() {
+    @Test(arguments: ["0000", "1111", "4:59:59", "42.1"])
+    @MainActor
+    func `잰 글자 폭은 화면에 그린 폭과 같다`(text: String) {
+        // given
+        let measured = SUITFont.width(of: text, size: 20, weight: .semiBold, monospacesDigits: true)
+
         // when
-        _ = SUITFont.semiBold(size: 14)
+        let view = AlignedTextView(text, size: 20, monospacesDigits: true, color: .white)
+        let rendered = ImageRenderer(content: view).cgImage?.width
+
+        // then -> 그린 폭은 pt 소수를 올린 칸 수다
+        #expect(rendered == Int(measured.rounded(.up)))
+    }
+
+    @Test
+    func `글꼴을 처음 쓰면 패키지 번들의 SUIT 굵기 셋이 모두 등록된다`() {
+        // when
+        _ = SUITFont.font(.semiBold, size: 14)
 
         // then
+        #expect(UIFont(name: "SUIT-Medium", size: 14) != nil)
         #expect(UIFont(name: "SUIT-SemiBold", size: 14) != nil)
+        #expect(UIFont(name: "SUIT-Bold", size: 14) != nil)
     }
 
     @Test

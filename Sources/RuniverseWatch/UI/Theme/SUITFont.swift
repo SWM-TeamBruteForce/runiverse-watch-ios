@@ -4,9 +4,41 @@ import os
 
 /// SUIT 글꼴이다. 글자 크기 설정을 따르지 않고 고정한다.
 enum SUITFont {
-    static func semiBold(size: CGFloat) -> Font {
+    enum Weight {
+        case medium
+        case semiBold
+        case bold
+
+        var postScriptName: String {
+            switch self {
+            case .medium: "SUIT-Medium"
+            case .semiBold: "SUIT-SemiBold"
+            case .bold: "SUIT-Bold"
+            }
+        }
+    }
+
+    static func font(_ weight: Weight, size: CGFloat) -> Font {
         _ = registration
-        return .custom("SUIT-SemiBold", fixedSize: size)
+        return .custom(weight.postScriptName, fixedSize: size)
+    }
+
+    /// 한 줄로 그렸을 때 글자 폭(pt)이다. 자간 보정까지 넣어 화면 글자 폭과 같다.
+    static func width(of text: String, size: CGFloat, weight: Weight, monospacesDigits: Bool = false) -> CGFloat {
+        _ = registration
+        var descriptor = CTFontDescriptorCreateWithNameAndSize(weight.postScriptName as CFString, size)
+        if monospacesDigits {
+            descriptor = CTFontDescriptorCreateCopyWithFeature(
+                descriptor,
+                kNumberSpacingType as CFNumber,
+                kMonospacedNumbersSelector as CFNumber
+            )
+        }
+        let font = CTFontCreateWithFontDescriptor(descriptor, size, nil)
+        let line = CTLineCreateWithAttributedString(
+            NSAttributedString(string: text, attributes: [NSAttributedString.Key(kCTFontAttributeName as String): font])
+        )
+        return CTLineGetTypographicBounds(line, nil, nil, nil)
     }
 
     // 글꼴이 앱 번들이 아니라 패키지 번들에 있어 앱이 올리지 않아, 처음 쓸 때 코드로 등록한다

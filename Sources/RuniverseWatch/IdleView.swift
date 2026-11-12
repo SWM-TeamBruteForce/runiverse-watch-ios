@@ -3,7 +3,7 @@ import SwiftUI
 /// 러닝이 없을 때 화면이다.
 /// 글자 두 줄은 업데이트 필요 화면과 같은 자리라, 폰이 버전을 거절해 넘어가도 글자가 제자리에서 바뀐다.
 struct IdleView: View {
-    /// nil이면 폰이 켠 러닝을 기다리며 그림만 그린다.
+    /// nil이면 있을 것으로 보는 러닝의 폰 상태를 기다리며 그림만 그린다.
     let content: IdleContent?
 
     var body: some View {
@@ -68,6 +68,6 @@ struct IdleContent: Equatable {
     IdleView(content: IdleContent(isPhoneReachable: false))
 }
 
-#Preview("대기 화면 폰이 켠 러닝 기다림") {
+#Preview("대기 화면 러닝 기다림") {
     IdleView(content: nil)
 }

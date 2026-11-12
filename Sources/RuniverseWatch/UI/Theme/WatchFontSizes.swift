@@ -6,6 +6,16 @@ struct WatchFontSizes: Equatable {
     let value: CGFloat
     let reading: CGFloat
 
+    /// 단위·보조 글자는 화면 단계와 상관없이 같다.
+    static let supporting: CGFloat = 12
+
+    /// 숫자 자리에 드는 상태 글자(멈춤·끊김·마침) 크기다. 숫자와 같은 크기면 튀어 보여 조금 줄인다.
+    static func statusWordSize(numberSize: CGFloat) -> CGFloat {
+        numberSize * statusToNumberRatio
+    }
+
+    private static let statusToNumberRatio: CGFloat = 0.93
+
     init(screenWidth: CGFloat) {
         if screenWidth >= Self.smallScreenBelow {
             self = Self.largeScreen

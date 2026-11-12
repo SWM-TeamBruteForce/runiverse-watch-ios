@@ -20,20 +20,20 @@ struct RootScreenTests {
     }
 
     @Test
-    func `폰이 켠 러닝을 기다리는 동안 그림 화면이고 끊김 판정이 나면 대기 화면이다`() {
+    func `러닝을 기다리는 동안 그림 화면이고 끊김 판정이 나면 대기 화면이다`() {
         // given
-        let awaiting = PhoneLinkState(isAwaitingLaunchedRun: true)
-        let lost = PhoneLinkState(isPhoneReachable: false, isAwaitingLaunchedRun: true)
+        let awaiting = PhoneLinkState(isAwaitingRun: true)
+        let lost = PhoneLinkState(isPhoneReachable: false, isAwaitingRun: true)
 
         // when & then
-        #expect(RootScreen(awaiting) == .awaitingLaunchedRun)
+        #expect(RootScreen(awaiting) == .awaitingRun)
         #expect(RootScreen(lost) == .idle(isPhoneReachable: false))
     }
 
     @Test
     func `끝나지 않은 러닝이 이미 있으면 기다리는 중에도 러닝 화면이다`() {
         // given
-        let linkState = PhoneLinkState(phoneState: state(status: .running), isAwaitingLaunchedRun: true)
+        let linkState = PhoneLinkState(phoneState: state(status: .running), isAwaitingRun: true)
 
         // when & then
         #expect(RootScreen(linkState) == .run(run(status: .running)))

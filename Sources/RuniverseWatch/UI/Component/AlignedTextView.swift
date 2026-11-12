@@ -4,21 +4,34 @@ import SwiftUI
 struct AlignedTextView: View {
     private let text: String
     private let size: CGFloat
+    private let weight: SUITFont.Weight
+    private let monospacesDigits: Bool
     private let color: Color
     private let placement: InkPlacement?
 
     /// `placement`는 `ScreenLayoutView` 안에서 화면 위 끝부터 잰 높이다. nil이면 부모 정렬을 따른다.
-    init(_ text: String, size: CGFloat, color: Color, placement: InkPlacement? = nil) {
+    /// `monospacesDigits`는 1초마다 바뀌는 내 수치에만 켠다 — 파티원 수는 원래 폭이 글자 간격이 고르다.
+    init(
+        _ text: String,
+        size: CGFloat,
+        weight: SUITFont.Weight = .semiBold,
+        monospacesDigits: Bool = false,
+        color: Color,
+        placement: InkPlacement? = nil
+    ) {
         self.text = text
         self.size = size
+        self.weight = weight
+        self.monospacesDigits = monospacesDigits
         self.color = color
         self.placement = placement
     }
 
     var body: some View {
         let ink = SUITFont.ink(for: text)
+        let font = SUITFont.font(weight, size: size)
         Text(verbatim: text)
-            .font(SUITFont.semiBold(size: size))
+            .font(monospacesDigits ? font.monospacedDigit() : font)
             .foregroundStyle(color)
             .lineLimit(1)
             .fixedSize()
@@ -40,10 +53,15 @@ enum InkPlacement: Equatable {
 
     /// 그 변이 그 높이에 오게 하는 기준선 높이다.
     func baseline(ink: InkExtent, size: CGFloat) -> CGFloat {
+        baseline(inkAbove: ink.aboveBaselineEm * size, inkBelow: ink.belowBaselineEm * size)
+    }
+
+    /// 크기가 다른 글자를 한 줄로 묶을 때 쓴다. 잉크 높이는 기준선 위아래 pt다.
+    func baseline(inkAbove: CGFloat, inkBelow: CGFloat) -> CGFloat {
         switch self {
-        case .top(let y): y + ink.aboveBaselineEm * size
-        case .center(let y): y + (ink.aboveBaselineEm - ink.belowBaselineEm) * size / 2
-        case .bottom(let y): y - ink.belowBaselineEm * size
+        case .top(let y): y + inkAbove
+        case .center(let y): y + (inkAbove - inkBelow) / 2
+        case .bottom(let y): y - inkBelow
         }
     }
 }

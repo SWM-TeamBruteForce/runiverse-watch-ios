@@ -9,4 +9,10 @@ enum RuniverseColors {
     static let supporting = Color.white.opacity(0.7)
 
     static let buttonBackground = Color(white: 42 / 255)
+
+    /// 진행 링의 아직 안 찬 길이다.
+    static let progressTrack = Color(white: 42 / 255)
+
+    /// 심박 구간 막대의 아직 안 찬 칸이다.
+    static let emptyZone = Color.white.opacity(0.25)
 }
