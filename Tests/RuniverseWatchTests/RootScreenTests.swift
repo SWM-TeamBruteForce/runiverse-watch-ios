@@ -78,6 +78,16 @@ struct RootScreenTests {
     }
 
     @Test
+    func `화면으로 돌아와 켜짐 신호의 답을 기다리는 동안 러닝이 없으면 그림 화면이다`() {
+        // given -> 나가 있는 사이 폰 앱이 꺼졌을 수 있다
+        let idle = PhoneState(phoneInstanceId: "p1", stateSequence: 1, statusVersion: 0, lastRequestId: nil, run: nil)
+        let linkState = PhoneLinkState(phoneState: idle, isAwaitingVisibleReply: true)
+
+        // when & then
+        #expect(RootScreen(linkState) == .awaitingPhone)
+    }
+
+    @Test
     func `SYNC 답을 기다리는 동안에도 받은 결과는 결과 요약이다`() {
         // given
         let linkState = PhoneLinkState(phoneState: state(status: .finished), isSyncing: true)
