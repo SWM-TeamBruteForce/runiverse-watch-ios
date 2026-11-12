@@ -274,7 +274,7 @@ final class RunViewUITests: XCTestCase {
     @MainActor
     func testComboBurstCoversScreenAndCloses() {
         // given -> 가짜 폰은 3초마다 콤보를 올리고 1·3·5·10에서 큰 순간을 보낸다
-        let app = launchRun("combo")
+        let app = launchRun("combo", extraArguments: Self.comboEffectOnArguments)
         let burst = comboBurst(in: app)
 
         // when & then
@@ -285,11 +285,16 @@ final class RunViewUITests: XCTestCase {
 
     @MainActor
     func testComboBurstDoesNotShowOnControls() {
-        // given
-        let app = launchControls("combo")
+        // given -> 덮인 채 넘기면 덮개가 쓸기를 막아, 첫 큰 순간이 지나간 뒤 조작 장으로 넘긴다
+        let app = launchRun("combo", extraArguments: Self.comboEffectOnArguments)
+        let burst = comboBurst(in: app)
+        XCTAssertTrue(burst.waitForExistence(timeout: 15))
+        XCTAssertTrue(waitUntilGone(burst))
+        app.swipeRight()
+        XCTAssertTrue(waitUntilHittable(app.buttons["일시정지"]))
 
         // when & then -> 큰 순간이 두 번 지나가는 동안 덮개가 버튼을 가리지 않는다
-        XCTAssertFalse(comboBurst(in: app).waitForExistence(timeout: 13))
+        XCTAssertFalse(burst.waitForExistence(timeout: 13))
         XCTAssertTrue(app.buttons["일시정지"].isHittable)
     }
 
@@ -300,9 +305,9 @@ final class RunViewUITests: XCTestCase {
     }
 
     @MainActor
-    private func launchRun(_ fakeRun: String) -> XCUIApplication {
+    private func launchRun(_ fakeRun: String, extraArguments: [String] = []) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-fakeRun", fakeRun]
+        app.launchArguments = ["-fakeRun", fakeRun] + extraArguments
         app.launch()
         XCTAssertTrue(app.staticTexts["5'32\""].waitForExistence(timeout: 5))
         dismissHealthPermissionIfShown()
@@ -350,4 +355,7 @@ final class RunViewUITests: XCTestCase {
         let expectation = XCTNSPredicateExpectation(predicate: hasValue, object: element)
         return XCTWaiter().wait(for: [expectation], timeout: 3) == .completed
     }
+
+    // 저장된 설정과 상관없이 콤보 효과를 켠다 — 꺼져 있으면 큰 순간이 작은 순간으로 내려와 아무것도 확인하지 못한다
+    private static let comboEffectOnArguments = ["-comboEffectOn", "YES"]
 }

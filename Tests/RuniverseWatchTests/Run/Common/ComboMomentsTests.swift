@@ -122,14 +122,44 @@ struct ComboMomentsTests {
     }
 
     @Test
-    func `명단에 없는 사람이나 끝난 러닝의 큰 순간은 띄우지 않는다`() {
+    func `지운 큰 순간을 지우는 시간이 다음 큰 순간을 일찍 지우지 않는다`() {
+        // given -> 큰 순간이 뜬 채 조작 장에 갔다가 돌아온다
+        let fixture = Fixture()
+        fixture.moments.onScreenActiveChanged(true)
+        fixture.receive(combo("e1", userId: "u2", kind: .milestone))
+        fixture.moments.onControlsShownChanged(true)
+        fixture.moments.onControlsShownChanged(false)
+
+        // when -> 0.6초 뒤 다음 큰 순간이 오고, 다시 0.6초 뒤 앞 순간을 지우는 시간이 된다
+        fixture.timer.advance(by: .milliseconds(600))
+        fixture.receive(combo("e2", userId: "u2", kind: .milestone))
+        fixture.timer.advance(by: .milliseconds(600))
+
+        // then
+        #expect(fixture.moments.burst?.moment.eventId == "e2")
+    }
+
+    @Test
+    func `명단에 없는 사람의 큰 순간은 띄우지 않는다`() {
         // given
         let fixture = Fixture()
         fixture.moments.onScreenActiveChanged(true)
 
         // when
         fixture.receive(combo("e1", userId: "u9", kind: .milestone))
-        fixture.moments.onCombo(combo("e2", userId: "u2", kind: .milestone), linkState: PhoneLinkState())
+
+        // then
+        #expect(fixture.moments.burst == nil)
+    }
+
+    @Test
+    func `끝난 러닝의 큰 순간은 명단에 있는 사람이어도 띄우지 않는다`() {
+        // given
+        let fixture = Fixture()
+        fixture.moments.onScreenActiveChanged(true)
+
+        // when
+        fixture.receive(combo("e1", userId: "u2", kind: .milestone), run: finished(RunSamples.party))
 
         // then
         #expect(fixture.moments.burst == nil)
@@ -220,6 +250,22 @@ struct ComboMomentsTests {
     private func combo(_ eventId: String, userId: String, comboCount: Int = 3, kind: ComboKind) -> WatchComboTriggered {
         WatchComboTriggered(eventId: eventId, userId: userId, comboCount: comboCount, kind: kind)
     }
+
+    // 명단은 그대로 두고 러닝만 끝낸다
+    private func finished(_ run: RunState) -> RunState {
+        RunState(
+            runningRoomId: run.runningRoomId,
+            type: run.type,
+            status: .finished,
+            targetDistanceMeters: run.targetDistanceMeters,
+            isServerConnected: run.isServerConnected,
+            isPenaltyApplicable: run.isPenaltyApplicable,
+            me: run.me,
+            players: run.players,
+            finish: run.finish,
+            result: run.result
+        )
+    }
 }
 
 @MainActor
@@ -234,14 +280,14 @@ private final class Fixture {
         isEffectOn: { [unowned self] in isEffectOn }
     )
 
-    // 샘플 파티(완두콩 u1·콩나물 u2·강낭콩 u3)가 달리는 중에 받는다
-    func receive(_ combo: WatchComboTriggered) {
+    // 따로 주지 않으면 샘플 파티(완두콩 u1·콩나물 u2·강낭콩 u3)가 달리는 중에 받는다
+    func receive(_ combo: WatchComboTriggered, run: RunState = RunSamples.party) {
         let phoneState = PhoneState(
             phoneInstanceId: "p1",
             stateSequence: 1,
             statusVersion: 0,
             lastRequestId: nil,
-            run: RunSamples.party
+            run: run
         )
         moments.onCombo(combo, linkState: PhoneLinkState(phoneState: phoneState))
     }
