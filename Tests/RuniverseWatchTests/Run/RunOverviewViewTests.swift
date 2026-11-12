@@ -96,6 +96,17 @@ struct RunOverviewViewTests {
     }
 
     @Test
+    func `멈춤·끊김·마침인 사람만 사진에 상태 아이콘을 얹는다`() {
+        // when
+        let running = content(RunSamples.party).players[0]
+        let statuses = content(RunSamples.playerStatuses).players
+
+        // then
+        #expect(running.statusIcon == nil)
+        #expect(statuses.map(\.statusIcon) == [.paused, .disconnected, .finished])
+    }
+
+    @Test
     func `그 사람 통지가 아직 없어 격차를 모르면 사진 아래를 비운다`() {
         // given
         let notNotified = player(RunSamples.party.players[0], gapMeters: nil)
