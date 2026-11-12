@@ -10,6 +10,8 @@ public final class RuniverseWatchAppDelegate: NSObject, WKApplicationDelegate {
     }
 
     public func handleActiveWorkoutRecovery() {
+        // 러닝 중에 죽었다 다시 뜬 앱이라, 폰 답 전에 `폰에서 러닝 시작`이 끼지 않게 기다린다
+        RuniverseWatchScene.phoneLink.onRunExpected()
         RuniverseWatchScene.workoutSession.onRecoveryRequested()
     }
 }

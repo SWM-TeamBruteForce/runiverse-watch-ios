@@ -121,7 +121,7 @@ final class PhoneLink {
         state = PhoneLinkState()
     }
 
-    /// 폰이 러닝을 시작하며 워치 앱을 켰다. 폰 상태를 받으면 풀린다.
+    /// 폰이 러닝을 시작하며 워치 앱을 켰거나, 러닝 중에 죽은 앱이 다시 떴다. 폰 상태를 받으면 풀린다.
     func onRunExpected() {
         // 폰이 이 버전을 거절해 이 러닝을 받을 수 없다
         guard !state.isUpdateRequired else { return }
