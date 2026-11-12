@@ -31,7 +31,7 @@ struct RunOverviewView: View {
             DistanceTimeRow(
                 content: content,
                 sizes: sizes,
-                width: pageSlots.topRowWidth,
+                width: RunPageSlots.topRowWidth(sizes: sizes),
                 inkBottom: pageSlots.topRowBottom
             )
             .opacity(content.phoneValuesAlpha)

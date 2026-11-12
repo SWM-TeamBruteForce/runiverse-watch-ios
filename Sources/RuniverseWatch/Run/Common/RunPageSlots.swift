@@ -4,8 +4,6 @@ import CoreGraphics
 struct RunPageSlots: Equatable {
     /// 위 줄 잉크의 아랫변이다.
     let topRowBottom: CGFloat
-    /// 위 줄 왼쪽 끝(거리)부터 오른쪽 끝(시간·이름)까지다. 첫 화면 가장 넓은 값으로 잰다.
-    let topRowWidth: CGFloat
     /// 큰 숫자 잉크의 세로 가운데다.
     let center: CGFloat
     /// 큰 숫자의 기준선이다. 숫자 잉크는 기준선 아래로 내려가지 않는다.
@@ -31,6 +29,11 @@ struct RunPageSlots: Equatable {
         bigNumberBaseline = center + halfBigNumber
         belowRowTop = bigNumberBaseline + RunDimensions.groupGap
         bottomRowTop = belowRowTop + avatarRowHeight
+    }
+
+    /// 위 줄 왼쪽 끝(거리)부터 오른쪽 끝(시간·이름)까지다. 첫 화면 가장 넓은 값으로 잰다.
+    /// 글자 폭을 재는 일이라 줄 자리에 담지 않고, 위 줄을 그리는 장만 부른다.
+    static func topRowWidth(sizes: WatchFontSizes) -> CGFloat {
         let widestDistance = ValueWithUnitView.width(
             Self.widestDistance,
             unit: RunTexts.kilometerUnit,
@@ -43,7 +46,7 @@ struct RunPageSlots: Equatable {
             weight: .semiBold,
             monospacesDigits: true
         )
-        topRowWidth = widestDistance + Self.minDistanceToTimeGap + widestTime
+        return widestDistance + Self.minDistanceToTimeGap + widestTime
     }
 
     // 같은 폭 숫자라도 SUIT는 1 다음 1에 자간이 붙어, 11이 가장 많은 값이 가장 넓다

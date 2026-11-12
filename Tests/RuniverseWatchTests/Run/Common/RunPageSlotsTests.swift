@@ -48,13 +48,10 @@ struct RunPageSlotsTests {
 
     @Test(arguments: [208.0, 176, 162])
     func `위 줄은 링 안쪽 글자 여백 안에 든다`(screenWidth: Double) {
-        // given
-        let screen = WatchScreen(screenWidth: screenWidth, screenHeight: 248, safeAreaTop: 40, safeAreaBottom: 228)
-
         // when
-        let slots = RunPageSlots(screen: screen, sizes: WatchFontSizes(screenWidth: screenWidth))
+        let topRowWidth = RunPageSlots.topRowWidth(sizes: WatchFontSizes(screenWidth: screenWidth))
 
         // then
-        #expect((screenWidth - slots.topRowWidth) / 2 >= 12.5)
+        #expect((screenWidth - topRowWidth) / 2 >= 12.5)
     }
 }
