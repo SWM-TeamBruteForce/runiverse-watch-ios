@@ -6,7 +6,7 @@ struct ControlsView: View {
     let isPhoneReachable: Bool
     let commandState: RunCommandState
     let commands: RunCommands
-    let isComboEffectOn: Bool
+    @Binding var isComboEffectOn: Bool
 
     @State private var isScrolled = false
 
@@ -22,7 +22,7 @@ struct ControlsView: View {
                     ControlsItemsView(
                         content: content,
                         commands: commands,
-                        isComboEffectOn: isComboEffectOn,
+                        isComboEffectOn: $isComboEffectOn,
                         isScrolled: isScrolled,
                         screen: screen,
                         sizes: sizes,
@@ -45,7 +45,7 @@ struct ControlsView: View {
 private struct ControlsItemsView: View {
     let content: ControlsContent
     let commands: RunCommands
-    let isComboEffectOn: Bool
+    @Binding var isComboEffectOn: Bool
     let isScrolled: Bool
     let screen: WatchScreen
     let sizes: WatchFontSizes
@@ -87,8 +87,10 @@ private struct ControlsItemsView: View {
             .opacity(content.buttonsAlpha)
             .alignmentGuide(.top) { _ in -slots.finishButtonTop }
             // 화면 끝에 걸쳐 보이면 조잡해, 통째로 안 들어오면 스크롤할 때까지 숨긴다
-            ComboEffectRow(label: content.comboEffectLabel, isOn: isComboEffectOn, fontSize: sizes.reading)
-                .opacity(slots.comboRowFits || isScrolled ? 1 : 0)
+            let isComboRowShown = slots.comboRowFits || isScrolled
+            ComboEffectRow(label: content.comboEffectLabel, isOn: $isComboEffectOn, fontSize: sizes.reading)
+                .opacity(isComboRowShown ? 1 : 0)
+                .disabled(!isComboRowShown)
                 .alignmentGuide(.top) { _ in -slots.comboRowTop }
         }
     }
@@ -425,23 +427,39 @@ struct ControlsSlots: Equatable {
 /// 콤보 효과 켜기·끄기 칸이다. 글자는 왼쪽, 스위치는 오른쪽 끝에 붙인다.
 private struct ComboEffectRow: View {
     let label: String
-    let isOn: Bool
+    @Binding var isOn: Bool
     let fontSize: CGFloat
 
     var body: some View {
-        HStack(alignment: .inkCenter, spacing: 0) {
+        Toggle(isOn: $isOn) {
             AlignedTextView(label, size: fontSize, color: RuniverseColors.value)
-            Spacer(minLength: Self.labelToSwitchGap)
-            ComboSwitchView(isOn: isOn)
         }
-        .padding(.leading, Self.labelLeadingPadding)
-        .padding(.trailing, Self.switchTrailingPadding)
-        .frame(
-            width: ControlsSlots.pillWidth,
-            height: ControlButton.pillHeight,
-            alignment: Alignment(horizontal: .center, vertical: .inkCenter)
-        )
-        .overlay(Capsule().strokeBorder(Self.outlineColor, lineWidth: Self.outlineWidth))
+        .toggleStyle(ComboEffectToggleStyle())
+    }
+}
+
+/// 칸 어디를 눌러도 켜고 끈다.
+private struct ComboEffectToggleStyle: ToggleStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        Button {
+            configuration.isOn.toggle()
+        } label: {
+            HStack(alignment: .inkCenter, spacing: 0) {
+                configuration.label
+                Spacer(minLength: Self.labelToSwitchGap)
+                ComboSwitchView(isOn: configuration.isOn)
+            }
+            .padding(.leading, Self.labelLeadingPadding)
+            .padding(.trailing, Self.switchTrailingPadding)
+            .frame(
+                width: ControlsSlots.pillWidth,
+                height: ControlButton.pillHeight,
+                alignment: Alignment(horizontal: .center, vertical: .inkCenter)
+            )
+            .overlay(Capsule().strokeBorder(Self.outlineColor, lineWidth: Self.outlineWidth))
+            .contentShape(Capsule())
+        }
+        .buttonStyle(.plain)
     }
 
     private static let outlineColor = Color(white: 0x33 / 255)
@@ -477,7 +495,7 @@ private struct ComboSwitchView: View {
         isPhoneReachable: true,
         commandState: RunCommandState(),
         commands: RunCommands(pause: {}, resume: {}, finish: { _ in }),
-        isComboEffectOn: true
+        isComboEffectOn: .constant(true)
     )
 }
 
@@ -487,7 +505,7 @@ private struct ComboSwitchView: View {
         isPhoneReachable: true,
         commandState: RunCommandState(),
         commands: RunCommands(pause: {}, resume: {}, finish: { _ in }),
-        isComboEffectOn: true
+        isComboEffectOn: .constant(true)
     )
 }
 
@@ -497,7 +515,7 @@ private struct ComboSwitchView: View {
         isPhoneReachable: false,
         commandState: RunCommandState(),
         commands: RunCommands(pause: {}, resume: {}, finish: { _ in }),
-        isComboEffectOn: false
+        isComboEffectOn: .constant(false)
     )
 }
 
@@ -507,6 +525,6 @@ private struct ComboSwitchView: View {
         isPhoneReachable: true,
         commandState: RunCommandState(isLocked: true, isFinishPending: true),
         commands: RunCommands(pause: {}, resume: {}, finish: { _ in }),
-        isComboEffectOn: true
+        isComboEffectOn: .constant(true)
     )
 }

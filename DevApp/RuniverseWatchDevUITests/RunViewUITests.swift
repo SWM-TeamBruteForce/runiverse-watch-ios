@@ -132,14 +132,14 @@ final class RunViewUITests: XCTestCase {
         let app = launchRun("party")
         app.swipeRight()
         XCTAssertTrue(waitUntilHittable(app.buttons["일시정지"]))
-        let comboLabel = app.staticTexts["콤보 효과"]
-        XCTAssertFalse(comboLabel.exists && comboLabel.isHittable)
+        let comboSwitch = app.switches["콤보 효과"]
+        XCTAssertFalse(comboSwitch.exists && comboSwitch.isHittable)
 
         // when
         app.swipeUp()
 
         // then
-        XCTAssertTrue(waitUntilHittable(comboLabel))
+        XCTAssertTrue(waitUntilHittable(comboSwitch))
     }
 
     @MainActor

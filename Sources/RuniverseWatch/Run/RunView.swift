@@ -14,6 +14,10 @@ struct RunView: View {
     @State private var verticalPage = RunVerticalPage.overview
     @State private var arePageDotsShown = true
 
+    // 서버 설정이 아니라 워치에만 저장한다
+    // TODO: 콤보 효과 — 콤보 효과를 만들 때 꺼져 있으면 큰 순간 터짐을 빼도록 잇는다
+    @AppStorage("comboEffectOn") private var isComboEffectOn = true
+
     var body: some View {
         TabView(selection: horizontalSelection) {
             ControlsView(
@@ -21,7 +25,7 @@ struct RunView: View {
                 isPhoneReachable: isPhoneReachable,
                 commandState: commandState,
                 commands: commands,
-                isComboEffectOn: true
+                isComboEffectOn: $isComboEffectOn
             )
             .tag(RunPage.controls)
             TabView(selection: $verticalPage) {
