@@ -143,6 +143,34 @@ final class RunViewUITests: XCTestCase {
     }
 
     @MainActor
+    func testComboEffectSettingStaysAfterRelaunch() {
+        // given
+        var app = launchControls("party")
+        app.swipeUp()
+        XCTAssertTrue(waitUntilHittable(app.switches["콤보 효과"]))
+        // 스위치 값은 켜짐 "1", 꺼짐 "0"이다
+        let initialValue = app.switches["콤보 효과"].value as? String ?? ""
+        let toggledValue = initialValue == "1" ? "0" : "1"
+
+        // when
+        app.switches["콤보 효과"].tap()
+        XCTAssertTrue(waitUntilValue(app.switches["콤보 효과"], equals: toggledValue))
+        app.terminate()
+        app = launchControls("party")
+        app.swipeUp()
+
+        // then -> 워치에 저장한 값이라 다시 켜도 바뀐 채다
+        XCTAssertTrue(waitUntilHittable(app.switches["콤보 효과"]))
+        XCTAssertTrue(waitUntilValue(app.switches["콤보 효과"], equals: toggledValue))
+
+        // when -> 다음 테스트를 위해 처음 값으로 되돌린다
+        app.switches["콤보 효과"].tap()
+
+        // then
+        XCTAssertTrue(waitUntilValue(app.switches["콤보 효과"], equals: initialValue))
+    }
+
+    @MainActor
     func testPauseAndResumeFromControls() {
         // given
         let app = launchControls("party")
@@ -278,6 +306,13 @@ final class RunViewUITests: XCTestCase {
     private func waitUntilHittable(_ element: XCUIElement) -> Bool {
         let hittable = NSPredicate(format: "exists == true AND hittable == true")
         let expectation = XCTNSPredicateExpectation(predicate: hittable, object: element)
+        return XCTWaiter().wait(for: [expectation], timeout: 3) == .completed
+    }
+
+    @MainActor
+    private func waitUntilValue(_ element: XCUIElement, equals value: String) -> Bool {
+        let hasValue = NSPredicate(format: "value == %@", value)
+        let expectation = XCTNSPredicateExpectation(predicate: hasValue, object: element)
         return XCTWaiter().wait(for: [expectation], timeout: 3) == .completed
     }
 }
