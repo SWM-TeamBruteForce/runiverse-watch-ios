@@ -20,6 +20,7 @@ final class WorkoutSession {
     @ObservationIgnored private var launchConfiguration: HKWorkoutConfiguration?
     @ObservationIgnored private var isWatchingPhone = false
     @ObservationIgnored private var checkTimer: PhoneTimer?
+    @ObservationIgnored private var heartRateTimer: PhoneTimer?
     @ObservationIgnored private var heardState: PhoneState?
     @ObservationIgnored private var heardAt: ContinuousClock.Instant
     @ObservationIgnored private var probedAt: ContinuousClock.Instant
@@ -148,7 +149,7 @@ final class WorkoutSession {
 
     private func endTracker() {
         trackerState = .changing
-        heartRateBpm = nil
+        clearHeartRate()
         tracker.end { [weak self] in
             guard let self else { return }
             trackerState = .idle
@@ -159,7 +160,7 @@ final class WorkoutSession {
     private func onEndedBySystem() {
         guard trackerState == .running else { return }
         trackerState = .idle
-        heartRateBpm = nil
+        clearHeartRate()
         isTrackerBlocked = true
     }
 
@@ -167,7 +168,15 @@ final class WorkoutSession {
         // 끝내는 중에 늦게 온 심박은 버린다
         guard trackerState == .running else { return }
         self.heartRateBpm = heartRateBpm
+        // HealthKit은 센서가 끊겨도 알려 주지 않아, 새 값이 한동안 없으면 마지막 값을 지운다
+        heartRateTimer?.cancel()
+        heartRateTimer = schedule(Self.heartRateTimeout) { [weak self] in self?.heartRateBpm = nil }
         checkPhone()
+    }
+
+    private func clearHeartRate() {
+        heartRateTimer?.cancel()
+        heartRateBpm = nil
     }
 
     private func scheduleCheck() {
@@ -217,6 +226,8 @@ final class WorkoutSession {
         return configuration
     }
 
+    // 심박을 몇 번 놓친 뒤에야 끊긴 것으로 보려는 추정값이다
+    private static let heartRateTimeout = Duration.seconds(15)
     private static let checkInterval = Duration.seconds(60)
     private static let probeDelay = Duration.seconds(60)
     private static let giveUpTimeout = Duration.seconds(600)
