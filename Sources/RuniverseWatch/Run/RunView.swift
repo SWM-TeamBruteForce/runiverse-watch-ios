@@ -11,6 +11,10 @@ struct RunView: View {
     let commands: RunCommands
     /// 사람 번호마다 지금 띄우는 작은 순간이다.
     var smallComboMoments: [String: ComboMoment] = [:]
+    /// 지금 화면을 덮는 큰 순간이다.
+    var comboBurst: ComboBurst?
+    /// 조작 장에선 큰 순간을 띄우지 않아, 조작 장이 보이는지 알린다.
+    var onControlsShownChange: (Bool) -> Void = { _ in }
 
     @State private var page = RunPage.overview
     @State private var verticalPage = RunVerticalPage.overview
@@ -68,6 +72,14 @@ struct RunView: View {
         }
         // 갤럭시처럼 가로 장 표시 점은 두지 않는다
         .tabViewStyle(.page(indexDisplayMode: .never))
+        .overlay {
+            if let comboBurst, let player = run.players.first(where: { $0.userId == comboBurst.userId }) {
+                ComboBurstView(burst: comboBurst, player: player)
+            }
+        }
+        .onChange(of: page, initial: true) { _, page in
+            onControlsShownChange(page == .controls)
+        }
         // 세로 점은 잠깐만 보인다 — 갤럭시는 넘기는 동안, 여기는 장이 뜨거나 바뀐 뒤다
         // 첫 화면으로 돌아오거나 파티원 장이 생길 때도 다시 보여야 해서 셋을 같이 본다
         .task(id: PageDotsTrigger(page: page, verticalPage: verticalPage, playerCount: run.players.count)) {

@@ -14,6 +14,9 @@ struct ComboMoment: Equatable {
     // 폰 배지가 튀는 시간과 같다
     static let smallDuration = Duration.milliseconds(320)
 
+    // 폰 콤보 임팩트와 같은 길이다
+    static let bigDuration = Duration.milliseconds(1200)
+
     /// 작은 순간 `progress`(0~1)에서 고리에 덮는 흰색의 투명도다.
     static func flashAlpha(progress: Double) -> Double {
         if progress <= 0 || progress >= 1 { return 0 }

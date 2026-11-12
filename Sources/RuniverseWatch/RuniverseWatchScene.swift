@@ -35,7 +35,7 @@ public struct RuniverseWatchScene: Scene {
         // 화면이 꺼져 있어도 울리게 진동은 화면이 아니라 앱에서 받는다
         link.onCombo = { combo in
             runVibrator.onCombo(combo, linkState: phoneLink.state)
-            comboMoments.onCombo(combo)
+            comboMoments.onCombo(combo, linkState: phoneLink.state)
         }
         link.onGoalPending = { runVibrator.vibrate(.goalPending) }
         return link
@@ -90,7 +90,9 @@ private struct RootView: View {
                     resume: { _ = phoneLink.resume() },
                     finish: { _ = phoneLink.finish(forced: phoneLink.state.phoneState?.run?.isFinishForced ?? false) }
                 ),
-                smallComboMoments: comboMoments.smallMoments
+                smallComboMoments: comboMoments.smallMoments,
+                comboBurst: comboMoments.burst,
+                onControlsShownChange: { comboMoments.onControlsShownChanged($0) }
             )
         case .updateRequired:
             UpdateRequiredView()
