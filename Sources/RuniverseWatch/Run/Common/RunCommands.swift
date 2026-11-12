@@ -12,6 +12,13 @@ struct RunCommandState: Equatable {
 struct RunCommands {
     let pause: @MainActor () -> Void
     let resume: @MainActor () -> Void
-    /// `forced`는 목표에 못 미쳐 끝내는지다 — 폰 종료 버튼과 같은 규칙이다.
-    let finish: @MainActor (_ forced: Bool) -> Void
+    /// 일찍 끝내는지(`forced`)는 보내는 순간의 폰 상태로 정한다.
+    let finish: @MainActor () -> Void
+}
+
+extension RunState {
+    /// 목표에 못 미쳐 끝낸다 — 폰 종료 버튼과 같은 규칙이다.
+    var isFinishForced: Bool {
+        targetDistanceMeters.map { me.distanceMeters < $0 } ?? false
+    }
 }

@@ -66,10 +66,11 @@ private struct RootView: View {
                     isCommandOverdue: linkState.isCommandOverdue
                 ),
                 // 잠겨 있으면 PhoneLink가 보내지 않고 false를 돌려줘, 버튼은 결과를 따로 보지 않는다
+                // 길게 누르는 동안 거리가 목표를 넘을 수 있어 일찍 끝내는지는 보내는 순간에 정한다
                 commands: RunCommands(
                     pause: { _ = phoneLink.pause() },
                     resume: { _ = phoneLink.resume() },
-                    finish: { _ = phoneLink.finish(forced: $0) }
+                    finish: { _ = phoneLink.finish(forced: phoneLink.state.phoneState?.run?.isFinishForced ?? false) }
                 )
             )
         case .updateRequired:

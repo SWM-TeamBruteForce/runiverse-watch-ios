@@ -82,7 +82,7 @@ private struct ControlsItemsView: View {
             .opacity(content.buttonsAlpha)
             .alignmentGuide(.top) { _ in -slots.firstButtonTop }
             FinishButton(content: content, fontSize: sizes.reading) {
-                commands.finish(content.isFinishForced)
+                commands.finish()
             }
             .opacity(content.buttonsAlpha)
             .alignmentGuide(.top) { _ in -slots.finishButtonTop }
@@ -269,8 +269,6 @@ struct ControlsContent: Equatable {
     let areButtonsLocked: Bool
     /// 답을 금방 받는 잠금까지 흐리면 누를 때마다 깜빡여, 오래 걸리는 잠금만 흐린다.
     let buttonsAlpha: Double
-    /// 목표에 못 미쳐 끝낸다 — 폰 종료 버튼과 같은 규칙이다.
-    let isFinishForced: Bool
     let comboEffectLabel = String(localized: "controls_combo_effect", bundle: .module)
 
     static let keepPressingLabel = String(localized: "controls_keep_pressing", bundle: .module)
@@ -301,7 +299,6 @@ struct ControlsContent: Equatable {
         buttonsAlpha = areButtonsDimmed ? RunDimensions.staleContentAlpha : 1
 
         let distanceMeters = run.me.distanceMeters
-        isFinishForced = run.targetDistanceMeters.map { distanceMeters < $0 } ?? false
         // 서버가 답한 남은 거리를 화면 거리보다 먼저 쓴다
         let serverRemainingMeters = run.finish.flatMap { $0.stage == .goalPending ? $0.remainingMeters : nil }
         if let notice = RunTexts.connectionNotice(run: run, isPhoneReachable: isPhoneReachable) {
@@ -494,7 +491,7 @@ private struct ComboSwitchView: View {
         run: RunSamples.party,
         isPhoneReachable: true,
         commandState: RunCommandState(),
-        commands: RunCommands(pause: {}, resume: {}, finish: { _ in }),
+        commands: RunCommands(pause: {}, resume: {}, finish: {}),
         isComboEffectOn: .constant(true)
     )
 }
@@ -504,7 +501,7 @@ private struct ComboSwitchView: View {
         run: RunSamples.paused,
         isPhoneReachable: true,
         commandState: RunCommandState(),
-        commands: RunCommands(pause: {}, resume: {}, finish: { _ in }),
+        commands: RunCommands(pause: {}, resume: {}, finish: {}),
         isComboEffectOn: .constant(true)
     )
 }
@@ -514,7 +511,7 @@ private struct ComboSwitchView: View {
         run: RunSamples.party,
         isPhoneReachable: false,
         commandState: RunCommandState(),
-        commands: RunCommands(pause: {}, resume: {}, finish: { _ in }),
+        commands: RunCommands(pause: {}, resume: {}, finish: {}),
         isComboEffectOn: .constant(false)
     )
 }
@@ -524,7 +521,7 @@ private struct ComboSwitchView: View {
         run: RunSamples.paused,
         isPhoneReachable: true,
         commandState: RunCommandState(isLocked: true, isFinishPending: true),
-        commands: RunCommands(pause: {}, resume: {}, finish: { _ in }),
+        commands: RunCommands(pause: {}, resume: {}, finish: {}),
         isComboEffectOn: .constant(true)
     )
 }

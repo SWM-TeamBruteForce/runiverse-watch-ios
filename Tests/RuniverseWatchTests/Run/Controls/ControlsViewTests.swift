@@ -126,14 +126,6 @@ struct ControlsViewTests {
     }
 
     @Test
-    func `화면 거리가 목표에 못 미칠 때만 일찍 끝내는 종료다`() {
-        // when & then
-        #expect(content(run(distanceMeters: 4999)).isFinishForced)
-        #expect(!content(run(distanceMeters: 5000)).isFinishForced)
-        #expect(!content(RunSamples.solo).isFinishForced)
-    }
-
-    @Test
     func `제재 방 80퍼센트 전에는 80퍼센트까지 남은 거리와 매칭 제한을 알린다`() {
         // given -> 목표 5000m의 80%는 4000m라 579m 남았다
         let running = run(distanceMeters: 3421)

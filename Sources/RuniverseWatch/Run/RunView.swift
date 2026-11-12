@@ -169,6 +169,6 @@ private struct VerticalPageDotsView: View {
         heartRateBpm: 148,
         birthday: RunSamples.birthday,
         commandState: RunCommandState(),
-        commands: RunCommands(pause: {}, resume: {}, finish: { _ in })
+        commands: RunCommands(pause: {}, resume: {}, finish: {})
     )
 }
