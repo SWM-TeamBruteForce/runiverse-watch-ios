@@ -54,8 +54,7 @@ private struct RootView: View {
     var body: some View {
         switch RootScreen(phoneLink.state) {
         case .run(let run):
-            // TODO: 장 넘기기 — 내 기록 장을 만들 때 장을 넘기는 러닝 화면으로 교체한다
-            RunOverviewView(
+            RunView(
                 run: run,
                 isPhoneReachable: phoneLink.state.isPhoneReachable,
                 heartRateBpm: workoutSession.heartRateBpm,
