@@ -46,7 +46,7 @@ struct RunView: View {
         }
         // 갤럭시처럼 가로 장 표시 점은 두지 않는다
         .tabViewStyle(.page(indexDisplayMode: .never))
-        // 세로 점은 갤럭시처럼 장이 뜰 때와 넘긴 뒤에만 잠깐 보인다
+        // 세로 점은 잠깐만 보인다 — 갤럭시는 넘기는 동안, 여기는 장이 뜨거나 바뀐 뒤 2초다
         // 첫 화면으로 돌아오거나 파티원 장이 생길 때도 다시 보여야 해서 셋을 같이 본다
         .task(id: PageDotsTrigger(page: page, verticalPage: verticalPage, playerCount: run.players.count)) {
             arePageDotsShown = true

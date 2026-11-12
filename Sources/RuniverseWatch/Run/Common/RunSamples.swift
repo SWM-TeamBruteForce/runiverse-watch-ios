@@ -24,7 +24,7 @@ enum RunSamples {
 
     static let serverLost = run(isServerConnected: false)
 
-    /// 파티원 장 끝 경우다 — 가장 넓은 값, 통지 전, 격차 0·소식 늦음.
+    /// 파티원 장 끝 경우다 — 가장 넓은 값, 통지 전, 격차 0에 소식이 늦은 사람이다.
     static let partyEdges = run(players: [longestPlayer, notNotifiedPlayer, levelStalePlayer])
 
     /// 폰 프로필 API 모양 그대로다. 만 나이로 심박 구간을 잰다.
@@ -58,7 +58,7 @@ enum RunSamples {
         isStale: false
     )
 
-    // 폰은 통지 전 파티원을 화면이 그리는 값(거리 0·이름 `함께 달리는 사람`)으로 보낸다
+    // 폰은 통지 전 파티원을 거리 0으로, 이름을 모르면 `함께 달리는 사람`으로 보낸다
     private static let notNotifiedPlayer = Player(
         userId: "u2",
         nickname: "함께 달리는 사람",

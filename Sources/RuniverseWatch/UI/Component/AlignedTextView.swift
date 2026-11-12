@@ -7,12 +7,12 @@ struct AlignedTextView: View {
     private let weight: SUITFont.Weight
     private let monospacesDigits: Bool
     private let color: Color
+    /// 이름처럼 칸보다 길 수 있는 글자에만 켠다 — 넘치면 끝을 `…`로 줄인다.
     private let truncatesTail: Bool
     private let placement: InkPlacement?
 
     /// `placement`는 `ScreenLayoutView` 안에서 화면 위 끝부터 잰 높이다. nil이면 부모 정렬을 따른다.
     /// `monospacesDigits`는 1초마다 바뀌는 내 수치에만 켠다 — 파티원 수는 원래 폭이 글자 간격이 고르다.
-    /// `truncatesTail`은 이름처럼 칸보다 길 수 있는 글자에만 켠다 — 넘치면 끝을 `…`로 줄인다.
     init(
         _ text: String,
         size: CGFloat,
