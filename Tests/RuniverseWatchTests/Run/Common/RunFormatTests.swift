@@ -99,6 +99,34 @@ struct RunFormatTests {
         #expect(RunFormat.distanceProgress(2500, targetDistanceMeters: 0) == nil)
     }
 
+    @Test(arguments: [(RunStatus.running, Int?(318)), (.finished, 318), (.paused, nil), (.disconnected, nil)])
+    func `파티원 페이스는 멈췄거나 끊기면 없고, 달리거나 마쳤으면 받은 값이다`(status: RunStatus, shownPace: Int?) {
+        // given
+        let base = RunSamples.party.players[0]
+        let player = Player(
+            userId: base.userId,
+            nickname: base.nickname,
+            colorSlot: base.colorSlot,
+            distanceMeters: base.distanceMeters,
+            currentPaceSecondsPerKm: 318,
+            status: status,
+            gapMeters: base.gapMeters,
+            comboCount: base.comboCount,
+            maxComboCount: base.maxComboCount,
+            isStale: base.isStale
+        )
+
+        // when & then
+        #expect(player.shownPaceSecondsPerKm == shownPace)
+    }
+
+    @Test
+    func `내가 멈추면 내 페이스는 없다`() {
+        // when & then
+        #expect(RunSamples.party.shownMyPaceSecondsPerKm == 332)
+        #expect(RunSamples.paused.shownMyPaceSecondsPerKm == nil)
+    }
+
     private func gap(_ gapMeters: Int) -> FormattedDistance {
         RunFormat.formatGapDistance(gapMeters, abbreviateUnits: false)
     }
