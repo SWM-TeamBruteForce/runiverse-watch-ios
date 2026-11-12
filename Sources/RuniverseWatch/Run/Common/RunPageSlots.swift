@@ -1,9 +1,11 @@
 import CoreGraphics
 
-/// 장 공통 줄 높이(화면 위에서 pt)다. 큰 숫자 높이로 잡아 장을 넘겨도 줄이 제자리에 있다.
+/// 장 공통 줄 자리(화면 위에서 pt)다. 큰 숫자 높이로 잡아 장을 넘겨도 줄이 제자리에 있다.
 struct RunPageSlots: Equatable {
     /// 위 줄 잉크의 아랫변이다.
     let topRowBottom: CGFloat
+    /// 위 줄 왼쪽 끝(거리)부터 오른쪽 끝(시간·이름)까지다. 첫 화면 가장 넓은 값으로 잰다.
+    let topRowWidth: CGFloat
     /// 큰 숫자 잉크의 세로 가운데다.
     let center: CGFloat
     /// 큰 숫자의 기준선이다. 숫자 잉크는 기준선 아래로 내려가지 않는다.
@@ -29,5 +31,23 @@ struct RunPageSlots: Equatable {
         bigNumberBaseline = center + halfBigNumber
         belowRowTop = bigNumberBaseline + RunDimensions.groupGap
         bottomRowTop = belowRowTop + avatarRowHeight
+        let widestDistance = ValueWithUnitView.width(
+            Self.widestDistance,
+            unit: RunTexts.kilometerUnit,
+            valueSize: sizes.value,
+            monospacesDigits: true
+        )
+        let widestTime = SUITFont.width(
+            of: Self.widestElapsedTime,
+            size: sizes.value,
+            weight: .semiBold,
+            monospacesDigits: true
+        )
+        topRowWidth = widestDistance + Self.minDistanceToTimeGap + widestTime
     }
+
+    // 같은 폭 숫자라도 SUIT는 1 다음 1에 자간이 붙어, 11이 가장 많은 값이 가장 넓다
+    private static let widestDistance = "11.1"
+    private static let widestElapsedTime = "1:11:11"
+    private static let minDistanceToTimeGap: CGFloat = 13
 }

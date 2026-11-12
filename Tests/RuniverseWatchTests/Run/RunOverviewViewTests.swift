@@ -177,15 +177,6 @@ struct RunOverviewViewTests {
         #expect((162 - slots.playerCellWidth * 3) / 2 >= 12.5)
     }
 
-    @Test(arguments: [208.0, 176, 162])
-    func `위 줄은 링 안쪽 글자 여백 안에 든다`(screenWidth: Double) {
-        // when
-        let slots = slots(screenWidth: screenWidth, screenHeight: 248)
-
-        // then
-        #expect((screenWidth - slots.topRowWidth) / 2 >= 12.5)
-    }
-
     private func content(
         _ run: RunState,
         isPhoneReachable: Bool = true,

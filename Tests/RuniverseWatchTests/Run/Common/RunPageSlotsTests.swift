@@ -45,4 +45,16 @@ struct RunPageSlotsTests {
         #expect(abs(slots.belowRowTop - 155.827) < 0.001)
         #expect(abs(slots.bottomRowTop - 186.327) < 0.001)
     }
+
+    @Test(arguments: [208.0, 176, 162])
+    func `위 줄은 링 안쪽 글자 여백 안에 든다`(screenWidth: Double) {
+        // given
+        let screen = WatchScreen(screenWidth: screenWidth, screenHeight: 248, safeAreaTop: 40, safeAreaBottom: 228)
+
+        // when
+        let slots = RunPageSlots(screen: screen, sizes: WatchFontSizes(screenWidth: screenWidth))
+
+        // then
+        #expect((screenWidth - slots.topRowWidth) / 2 >= 12.5)
+    }
 }

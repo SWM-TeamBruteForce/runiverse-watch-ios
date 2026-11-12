@@ -28,8 +28,13 @@ struct RunOverviewView: View {
                 )
                 .opacity(content.phoneValuesAlpha)
             }
-            DistanceTimeRow(content: content, sizes: sizes, width: slots.topRowWidth, inkBottom: pageSlots.topRowBottom)
-                .opacity(content.phoneValuesAlpha)
+            DistanceTimeRow(
+                content: content,
+                sizes: sizes,
+                width: pageSlots.topRowWidth,
+                inkBottom: pageSlots.topRowBottom
+            )
+            .opacity(content.phoneValuesAlpha)
             AlignedTextView(
                 content.centerText,
                 size: content.isPaused ? WatchFontSizes.statusWordSize(numberSize: sizes.bigNumber) : sizes.bigNumber,
@@ -166,26 +171,11 @@ enum GapLabel: Equatable {
 
 /// 첫 화면 칸 폭(pt)이다. 값이 바뀌어도 안 움직이게 나올 수 있는 가장 넓은 값으로 잰다.
 struct RunOverviewSlots: Equatable {
-    /// 위 줄 거리 왼쪽 끝부터 시간 오른쪽 끝까지다.
-    let topRowWidth: CGFloat
     /// 가장 넓은 격차 셋이 링 안에 안 들어가는 화면이다. 값이 아니라 화면으로 정해 모양이 안 바뀐다.
     let abbreviateGapUnits: Bool
     let playerCellWidth: CGFloat
 
     init(screen: WatchScreen, sizes: WatchFontSizes) {
-        let widestDistance = ValueWithUnitView.width(
-            Self.widestDistance,
-            unit: RunTexts.kilometerUnit,
-            valueSize: sizes.value,
-            monospacesDigits: true
-        )
-        let widestTime = SUITFont.width(
-            of: Self.widestElapsedTime,
-            size: sizes.value,
-            weight: .semiBold,
-            monospacesDigits: true
-        )
-        topRowWidth = widestDistance + Self.minDistanceToTimeGap + widestTime
         let fullLabelWidth = Self.widestGapLabelWidth(readingSize: sizes.reading, abbreviateUnits: false)
         let fullCellWidth = Self.playerCellWidth(screenWidth: screen.screenWidth, labelWidth: fullLabelWidth)
         abbreviateGapUnits = !Self.gapLabelsFit(
@@ -227,11 +217,6 @@ struct RunOverviewSlots: Equatable {
     static let directionIndicatorWidth: CGFloat = 7.5
     static let directionIndicatorHeight: CGFloat = 6.6
     static let directionIndicatorToValueGap: CGFloat = 2
-
-    // 같은 폭 숫자라도 SUIT는 1 다음 1에 자간이 붙어, 11이 가장 많은 값이 가장 넓다
-    private static let widestDistance = "11.1"
-    private static let widestElapsedTime = "1:11:11"
-    private static let minDistanceToTimeGap: CGFloat = 13
 
     // 파티원 수는 원래 폭이라 0이 가장 넓고 4가 다음이다
     private static let widestGapsMeters = [400, 4_000]
