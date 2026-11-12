@@ -4,9 +4,23 @@ import os
 
 /// SUIT 글꼴이다. 글자 크기 설정을 따르지 않고 고정한다.
 enum SUITFont {
-    static func semiBold(size: CGFloat) -> Font {
+    enum Weight {
+        case medium
+        case semiBold
+        case bold
+
+        var postScriptName: String {
+            switch self {
+            case .medium: "SUIT-Medium"
+            case .semiBold: "SUIT-SemiBold"
+            case .bold: "SUIT-Bold"
+            }
+        }
+    }
+
+    static func font(_ weight: Weight, size: CGFloat) -> Font {
         _ = registration
-        return .custom("SUIT-SemiBold", fixedSize: size)
+        return .custom(weight.postScriptName, fixedSize: size)
     }
 
     // 글꼴이 앱 번들이 아니라 패키지 번들에 있어 앱이 올리지 않아, 처음 쓸 때 코드로 등록한다

@@ -6,12 +6,14 @@ import UIKit
 struct SUITFontTests {
 
     @Test
-    func `글꼴을 처음 쓰면 패키지 번들의 SUIT가 등록된다`() {
+    func `글꼴을 처음 쓰면 패키지 번들의 SUIT 굵기 셋이 모두 등록된다`() {
         // when
-        _ = SUITFont.semiBold(size: 14)
+        _ = SUITFont.font(.semiBold, size: 14)
 
         // then
+        #expect(UIFont(name: "SUIT-Medium", size: 14) != nil)
         #expect(UIFont(name: "SUIT-SemiBold", size: 14) != nil)
+        #expect(UIFont(name: "SUIT-Bold", size: 14) != nil)
     }
 
     @Test
