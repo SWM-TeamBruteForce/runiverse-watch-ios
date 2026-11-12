@@ -54,10 +54,12 @@ private struct ControlsItemsView: View {
     var body: some View {
         ZStack(alignment: .top) {
             Color.clear.frame(width: screen.screenWidth, height: slots.contentHeight)
+            // 남은 거리는 내 거리로 1초마다 바뀌어, 같은 폭 숫자로 써야 가운데 맞춘 줄이 안 흔들린다
             if let firstHint = content.firstHint {
                 AlignedTextView(
                     firstHint,
                     size: sizes.reading,
+                    monospacesDigits: true,
                     color: RuniverseColors.value,
                     placement: .top(slots.hintTop)
                 )

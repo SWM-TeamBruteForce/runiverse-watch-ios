@@ -313,8 +313,12 @@ struct ControlsViewTests {
         ]
         .map { String(localized: String.LocalizationValue($0), bundle: .module) }
 
-        // when
-        let widestFirst = firstHints.map { SUITFont.width(of: $0, size: sizes.reading, weight: .semiBold) }.max() ?? 0
+        // when -> 첫 안내는 같은 폭 숫자로 그린다
+        let widestFirst =
+            firstHints.map {
+                SUITFont.width(of: $0, size: sizes.reading, weight: .semiBold, monospacesDigits: true)
+            }
+            .max() ?? 0
         let widestSecond =
             secondHints.map { SUITFont.width(of: $0, size: sizes.reading, weight: .semiBold) }.max() ?? 0
 
