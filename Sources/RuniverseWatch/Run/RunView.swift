@@ -41,7 +41,8 @@ struct RunView: View {
                         .tag(RunVerticalPage.player(userId: player.userId))
                 }
             }
-            .tabViewStyle(.verticalPage)
+            // 기본 전환은 장이 끊겨 화면이 바뀌듯 넘어가, 갤럭시처럼 이어 넘긴다
+            .tabViewStyle(.verticalPage(transitionStyle: .identity))
             // 시스템 세로 점은 화면 끝 진행 링 위에 그려져, 끄고 링 안쪽에 직접 그린다
             .scrollIndicators(.hidden)
             .overlay {
