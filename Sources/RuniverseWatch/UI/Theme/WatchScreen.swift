@@ -13,6 +13,17 @@ extension WatchScreen {
     /// 화면 모서리 반지름이다.
     var cornerRadius: CGFloat { screenWidth * Self.cornerToWidthRatio }
 
+    /// 높이 y에서 화면 끝부터 `margin` 안쪽으로 쓸 수 있는 가로 폭이다. 모서리 곡선 높이에서만 좁아진다.
+    func usableWidth(atY y: CGFloat, margin: CGFloat) -> CGFloat {
+        guard y >= margin, y <= screenHeight - margin else { return 0 }
+        let innerRadius = max(0, cornerRadius - margin)
+        let curveTop = margin + innerRadius
+        let curveBottom = screenHeight - margin - innerRadius
+        let fromCurveCenter = y < curveTop ? curveTop - y : max(0, y - curveBottom)
+        let inset = innerRadius - (innerRadius * innerRadius - fromCurveCenter * fromCurveCenter).squareRoot()
+        return screenWidth - (margin + inset) * 2
+    }
+
     // 시안 그림에서 잰 추정값이다
     private static let cornerToWidthRatio: CGFloat = 0.165
 
