@@ -31,10 +31,12 @@ enum RunFormat {
     /// 목표까지 남은 거리다. 1000m 미만은 m, 그 위는 소수 한 자리 km다.
     /// 남은 거리를 적게 말하지 않게 폰처럼 올린다.
     static func formatRemainingDistance(_ meters: Int) -> FormattedDistance {
+        // 받은 값이 어긋나도 죽지 않게 음수는 0으로 보고, 더하지 않고 올린다
+        let meters = max(0, meters)
         if meters < metersPerKm {
             return FormattedDistance(value: "\(meters)", unit: .meter)
         }
-        let tenthsOfKm = (meters + metersPerTenthKm - 1) / metersPerTenthKm
+        let tenthsOfKm = meters / metersPerTenthKm + (meters % metersPerTenthKm == 0 ? 0 : 1)
         return FormattedDistance(value: "\(tenthsOfKm / 10).\(tenthsOfKm % 10)", unit: .kilometer)
     }
 

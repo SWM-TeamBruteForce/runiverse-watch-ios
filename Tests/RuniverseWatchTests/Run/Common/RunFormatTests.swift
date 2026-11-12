@@ -81,6 +81,13 @@ struct RunFormatTests {
     }
 
     @Test
+    func `남은 거리가 음수면 0m로 쓰고, Int의 가장 큰 값이어도 죽지 않는다`() {
+        // when & then
+        #expect(RunFormat.formatRemainingDistance(-5) == FormattedDistance(value: "0", unit: .meter))
+        #expect(RunFormat.formatRemainingDistance(Int.max).unit == .kilometer)
+    }
+
+    @Test
     func `페이스는 분과 초로 쓰고, 없거나 60분을 넘으면 비운다`() {
         // when & then
         #expect(RunFormat.formatPace(332) == "5'32\"")

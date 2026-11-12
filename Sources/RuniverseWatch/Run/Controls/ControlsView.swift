@@ -327,7 +327,10 @@ struct ControlsContent: Equatable {
             firstHint = Self.toGoalHint(serverRemainingMeters)
             secondHint = isPaused ? Self.mayNotComplete : nil
         } else if let targetDistanceMeters = run.targetDistanceMeters {
-            let penaltyLineMeters = targetDistanceMeters * Self.penaltyLinePercent / 100
+            // 받은 목표가 커도 곱셈이 넘쳐 죽지 않게 100으로 먼저 나눈다
+            let penaltyLineMeters =
+                targetDistanceMeters / 100 * Self.penaltyLinePercent
+                + targetDistanceMeters % 100 * Self.penaltyLinePercent / 100
             if distanceMeters >= targetDistanceMeters {
                 firstHint = String(localized: "controls_distance_checking", bundle: .module)
                 secondHint = isPaused ? nil : String(localized: "controls_keep_running_if_short", bundle: .module)

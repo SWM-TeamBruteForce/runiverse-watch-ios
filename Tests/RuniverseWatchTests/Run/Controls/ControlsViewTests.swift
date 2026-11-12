@@ -137,6 +137,29 @@ struct ControlsViewTests {
     }
 
     @Test
+    func `목표 거리가 Int의 가장 큰 값이어도 80퍼센트 선을 재다 죽지 않는다`() {
+        // given
+        let run = RunState(
+            runningRoomId: nil,
+            type: .match,
+            status: .running,
+            targetDistanceMeters: Int.max,
+            isServerConnected: true,
+            isPenaltyApplicable: true,
+            me: RunSamples.party.me,
+            players: RunSamples.party.players,
+            finish: nil,
+            result: nil
+        )
+
+        // when
+        let hints = hints(run)
+
+        // then
+        #expect(hints.first?.hasPrefix("80%까지 약 ") == true)
+    }
+
+    @Test
     func `80퍼센트를 넘으면 목표까지 남은 거리로 바뀌고 멈췄을 때만 미완주를 알린다`() {
         // given
         let running = run(distanceMeters: 4200)
