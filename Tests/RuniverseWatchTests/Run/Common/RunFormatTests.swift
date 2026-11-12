@@ -40,6 +40,20 @@ struct RunFormatTests {
     }
 
     @Test
+    func `단위를 줄이면 격차의 m는 숫자만, km는 k로 쓴다`() {
+        // when & then
+        #expect(RunFormat.formatGapDistance(999, abbreviateUnits: true) == FormattedDistance(value: "999", unit: nil))
+        #expect(
+            RunFormat.formatGapDistance(1200, abbreviateUnits: true)
+                == FormattedDistance(value: "1.2", unit: .shortKilometer)
+        )
+        #expect(
+            RunFormat.formatGapDistance(42_000, abbreviateUnits: true)
+                == FormattedDistance(value: "42", unit: .shortKilometer)
+        )
+    }
+
+    @Test
     func `격차가 양수면 상대가 앞, 음수면 뒤, 0이면 나란히다`() {
         // when & then
         #expect(GapDirection(gapMeters: 120) == .ahead)
