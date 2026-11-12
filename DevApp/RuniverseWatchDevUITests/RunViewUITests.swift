@@ -107,6 +107,42 @@ final class RunViewUITests: XCTestCase {
     }
 
     @MainActor
+    func testSwipeRightShowsControlsAndSwipeLeftReturns() {
+        // given
+        let app = launchRun("party")
+        let pauseButton = app.buttons["일시정지"]
+        XCTAssertFalse(pauseButton.exists && pauseButton.isHittable)
+
+        // when
+        app.swipeRight()
+
+        // then
+        XCTAssertTrue(waitUntilHittable(pauseButton))
+
+        // when
+        app.swipeLeft()
+
+        // then
+        XCTAssertTrue(waitUntilHittable(app.staticTexts["5'32\""]))
+    }
+
+    @MainActor
+    func testComboEffectRowShowsAfterScrollingControls() {
+        // given -> 콤보 칸은 어느 애플 화면에서도 스크롤해야 보인다
+        let app = launchRun("party")
+        app.swipeRight()
+        XCTAssertTrue(waitUntilHittable(app.buttons["일시정지"]))
+        let comboLabel = app.staticTexts["콤보 효과"]
+        XCTAssertFalse(comboLabel.exists && comboLabel.isHittable)
+
+        // when
+        app.swipeUp()
+
+        // then
+        XCTAssertTrue(waitUntilHittable(comboLabel))
+    }
+
+    @MainActor
     func testSoloStaysOnOverviewWhenSwipedUp() {
         // given
         let app = launchRun("solo")
