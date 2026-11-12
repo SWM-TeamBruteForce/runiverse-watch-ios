@@ -200,6 +200,54 @@ struct PhoneLinkTests {
     }
 
     @Test
+    func `화면으로 돌아오면 폰 상태를 받을 때까지 켜짐 신호의 답을 기다리는 중이다`() throws {
+        // given
+        let fixture = Fixture()
+        try fixture.connect(idleState(stateSequence: 1))
+
+        // when
+        fixture.phoneLink.onScreenVisibilityChanged(true)
+
+        // then
+        #expect(fixture.phoneLink.state.isAwaitingVisibleReply)
+
+        // when
+        fixture.phoneLink.onReceived(stateUpdated(idleState(stateSequence: 2)))
+
+        // then
+        #expect(!fixture.phoneLink.state.isAwaitingVisibleReply)
+    }
+
+    @Test
+    func `켜짐 신호의 답을 3초 동안 못 받으면 기다리는 중이 풀리고 폰 연결 확인 중이 된다`() throws {
+        // given
+        let fixture = Fixture()
+        try fixture.connect(idleState(stateSequence: 1))
+        fixture.phoneLink.onScreenVisibilityChanged(true)
+
+        // when
+        fixture.timer.advance(by: .milliseconds(3_001))
+
+        // then
+        #expect(!fixture.phoneLink.state.isAwaitingVisibleReply)
+        #expect(!fixture.phoneLink.state.isPhoneReachable)
+    }
+
+    @Test
+    func `켜짐 신호의 답을 기다리다 화면이 꺼지면 기다리는 중이 풀린다`() throws {
+        // given
+        let fixture = Fixture()
+        try fixture.connect(idleState(stateSequence: 1))
+        fixture.phoneLink.onScreenVisibilityChanged(true)
+
+        // when
+        fixture.phoneLink.onScreenVisibilityChanged(false)
+
+        // then
+        #expect(!fixture.phoneLink.state.isAwaitingVisibleReply)
+    }
+
+    @Test
     func `화면이 꺼져 있으면 SYNC를 한 번만 보낸다`() {
         // given
         let fixture = Fixture()
