@@ -79,6 +79,21 @@ extension Player {
     func hasStaleValues(in run: RunState, isPhoneReachable: Bool) -> Bool {
         !isPhoneReachable || !run.isServerConnected || isStale
     }
+
+    /// 멈췄거나 끊긴 사람은 지금 페이스가 없다 — 폰은 마지막 값을 그대로 보낸다.
+    var shownPaceSecondsPerKm: Int? {
+        switch status {
+        case .paused, .disconnected: nil
+        case .running, .finished: currentPaceSecondsPerKm
+        }
+    }
+}
+
+extension RunState {
+    /// 내가 버튼으로 멈춰도 상대처럼 지금 페이스가 없다.
+    var shownMyPaceSecondsPerKm: Int? {
+        status == .paused ? nil : me.currentPaceSecondsPerKm
+    }
 }
 
 enum GapDirection {

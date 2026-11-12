@@ -21,6 +21,66 @@
         }
       }
     },
+    "run_combo_current %lld" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld콤보"
+          }
+        }
+      }
+    },
+    "run_combo_max %lld" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최고 %lld"
+          }
+        }
+      }
+    },
+    "run_gap_ahead" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "앞"
+          }
+        }
+      }
+    },
+    "run_gap_behind" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "뒤"
+          }
+        }
+      }
+    },
+    "run_pace_me" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "나"
+          }
+        }
+      }
+    },
+    "run_pace_player" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상대"
+          }
+        }
+      }
+    },
     "run_phone_checking" : {
       "localizations" : {
         "ko" : {
