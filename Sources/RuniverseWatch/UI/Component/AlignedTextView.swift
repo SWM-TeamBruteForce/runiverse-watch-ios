@@ -7,6 +7,8 @@ struct AlignedTextView: View {
     private let weight: SUITFont.Weight
     private let monospacesDigits: Bool
     private let color: Color
+    /// 이름처럼 칸보다 길 수 있는 글자에만 켠다 — 넘치면 끝을 `…`로 줄인다.
+    private let truncatesTail: Bool
     private let placement: InkPlacement?
 
     /// `placement`는 `ScreenLayoutView` 안에서 화면 위 끝부터 잰 높이다. nil이면 부모 정렬을 따른다.
@@ -17,6 +19,7 @@ struct AlignedTextView: View {
         weight: SUITFont.Weight = .semiBold,
         monospacesDigits: Bool = false,
         color: Color,
+        truncatesTail: Bool = false,
         placement: InkPlacement? = nil
     ) {
         self.text = text
@@ -24,6 +27,7 @@ struct AlignedTextView: View {
         self.weight = weight
         self.monospacesDigits = monospacesDigits
         self.color = color
+        self.truncatesTail = truncatesTail
         self.placement = placement
     }
 
@@ -34,7 +38,7 @@ struct AlignedTextView: View {
             .font(monospacesDigits ? font.monospacedDigit() : font)
             .foregroundStyle(color)
             .lineLimit(1)
-            .fixedSize()
+            .fixedSize(horizontal: !truncatesTail, vertical: true)
             .alignmentGuide(.inkCenter) {
                 $0[.firstTextBaseline] - (ink.aboveBaselineEm - ink.belowBaselineEm) * size / 2
             }

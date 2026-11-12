@@ -1,0 +1,56 @@
+import Testing
+
+@testable import RuniverseWatch
+
+struct RunViewTests {
+
+    private let players = RunSamples.party.players
+
+    @Test
+    func `파티원이 없으면 세로 점을 그리지 않는다`() {
+        // when & then
+        #expect(VerticalPageDotsContent(players: [], verticalPage: .overview) == nil)
+    }
+
+    @Test
+    func `세로 점은 첫 화면과 파티원 수만큼이고 첫 화면이면 첫 점이다`() {
+        // when
+        let dots = VerticalPageDotsContent(players: players, verticalPage: .overview)
+
+        // then -> 샘플 파티원 셋과 첫 화면 하나다
+        #expect(dots?.count == 4)
+        #expect(dots?.currentIndex == 0)
+    }
+
+    @Test
+    func `파티원 장이면 명단 순서 다음 점을 가리킨다`() {
+        // when
+        let dots = VerticalPageDotsContent(players: players, verticalPage: .player(userId: players[1].userId))
+
+        // then
+        #expect(dots?.currentIndex == 2)
+    }
+
+    @Test
+    func `보던 파티원이 명단에서 빠지면 첫 점을 가리킨다`() {
+        // when
+        let dots = VerticalPageDotsContent(players: players, verticalPage: .player(userId: "left"))
+
+        // then
+        #expect(dots?.currentIndex == 0)
+    }
+
+    @Test
+    func `첫 화면 칸에서 파티원 장을 보면 좌우로 안 넘어간다`() {
+        // when & then
+        #expect(!RunPage.overview.canMoveSideways(verticalPage: .player(userId: players[0].userId)))
+        #expect(RunPage.overview.canMoveSideways(verticalPage: .overview))
+    }
+
+    @Test
+    func `내 기록 장에선 세로 장이 파티원 장이어도 첫 화면으로 돌아간다`() {
+        // when & then
+        #expect(RunPage.myRecord.canMoveSideways(verticalPage: .player(userId: players[0].userId)))
+        #expect(RunPage.myRecord.canMoveSideways(verticalPage: .overview))
+    }
+}
