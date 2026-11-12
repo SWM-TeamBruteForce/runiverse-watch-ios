@@ -118,7 +118,7 @@ enum PlayerCenter: Equatable {
     }
 }
 
-/// 파티원 장 맨 아래 줄이다. 끊긴 동안은 콤보 자리를 연결 안내가 대신한다.
+/// 파티원 장 맨 아래 줄에 쓰는 것이다. 끊긴 동안은 콤보 자리를 연결 안내가 대신한다.
 enum PlayerBottomLabel: Equatable {
     case combo(String)
     case notice(String)
