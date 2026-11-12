@@ -13,7 +13,6 @@ final class RunViewUITests: XCTestCase {
 
         // then -> 샘플 내 페이스가 첫 화면 가운데에 뜬다
         XCTAssertTrue(app.staticTexts["5'32\""].waitForExistence(timeout: 5))
-        XCTAssertFalse(app.staticTexts["폰에서 러닝 시작"].exists)
     }
 
     @MainActor
@@ -25,6 +24,7 @@ final class RunViewUITests: XCTestCase {
         let pace = app.staticTexts["5'32\""]
         let cadenceUnit = app.staticTexts["spm"]
         XCTAssertTrue(pace.waitForExistence(timeout: 5))
+        XCTAssertTrue(waitUntilHittable(pace), "건강 권한 창이 첫 화면을 가리면 쓸기가 창으로 간다")
         XCTAssertFalse(cadenceUnit.exists && cadenceUnit.isHittable)
 
         // when

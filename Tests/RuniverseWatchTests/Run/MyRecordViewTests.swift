@@ -16,7 +16,7 @@ struct MyRecordViewTests {
     }
 
     @Test
-    func `멈춘 채 폰이 끊기면 같은 자리라 끊김 안내가 먼저다`() {
+    func `멈춘 채 폰이 끊기면 같은 자리라 끊김 안내가 먼저고 받은 값을 흐린다`() {
         // when
         let content = content(RunSamples.paused, isPhoneReachable: false)
 
@@ -57,7 +57,7 @@ struct MyRecordViewTests {
     }
 
     @Test
-    func `심박과 구간은 첫 화면 솔로와 같게 쓴다`() {
+    func `심박과 그 구간을 쓰고, 생일이 없으면 막대를 숨긴다`() {
         // when
         let measured = content(RunSamples.party, heartRateBpm: 148)
         let noBirthday = content(RunSamples.party, heartRateBpm: 148, birthday: nil)

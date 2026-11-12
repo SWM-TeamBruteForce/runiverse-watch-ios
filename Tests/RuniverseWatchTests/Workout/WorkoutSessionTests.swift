@@ -264,10 +264,16 @@ struct WorkoutSessionTests {
         try fixture.connect(state(stateSequence: 1))
         fixture.tracker.deliver(148)
 
-        // when & then
+        // when
         fixture.timer.advance(by: .seconds(14))
+
+        // then
         #expect(fixture.session.heartRateBpm == 148)
+
+        // when
         fixture.timer.advance(by: .seconds(1))
+
+        // then
         #expect(fixture.session.heartRateBpm == nil)
     }
 

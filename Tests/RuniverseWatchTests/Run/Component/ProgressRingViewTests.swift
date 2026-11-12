@@ -19,7 +19,7 @@ struct ProgressRingViewTests {
 
     @Test
     func `둥근 끝이 빈칸으로 나가지 않게 두께 절반만큼 안쪽에서 시작하고 끝낸다`() {
-        // given -> 모서리 반지름 28.32, 선 길이는 변 넷 549.08 + 모서리 셋 133.456
+        // given -> 링 모서리 반지름 28.32, 선 길이는 변 넷 549.08 + 모서리 셋 133.456
         let slots = ProgressRingSlots(screen: screen)
 
         // when
