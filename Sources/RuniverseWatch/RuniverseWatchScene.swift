@@ -89,7 +89,7 @@ private struct RootView: View {
                 ),
                 smallComboMoments: comboMoments.smallMoments,
                 comboBurst: comboMoments.burst,
-                onControlsShownChange: { comboMoments.onControlsShownChanged($0) }
+                onControlsShownChanged: { comboMoments.onControlsShownChanged($0) }
             )
         case .updateRequired:
             UpdateRequiredView()

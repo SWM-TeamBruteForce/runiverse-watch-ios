@@ -14,7 +14,7 @@ struct RunView: View {
     /// 지금 화면을 덮는 큰 순간이다.
     var comboBurst: ComboBurst?
     /// 조작 장에선 큰 순간을 띄우지 않아, 조작 장이 보이는지 알린다.
-    var onControlsShownChange: (Bool) -> Void = { _ in }
+    var onControlsShownChanged: (Bool) -> Void = { _ in }
 
     @State private var page = RunPage.overview
     @State private var verticalPage = RunVerticalPage.overview
@@ -78,7 +78,7 @@ struct RunView: View {
             }
         }
         .onChange(of: page, initial: true) { _, page in
-            onControlsShownChange(page == .controls)
+            onControlsShownChanged(page == .controls)
         }
         // 세로 점은 잠깐만 보인다 — 갤럭시는 넘기는 동안, 여기는 장이 뜨거나 바뀐 뒤다
         // 첫 화면으로 돌아오거나 파티원 장이 생길 때도 다시 보여야 해서 셋을 같이 본다

@@ -34,7 +34,7 @@ struct PlayerView: View {
             PaceRows(content: content, sizes: sizes, slots: slots, top: pageSlots.belowRowTop)
             switch content.bottomLabel {
             case .combo(let text):
-                ComboRow(text: text, top: slots.comboRowTop, smallComboMoment: smallComboMoment)
+                ComboLabelView(text: text, top: slots.comboRowTop, smallComboMoment: smallComboMoment)
                     .opacity(content.playerValuesAlpha)
             case .notice(let notice):
                 AlignedTextView(
@@ -314,7 +314,7 @@ private struct LabeledPaceView: View {
 }
 
 /// 맨 아래 콤보 줄이다. 작은 순간엔 한 번 튄다.
-private struct ComboRow: View {
+private struct ComboLabelView: View {
     let text: String
     let top: CGFloat
     let smallComboMoment: ComboMoment?
