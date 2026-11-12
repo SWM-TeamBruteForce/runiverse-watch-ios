@@ -272,6 +272,34 @@ final class RunViewUITests: XCTestCase {
     }
 
     @MainActor
+    func testComboBurstCoversScreenAndCloses() {
+        // given -> 가짜 폰은 3초마다 콤보를 올리고 1·3·5·10에서 큰 순간을 보낸다
+        let app = launchRun("combo")
+        let burst = comboBurst(in: app)
+
+        // when & then
+        XCTAssertTrue(burst.waitForExistence(timeout: 15))
+        XCTAssertTrue(waitUntilGone(burst))
+        XCTAssertTrue(waitUntilHittable(app.staticTexts["5'32\""]))
+    }
+
+    @MainActor
+    func testComboBurstDoesNotShowOnControls() {
+        // given
+        let app = launchControls("combo")
+
+        // when & then -> 큰 순간이 두 번 지나가는 동안 덮개가 버튼을 가리지 않는다
+        XCTAssertFalse(comboBurst(in: app).waitForExistence(timeout: 13))
+        XCTAssertTrue(app.buttons["일시정지"].isHittable)
+    }
+
+    // 큰 순간은 `N COMBO 이름` 하나로 읽힌다
+    @MainActor
+    private func comboBurst(in app: XCUIApplication) -> XCUIElement {
+        app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS 'COMBO'")).firstMatch
+    }
+
+    @MainActor
     private func launchRun(_ fakeRun: String) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-fakeRun", fakeRun]
@@ -306,6 +334,13 @@ final class RunViewUITests: XCTestCase {
     private func waitUntilHittable(_ element: XCUIElement) -> Bool {
         let hittable = NSPredicate(format: "exists == true AND hittable == true")
         let expectation = XCTNSPredicateExpectation(predicate: hittable, object: element)
+        return XCTWaiter().wait(for: [expectation], timeout: 3) == .completed
+    }
+
+    @MainActor
+    private func waitUntilGone(_ element: XCUIElement) -> Bool {
+        let gone = NSPredicate(format: "exists == false")
+        let expectation = XCTNSPredicateExpectation(predicate: gone, object: element)
         return XCTWaiter().wait(for: [expectation], timeout: 3) == .completed
     }
 
