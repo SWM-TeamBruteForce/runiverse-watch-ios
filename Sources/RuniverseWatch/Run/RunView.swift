@@ -62,13 +62,12 @@ struct RunView: View {
         }
     }
 
-    // 첫 화면 칸에서 파티원 장을 볼 때만 좌우를 막는다 — scrollDisabled로는 TabView 넘기기가 안 막힌다
-    // 내 기록 장에선 화면 밖 세로 장이 어디 있든 첫 화면으로 돌아갈 수 있어야 한다
+    // scrollDisabled로는 TabView 넘기기가 안 막혀 가로 선택을 거절한다
     private var horizontalSelection: Binding<RunPage> {
         Binding(
             get: { page },
             set: { newPage in
-                if page != .overview || verticalPage == .overview { page = newPage }
+                if page.canMoveSideways(verticalPage: verticalPage) { page = newPage }
             }
         )
     }
@@ -76,9 +75,16 @@ struct RunView: View {
     private static let pageDotsHideDelay = Duration.seconds(2)
 }
 
-private enum RunPage {
+/// 가로 장이다. 첫 화면 칸과 내 기록 장이 있다.
+enum RunPage {
     case overview
     case myRecord
+
+    /// 첫 화면 칸에서 파티원 장을 볼 때만 좌우로 안 넘어간다.
+    /// 내 기록 장에선 화면 밖 세로 장이 어디 있든 첫 화면으로 돌아갈 수 있어야 한다.
+    func canMoveSideways(verticalPage: RunVerticalPage) -> Bool {
+        self != .overview || verticalPage == .overview
+    }
 }
 
 /// 첫 화면 칸의 세로 장이다. 첫 화면 아래로 파티원마다 한 장이 있다.
