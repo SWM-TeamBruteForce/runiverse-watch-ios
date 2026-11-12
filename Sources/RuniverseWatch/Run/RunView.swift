@@ -1,6 +1,7 @@
 import SwiftUI
 
-/// 러닝 중 화면이다. 첫 화면에서 왼쪽으로 쓸면 내 기록 장, 위로 쓸거나 크라운을 돌리면 파티원 장이 나온다.
+/// 러닝 중 화면이다. 첫 화면에서 오른쪽으로 쓸면 조작 장, 왼쪽으로 쓸면 내 기록 장,
+/// 위로 쓸거나 크라운을 돌리면 파티원 장이 나온다.
 struct RunView: View {
     let run: RunState
     let isPhoneReachable: Bool
@@ -13,6 +14,8 @@ struct RunView: View {
 
     var body: some View {
         TabView(selection: horizontalSelection) {
+            ControlsView(run: run, isPhoneReachable: isPhoneReachable, isComboEffectOn: true)
+                .tag(RunPage.controls)
             TabView(selection: $verticalPage) {
                 RunOverviewView(
                     run: run,
@@ -75,8 +78,9 @@ struct RunView: View {
     private static let pageDotsHideDelay = Duration.seconds(2)
 }
 
-/// 가로 장이다. 첫 화면 칸과 내 기록 장이 있다.
+/// 가로 장이다. 왼쪽부터 조작 장, 첫 화면 칸, 내 기록 장이다.
 enum RunPage {
+    case controls
     case overview
     case myRecord
 

@@ -28,6 +28,16 @@ enum RunFormat {
         return FormattedDistance(value: "\(km).\(tenthsOfKm)", unit: kilometerLabel)
     }
 
+    /// 목표까지 남은 거리다. 1000m 미만은 m, 그 위는 소수 한 자리 km다.
+    /// 남은 거리를 적게 말하지 않게 폰처럼 올린다.
+    static func formatRemainingDistance(_ meters: Int) -> FormattedDistance {
+        if meters < metersPerKm {
+            return FormattedDistance(value: "\(meters)", unit: .meter)
+        }
+        let tenthsOfKm = (meters + metersPerTenthKm - 1) / metersPerTenthKm
+        return FormattedDistance(value: "\(tenthsOfKm / 10).\(tenthsOfKm % 10)", unit: .kilometer)
+    }
+
     /// 위치를 못 잡았거나 60분을 넘으면 낼 페이스가 없다고 본다.
     static func formatPace(_ secondsPerKm: Int?) -> String {
         guard let secondsPerKm, secondsPerKm < secondsPerHour else { return unknownPace }
