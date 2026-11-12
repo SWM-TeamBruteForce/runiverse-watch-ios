@@ -28,6 +28,14 @@ public struct RuniverseWatchScene: Scene {
 
     // 화면이 닫혀도 연결을 이어 가려고 화면이 아니라 앱에 하나 둔다
     static let phoneLink: PhoneLink = {
+        #if DEBUG
+            // 실행 인자 `-fakeRun <경우>`는 UserDefaults 인자 영역으로 읽힌다
+            if let fakePhone = FakePhone(fakeRunName: UserDefaults.standard.string(forKey: "fakeRun")) {
+                let link = PhoneLink(send: { fakePhone.send($0) })
+                fakePhone.start(onReceived: { link.onReceived($0) }, onOpened: { link.onChannelOpened() })
+                return link
+            }
+        #endif
         let channel = PhoneChannel(
             onReceived: { phoneLink.onReceived($0) },
             onOpened: { phoneLink.onChannelOpened() }
