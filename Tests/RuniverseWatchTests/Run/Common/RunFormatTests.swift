@@ -23,20 +23,20 @@ struct RunFormatTests {
     @Test
     func `격차는 1000m 미만이면 m로 쓴다`() {
         // when & then
-        #expect(RunFormat.formatGapDistance(120) == FormattedDistance(value: "120", unit: .meter))
-        #expect(RunFormat.formatGapDistance(-20) == FormattedDistance(value: "20", unit: .meter))
-        #expect(RunFormat.formatGapDistance(0) == FormattedDistance(value: "0", unit: .meter))
-        #expect(RunFormat.formatGapDistance(999) == FormattedDistance(value: "999", unit: .meter))
+        #expect(gap(120) == FormattedDistance(value: "120", unit: .meter))
+        #expect(gap(-20) == FormattedDistance(value: "20", unit: .meter))
+        #expect(gap(0) == FormattedDistance(value: "0", unit: .meter))
+        #expect(gap(999) == FormattedDistance(value: "999", unit: .meter))
     }
 
     @Test
     func `격차는 10km 미만이면 소수 한 자리 km, 그 위는 정수 km로 버린다`() {
         // when & then
-        #expect(RunFormat.formatGapDistance(1000) == FormattedDistance(value: "1.0", unit: .kilometer))
-        #expect(RunFormat.formatGapDistance(1299) == FormattedDistance(value: "1.2", unit: .kilometer))
-        #expect(RunFormat.formatGapDistance(-9999) == FormattedDistance(value: "9.9", unit: .kilometer))
-        #expect(RunFormat.formatGapDistance(10_000) == FormattedDistance(value: "10", unit: .kilometer))
-        #expect(RunFormat.formatGapDistance(42_195) == FormattedDistance(value: "42", unit: .kilometer))
+        #expect(gap(1000) == FormattedDistance(value: "1.0", unit: .kilometer))
+        #expect(gap(1299) == FormattedDistance(value: "1.2", unit: .kilometer))
+        #expect(gap(-9999) == FormattedDistance(value: "9.9", unit: .kilometer))
+        #expect(gap(10_000) == FormattedDistance(value: "10", unit: .kilometer))
+        #expect(gap(42_195) == FormattedDistance(value: "42", unit: .kilometer))
     }
 
     @Test
@@ -74,5 +74,9 @@ struct RunFormatTests {
         #expect(RunFormat.distanceProgress(2500, targetDistanceMeters: 5000) == 0.5)
         #expect(RunFormat.distanceProgress(2500, targetDistanceMeters: nil) == nil)
         #expect(RunFormat.distanceProgress(2500, targetDistanceMeters: 0) == nil)
+    }
+
+    private func gap(_ gapMeters: Int) -> FormattedDistance {
+        RunFormat.formatGapDistance(gapMeters, abbreviateUnits: false)
     }
 }

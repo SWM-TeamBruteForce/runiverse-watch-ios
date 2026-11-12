@@ -13,17 +13,19 @@ enum RunFormat {
     }
 
     /// 파티원과의 격차다. 1000m 미만은 m, 10km 미만은 소수 한 자리 km, 그 위는 정수 km로 버린다.
-    static func formatGapDistance(_ gapMeters: Int) -> FormattedDistance {
+    /// `abbreviateUnits`면 m는 숫자만, km는 `k`로 줄인다 — 단위를 다 빼면 42m와 42km가 같아 보인다.
+    static func formatGapDistance(_ gapMeters: Int, abbreviateUnits: Bool) -> FormattedDistance {
         let meters = abs(gapMeters)
         if meters < metersPerKm {
-            return FormattedDistance(value: "\(meters)", unit: .meter)
+            return FormattedDistance(value: "\(meters)", unit: abbreviateUnits ? nil : .meter)
         }
         let km = meters / metersPerKm
+        let kilometerLabel: DistanceUnitLabel = abbreviateUnits ? .shortKilometer : .kilometer
         if meters >= extraDecimalBelowMeters {
-            return FormattedDistance(value: "\(km)", unit: .kilometer)
+            return FormattedDistance(value: "\(km)", unit: kilometerLabel)
         }
         let tenthsOfKm = meters % metersPerKm / metersPerTenthKm
-        return FormattedDistance(value: "\(km).\(tenthsOfKm)", unit: .kilometer)
+        return FormattedDistance(value: "\(km).\(tenthsOfKm)", unit: kilometerLabel)
     }
 
     /// 위치를 못 잡았거나 60분을 넘으면 낼 페이스가 없다고 본다.
@@ -61,12 +63,22 @@ enum RunFormat {
 /// 표기를 마친 거리다. 숫자와 단위를 따로 그린다 — 단위는 작고 흐리게 쓴다.
 struct FormattedDistance: Equatable {
     let value: String
-    let unit: DistanceUnitLabel
+    /// 줄여서 숫자만 쓰면 없다.
+    let unit: DistanceUnitLabel?
 }
 
+/// `km`와 `k`는 다른 단위가 아니라 같은 단위의 다른 표기다.
 enum DistanceUnitLabel {
     case meter
     case kilometer
+    case shortKilometer
+}
+
+extension Player {
+    /// 폰이나 서버가 끊겼거나 그 사람 소식이 늦으면 그 사람 값은 오래된 값이다.
+    func hasStaleValues(in run: RunState, isPhoneReachable: Bool) -> Bool {
+        !isPhoneReachable || !run.isServerConnected || isStale
+    }
 }
 
 enum GapDirection {
