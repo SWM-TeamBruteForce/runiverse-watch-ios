@@ -1,6 +1,186 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
+    "controls_after_reconnect" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "연결 후 조작 가능"
+          }
+        }
+      }
+    },
+    "controls_combo_effect" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "콤보 효과"
+          }
+        }
+      }
+    },
+    "controls_distance_checking" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "거리 확인 중"
+          }
+        }
+      }
+    },
+    "controls_finish" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "종료"
+          }
+        }
+      }
+    },
+    "controls_finish_checking" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "종료 확인 중"
+          }
+        }
+      }
+    },
+    "controls_finishing" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "종료 중"
+          }
+        }
+      }
+    },
+    "controls_hold_longer" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "길게 눌러야 종료"
+          }
+        }
+      }
+    },
+    "controls_hold_to_finish" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "길게 눌러 종료"
+          }
+        }
+      }
+    },
+    "controls_keep_pressing" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "계속 누르기"
+          }
+        }
+      }
+    },
+    "controls_keep_running_if_short" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모자라면 계속 달리기"
+          }
+        }
+      }
+    },
+    "controls_may_not_complete" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "끝내면 미완주 가능"
+          }
+        }
+      }
+    },
+    "controls_pause" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "일시정지"
+          }
+        }
+      }
+    },
+    "controls_penalty_if_finished" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "끝내면 20분 매칭 제한"
+          }
+        }
+      }
+    },
+    "controls_penalty_if_short" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "못 채우면 20분 매칭 제한"
+          }
+        }
+      }
+    },
+    "controls_resume" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "계속 달리기"
+          }
+        }
+      }
+    },
+    "controls_run_recording" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "러닝 기록 중"
+          }
+        }
+      }
+    },
+    "controls_to_goal %@" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "목표까지 약 %@"
+          }
+        }
+      }
+    },
+    "controls_to_penalty_line %@" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "80%%까지 약 %@"
+          }
+        }
+      }
+    },
     "idle_run_screen_shown_automatically" : {
       "localizations" : {
         "ko" : {

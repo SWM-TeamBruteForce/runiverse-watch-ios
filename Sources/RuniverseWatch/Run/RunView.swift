@@ -1,18 +1,33 @@
 import SwiftUI
 
-/// 러닝 중 화면이다. 첫 화면에서 왼쪽으로 쓸면 내 기록 장, 위로 쓸거나 크라운을 돌리면 파티원 장이 나온다.
+/// 러닝 중 화면이다. 첫 화면에서 오른쪽으로 쓸면 조작 장, 왼쪽으로 쓸면 내 기록 장,
+/// 위로 쓸거나 크라운을 돌리면 파티원 장이 나온다.
 struct RunView: View {
     let run: RunState
     let isPhoneReachable: Bool
     let heartRateBpm: Int?
     let birthday: String?
+    let commandState: RunCommandState
+    let commands: RunCommands
 
     @State private var page = RunPage.overview
     @State private var verticalPage = RunVerticalPage.overview
     @State private var arePageDotsShown = true
 
+    // 서버 설정이 아니라 워치에만 저장한다
+    // TODO: 콤보 효과 — 콤보 효과를 만들 때 꺼져 있으면 큰 순간 터짐을 빼도록 잇는다
+    @AppStorage("comboEffectOn") private var isComboEffectOn = true
+
     var body: some View {
         TabView(selection: horizontalSelection) {
+            ControlsView(
+                run: run,
+                isPhoneReachable: isPhoneReachable,
+                commandState: commandState,
+                commands: commands,
+                isComboEffectOn: $isComboEffectOn
+            )
+            .tag(RunPage.controls)
             TabView(selection: $verticalPage) {
                 RunOverviewView(
                     run: run,
@@ -75,13 +90,14 @@ struct RunView: View {
     private static let pageDotsHideDelay = Duration.seconds(2)
 }
 
-/// 가로 장이다. 첫 화면 칸과 내 기록 장이 있다.
+/// 가로 장이다. 왼쪽부터 조작 장, 첫 화면 칸, 내 기록 장이다.
 enum RunPage {
+    case controls
     case overview
     case myRecord
 
     /// 첫 화면 칸에서 파티원 장을 볼 때만 좌우로 안 넘어간다.
-    /// 내 기록 장에선 화면 밖 세로 장이 어디 있든 첫 화면으로 돌아갈 수 있어야 한다.
+    /// 조작 장·내 기록 장에선 화면 밖 세로 장이 어디 있든 첫 화면으로 돌아갈 수 있어야 한다.
     func canMoveSideways(verticalPage: RunVerticalPage) -> Bool {
         self != .overview || verticalPage == .overview
     }
@@ -147,5 +163,12 @@ private struct VerticalPageDotsView: View {
 }
 
 #Preview("러닝 화면 파티") {
-    RunView(run: RunSamples.party, isPhoneReachable: true, heartRateBpm: 148, birthday: RunSamples.birthday)
+    RunView(
+        run: RunSamples.party,
+        isPhoneReachable: true,
+        heartRateBpm: 148,
+        birthday: RunSamples.birthday,
+        commandState: RunCommandState(),
+        commands: RunCommands(pause: {}, resume: {}, finish: {})
+    )
 }
