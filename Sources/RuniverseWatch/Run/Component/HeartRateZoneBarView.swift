@@ -29,7 +29,8 @@ struct HeartRateZoneBarView: View {
 
     private static let zoneCount = 5
     private static let zoneGap: CGFloat = 3
-    private static let widestHeartRate = "888"
+    // 같은 폭 숫자라도 SUIT는 1 다음 1에 자간이 붙어, 11이 가장 많은 값이 가장 넓다
+    private static let widestHeartRate = "111"
 }
 
 #Preview("심박 구간 막대 3칸") {
