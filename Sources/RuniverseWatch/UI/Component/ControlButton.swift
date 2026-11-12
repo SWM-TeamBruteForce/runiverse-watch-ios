@@ -11,18 +11,7 @@ struct ControlButton: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(alignment: .inkCenter, spacing: Self.iconToLabelGap) {
-                if let icon {
-                    ControlIconView(icon: icon, size: fontSize * Self.iconToFontRatio)
-                }
-                AlignedTextView(label, size: fontSize, color: .white)
-            }
-            .frame(
-                width: width,
-                height: Self.pillHeight,
-                alignment: Alignment(horizontal: .center, vertical: .inkCenter)
-            )
-            .background(background, in: Capsule())
+            ControlButtonLabelView(label: label, icon: icon, fontSize: fontSize, width: width, background: background)
         }
         .buttonStyle(.plain)
     }
@@ -33,6 +22,32 @@ struct ControlButton: View {
     // 화면 맨 아래에 하나만 두는 버튼 폭이다
     // 화면 폭의 204/480이되 96보다 좁아지지 않는 갤럭시 규칙으로 재면 애플은 모든 화면이 96이다
     private static let bottomButtonWidth: CGFloat = 96
+}
+
+/// 알약 버튼의 겉모양이다. 길게 누르는 버튼이 채운 부분을 다른 색으로 덧그릴 때도 쓴다.
+struct ControlButtonLabelView: View {
+    let label: String
+    let icon: ControlIcon?
+    let fontSize: CGFloat
+    let width: CGFloat
+    let background: Color
+    var foreground = Color.white
+
+    var body: some View {
+        HStack(alignment: .inkCenter, spacing: Self.iconToLabelGap) {
+            if let icon {
+                ControlIconView(icon: icon, size: fontSize * Self.iconToFontRatio, color: foreground)
+            }
+            AlignedTextView(label, size: fontSize, color: foreground)
+        }
+        .frame(
+            width: width,
+            height: ControlButton.pillHeight,
+            alignment: Alignment(horizontal: .center, vertical: .inkCenter)
+        )
+        .background(background, in: Capsule())
+    }
+
     private static let iconToFontRatio: CGFloat = 0.62
     private static let iconToLabelGap: CGFloat = 6
 }
@@ -48,14 +63,15 @@ enum ControlIcon {
 private struct ControlIconView: View {
     let icon: ControlIcon
     let size: CGFloat
+    let color: Color
 
     var body: some View {
         let shape = ControlIconShape(icon: icon)
         Group {
             if icon == .upArrow {
-                shape.stroke(.white, style: Self.lineIconStroke)
+                shape.stroke(color, style: Self.lineIconStroke)
             } else {
-                shape.fill(.white)
+                shape.fill(color)
             }
         }
         .frame(width: size, height: size)
