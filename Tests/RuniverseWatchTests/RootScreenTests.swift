@@ -26,7 +26,7 @@ struct RootScreenTests {
         let lost = PhoneLinkState(isPhoneReachable: false, isAwaitingRun: true)
 
         // when & then
-        #expect(RootScreen(awaiting) == .awaitingRun)
+        #expect(RootScreen(awaiting) == .awaitingPhone)
         #expect(RootScreen(lost) == .idle(isPhoneReachable: false))
     }
 
