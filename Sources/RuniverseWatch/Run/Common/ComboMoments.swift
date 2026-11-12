@@ -53,8 +53,12 @@ final class ComboMoments {
         }
     }
 
+    /// 조작 장으로 넘어가면 덮던 큰 순간도 지운다. 넘기는 중에 뜬 덮개가 일시정지·종료를 가린다.
     func onControlsShownChanged(_ isShown: Bool) {
         isControlsShown = isShown
+        if isShown {
+            burst = nil
+        }
     }
 
     // 넘겨 둔 장이 돌아와 늦게 그려져도 지난 순간을 틀지 않게 시간이 지나면 지운다

@@ -108,6 +108,20 @@ struct ComboMomentsTests {
     }
 
     @Test
+    func `조작 장으로 넘어가면 덮던 큰 순간을 지운다`() {
+        // given -> 첫 화면에서 큰 순간이 뜬 채로 조작 장으로 넘긴다
+        let fixture = Fixture()
+        fixture.moments.onScreenActiveChanged(true)
+        fixture.receive(combo("e1", userId: "u2", kind: .milestone))
+
+        // when
+        fixture.moments.onControlsShownChanged(true)
+
+        // then
+        #expect(fixture.moments.burst == nil)
+    }
+
+    @Test
     func `명단에 없는 사람이나 끝난 러닝의 큰 순간은 띄우지 않는다`() {
         // given
         let fixture = Fixture()
