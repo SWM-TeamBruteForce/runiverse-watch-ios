@@ -3,7 +3,7 @@ import SwiftUI
 /// 심박 구간 막대다. 사람 색(레인 색)과 섞이지 않게 흰색 한 가지로 지금 구간까지 채운다.
 struct HeartRateZoneBarView: View {
     let filledZoneCount: Int
-    /// 막대 길이를 잴 심박 숫자 크기·굵기다. 그 옆에 그리는 심박과 같게 준다.
+    /// 막대 길이를 잴 심박 숫자 크기·굵기다. 그 위에 그리는 심박과 같게 준다.
     let valueSize: CGFloat
     let valueWeight: SUITFont.Weight
 

@@ -26,7 +26,7 @@ struct PhoneLinkState: Equatable {
     var dismissedResult: ResultKey?
     /// 폰이 이 워치 버전을 거절했다 — 앱을 다시 열 때까지 폰에 새로 보내지 않는다.
     var isUpdateRequired = false
-    /// 러닝이 있을 것으로 보는데 그 뒤 폰 상태를 아직 못 받았다.
+    /// 러닝이 있을 것으로 본 뒤 폰 상태를 아직 못 받았다.
     var isAwaitingRun = false
 
     var isLocked: Bool { isSyncing || pendingRequestId != nil }

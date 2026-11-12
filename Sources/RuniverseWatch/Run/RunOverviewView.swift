@@ -302,6 +302,7 @@ private struct PlayerAvatarView: View {
         let borderWidth = RunDimensions.comboBorderWidth
         ZStack(alignment: Alignment(horizontal: .center, vertical: .inkCenter)) {
             Circle().fill(lane).frame(width: avatarSize, height: avatarSize)
+            // TODO: 파티원 사진 — 사진을 만들 때 폰이 보낸 사진을 그린다
             if let initial = player.initial {
                 AlignedTextView(initial, size: WatchFontSizes.supporting, weight: .bold, color: .white)
             }

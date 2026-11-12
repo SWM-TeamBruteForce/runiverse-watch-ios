@@ -24,7 +24,7 @@ extension WatchScreen {
         return screenWidth - (margin + inset) * 2
     }
 
-    // 시안 그림에서 잰 추정값이다
+    // 링과 글자 여백이 화면 모서리를 따라가게 하려는 추정값이다
     private static let cornerToWidthRatio: CGFloat = 0.165
 
     /// 안전 영역을 따르는 GeometryReader에서 잰다.

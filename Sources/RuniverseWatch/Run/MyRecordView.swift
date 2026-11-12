@@ -103,7 +103,7 @@ struct MyRecordSlots: Equatable {
 
     init(screen: WatchScreen, sizes: WatchFontSizes, showsZoneBar: Bool) {
         let pageSlots = RunPageSlots(screen: screen, sizes: sizes)
-        // 숫자든 `--`든 잉크 높이가 같아 심박 값과 상관없이 잰다
+        // 아랫변은 숫자가 아니라 `bpm`의 p 꼬리가 정해, 심박이 `--`여도 같다
         let heartRateInk = ValueWithUnitView.ink(
             value: RunTexts.valueUnknown,
             unit: RunTexts.heartRateUnit,
