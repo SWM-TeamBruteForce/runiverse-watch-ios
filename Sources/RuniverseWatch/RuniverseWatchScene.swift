@@ -17,7 +17,7 @@ public struct RuniverseWatchScene: Scene {
                     workoutSession.requestAuthorization()
                 }
         }
-        // 어두워진 화면(.inactive)에도 값이 떠 있어 꺼질 때(.background)만 1초 전송을 멈춘다
+        // 어두워진 화면(.inactive)에도 값이 떠 있어 .background일 때만 1초 전송을 멈춘다
         .onChange(of: scenePhase, initial: true) { _, phase in
             Self.phoneLink.onScreenVisibilityChanged(phase != .background)
         }
