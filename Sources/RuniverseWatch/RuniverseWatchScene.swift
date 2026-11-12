@@ -1,4 +1,5 @@
 import SwiftUI
+import WatchKit
 
 /// 워치 앱의 화면 전체를 담는다. 앱 타깃은 진입점에서 이것만 띄운다.
 public struct RuniverseWatchScene: Scene {
@@ -28,6 +29,16 @@ public struct RuniverseWatchScene: Scene {
 
     // 화면이 닫혀도 연결을 이어 가려고 화면이 아니라 앱에 하나 둔다
     static let phoneLink: PhoneLink = {
+        let link = openPhoneLink()
+        // 화면이 꺼져 있어도 울리게 진동은 화면이 아니라 앱에서 받는다
+        link.onCombo = { runVibrator.onCombo($0, linkState: phoneLink.state) }
+        link.onGoalPending = { runVibrator.vibrate(.goalPending) }
+        return link
+    }()
+
+    static let runVibrator = RunVibrator(play: { WKInterfaceDevice.current().play($0) })
+
+    private static func openPhoneLink() -> PhoneLink {
         #if DEBUG
             // 실행 인자 `-fakeRun <경우>`는 UserDefaults 인자 영역으로 읽힌다
             if let fakePhone = FakePhone(fakeRunName: UserDefaults.standard.string(forKey: "fakeRun")) {
@@ -43,7 +54,7 @@ public struct RuniverseWatchScene: Scene {
         let link = PhoneLink(send: channel.send)
         channel.activate()
         return link
-    }()
+    }
 }
 
 /// 폰 상태는 여기서만 읽고, 아래 화면엔 값만 넘긴다.

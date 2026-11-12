@@ -37,6 +37,9 @@ struct PhoneLinkState: Equatable {
         return run.status != .finished
     }
 
+    /// 거리가 모자라 폰이 종료를 보류하고 있다.
+    var isGoalPending: Bool { phoneState?.run?.finish?.stage == .goalPending }
+
     /// 결과 화면에 띄울 끝난 러닝이다.
     var finishedRun: RunState? {
         guard let phoneState, let run = phoneState.run, run.status == .finished else { return nil }
@@ -61,11 +64,17 @@ typealias PhoneSchedule = @MainActor (Duration, @escaping @MainActor () -> Void)
 @Observable
 final class PhoneLink {
     private(set) var state = PhoneLinkState() {
-        didSet { onStateChanged?(state) }
+        didSet {
+            if state.isGoalPending, !oldValue.isGoalPending { onGoalPending?() }
+            onStateChanged?(state)
+        }
     }
 
     /// 콤보 순간을 받는 곳이다. 비어 있으면 버린다 — 지난 콤보를 뒤늦게 울리지 않는다.
     @ObservationIgnored var onCombo: ((WatchComboTriggered) -> Void)?
+
+    /// 보류에 들어갈 때 부른다. 같은 보류가 1초마다 다시 와도 한 번만 부른다.
+    @ObservationIgnored var onGoalPending: (() -> Void)?
 
     /// 상태가 바뀔 때마다 부른다. 바꾸는 도중이라 여기서 PhoneLink를 다시 부르지 않는다.
     @ObservationIgnored var onStateChanged: ((PhoneLinkState) -> Void)?
