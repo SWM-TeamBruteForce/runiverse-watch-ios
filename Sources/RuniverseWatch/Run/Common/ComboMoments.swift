@@ -1,7 +1,7 @@
 import Foundation
 import Observation
 
-/// 콤보 순간을 받아 화면에 띄울 순간을 고른다. 진동은 `RunVibrator`가 따로 울린다.
+/// 콤보 순간을 받아 화면에 띄울 순간을 고른다.
 @MainActor
 @Observable
 final class ComboMoments {
@@ -28,13 +28,13 @@ final class ComboMoments {
     }
 
     func onCombo(_ combo: WatchComboTriggered, linkState: PhoneLinkState) {
-        // 어둡거나 꺼진 화면에 온 콤보는 진동만 한다 — 켜진 뒤 효과를 뒤늦게 틀지 않는다
+        // 어둡거나 꺼진 화면에 온 콤보는 버린다 — 켜진 뒤 효과를 뒤늦게 틀지 않는다
         guard isScreenActive else { return }
         switch ComboMomentSize(kind: combo.kind, isEffectOn: isEffectOn()) {
         case .small:
             showSmall(combo)
         case .big:
-            // 명단에 없는 사람은 띄울 사진·이름이 없어 진동만 한다
+            // 명단에 없는 사람은 띄울 사진·이름이 없다
             guard linkState.isRunActive,
                 linkState.phoneState?.run?.players.contains(where: { $0.userId == combo.userId }) == true
             else { return }

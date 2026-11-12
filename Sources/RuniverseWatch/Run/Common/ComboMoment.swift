@@ -47,7 +47,7 @@ enum ComboMomentSize {
     case small
     case big
 
-    /// 효과를 끄면 큰 순간 터짐만 빠지고 작은 순간은 남는다. 끊김은 진동만 하니 nil이다.
+    /// 효과를 끄면 큰 순간 터짐만 빠지고 작은 순간은 남는다. 끊김은 띄울 효과가 없어 nil이다.
     init?(kind: ComboKind, isEffectOn: Bool) {
         switch kind {
         case .tick: self = .small

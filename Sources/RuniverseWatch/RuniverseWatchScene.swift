@@ -32,16 +32,13 @@ public struct RuniverseWatchScene: Scene {
     // 화면이 닫혀도 연결을 이어 가려고 화면이 아니라 앱에 하나 둔다
     static let phoneLink: PhoneLink = {
         let link = openPhoneLink()
-        // 화면이 꺼져 있어도 울리게 진동은 화면이 아니라 앱에서 받는다
-        link.onCombo = { combo in
-            runVibrator.onCombo(combo, linkState: phoneLink.state)
-            comboMoments.onCombo(combo, linkState: phoneLink.state)
-        }
-        link.onGoalPending = { runVibrator.vibrate(.goalPending) }
+        // 워치 진동엔 소리가 붙어 무음 모드가 아니면 콤보마다 울려, 콤보는 진동 없이 효과만 띄운다
+        link.onCombo = { comboMoments.onCombo($0, linkState: phoneLink.state) }
+        // 화면이 꺼져 있어도 울리게 보류 진동은 화면이 아니라 앱에서 받는다
+        link.onGoalPending = { WKInterfaceDevice.current().play(.notification) }
         return link
     }()
 
-    static let runVibrator = RunVibrator(play: { WKInterfaceDevice.current().play($0) })
     static let comboMoments = ComboMoments()
 
     private static func openPhoneLink() -> PhoneLink {
