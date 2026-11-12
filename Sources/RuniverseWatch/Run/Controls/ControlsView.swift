@@ -129,6 +129,7 @@ private struct FinishButton: View {
         if content.finishStage == .hold {
             HoldToFinishButton(
                 label: content.finishButton.label,
+                icon: content.finishButton.icon,
                 fontSize: fontSize,
                 background: background,
                 isEnabled: !content.areButtonsLocked,
@@ -151,6 +152,7 @@ private struct FinishButton: View {
 /// 길게 눌러 끝내는 종료 버튼이다. 달리는 중에 손가락이 스쳐 기록이 끝나지 않게 한다.
 private struct HoldToFinishButton: View {
     let label: String
+    let icon: ControlIcon?
     let fontSize: CGFloat
     let background: Color
     let isEnabled: Bool
@@ -161,22 +163,23 @@ private struct HoldToFinishButton: View {
     @State private var hasFinishedByHolding = false
     @State private var filledFraction: CGFloat = 0
     @State private var isHoldLongerShown = false
+    @State private var holdLongerNoticeId = 0
 
     var body: some View {
         let isPressing = pressStart != nil
         let shownLabel =
             isPressing
             ? ControlsContent.keepPressingLabel : isHoldLongerShown ? ControlsContent.holdLongerLabel : label
-        let icon: ControlIcon? = isHoldLongerShown && !isPressing ? nil : .stop
+        let shownIcon = isHoldLongerShown && !isPressing ? nil : icon
         // 버튼 동작은 손가락을 그 자리에서 뗐을 때만 온다 — 쓸어 넘기면 오지 않아 안내를 안 띄운다
         Button {
-            if !hasFinishedByHolding { isHoldLongerShown = true }
+            if !hasFinishedByHolding { showHoldLongerNotice() }
             hasFinishedByHolding = false
         } label: {
             ZStack(alignment: .leading) {
                 ControlButtonLabelView(
                     label: shownLabel,
-                    icon: icon,
+                    icon: shownIcon,
                     fontSize: fontSize,
                     width: ControlsSlots.pillWidth,
                     background: background
@@ -184,7 +187,7 @@ private struct HoldToFinishButton: View {
                 // 흰색이 왼쪽부터 차오르고, 찬 부분의 글자는 검게 보인다
                 ControlButtonLabelView(
                     label: shownLabel,
-                    icon: icon,
+                    icon: shownIcon,
                     fontSize: fontSize,
                     width: ControlsSlots.pillWidth,
                     background: .white,
@@ -202,6 +205,10 @@ private struct HoldToFinishButton: View {
             }
         )
         .disabled(!isEnabled)
+        // VoiceOver는 계속 누를 수 없어, 길게 누르기 대신 이름 붙은 동작으로 끝낸다
+        .accessibilityAction(named: Text(verbatim: label)) {
+            if isEnabled { onFinish() }
+        }
         // 누른 시간은 채움 애니메이션과 따로 잰다 — 애니메이션이 끝났는지로 재지 않는다
         .task(id: pressStart) {
             guard pressStart != nil else { return }
@@ -212,16 +219,25 @@ private struct HoldToFinishButton: View {
             filledFraction = 0
             onFinish()
         }
-        .task(id: isHoldLongerShown) {
+        // 연달아 짧게 누르면 마지막으로 누른 때부터 다시 잰다
+        .task(id: holdLongerNoticeId) {
             guard isHoldLongerShown else { return }
             try? await Task.sleep(for: Self.holdLongerNoticeTimeout)
             guard !Task.isCancelled else { return }
             isHoldLongerShown = false
         }
-        // 화면이 꺼지면 손가락이 떨어진 것과 같게 본다
+        // 화면이 꺼지거나 누르는 도중 잠기면 손가락이 떨어진 것과 같게 본다
         .onChange(of: scenePhase) { _, phase in
             if phase != .active { endPress() }
         }
+        .onChange(of: isEnabled) { _, isEnabled in
+            if !isEnabled { endPress() }
+        }
+    }
+
+    private func showHoldLongerNotice() {
+        isHoldLongerShown = true
+        holdLongerNoticeId += 1
     }
 
     // 누르는 동안엔 `계속 누르기`가 먼저라 안내를 지우지 않는다 — 지우면 짧은 탭에서 안내가 안 떴다
