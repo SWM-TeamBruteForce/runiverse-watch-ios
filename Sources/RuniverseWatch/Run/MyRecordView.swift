@@ -22,7 +22,7 @@ struct MyRecordView: View {
             if let progress = content.progress {
                 ProgressRingView(
                     progress: progress,
-                    color: LaneColors.color(slot: LaneColors.myColorSlot),
+                    color: LaneColors.color(colorSlot: LaneColors.myColorSlot),
                     screen: screen
                 )
                 .opacity(content.phoneValuesAlpha)

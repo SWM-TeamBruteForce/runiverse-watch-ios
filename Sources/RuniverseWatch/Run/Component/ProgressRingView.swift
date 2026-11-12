@@ -84,6 +84,6 @@ private struct ProgressRingTrack: Shape {
 
 #Preview("진행 링 62%") {
     ScreenLayoutView { screen in
-        ProgressRingView(progress: 0.62, color: LaneColors.color(slot: LaneColors.myColorSlot), screen: screen)
+        ProgressRingView(progress: 0.62, color: LaneColors.color(colorSlot: LaneColors.myColorSlot), screen: screen)
     }
 }

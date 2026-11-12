@@ -6,8 +6,8 @@ enum LaneColors {
     static let myColorSlot = 0
 
     /// 0은 나, 1~3은 파티원이다.
-    static func color(slot: Int) -> Color {
-        colors[(slot % colors.count + colors.count) % colors.count]
+    static func color(colorSlot: Int) -> Color {
+        colors[(colorSlot % colors.count + colors.count) % colors.count]
     }
 
     private static let colors = [

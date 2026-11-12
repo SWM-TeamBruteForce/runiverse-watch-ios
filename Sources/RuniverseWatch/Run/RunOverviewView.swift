@@ -23,7 +23,7 @@ struct RunOverviewView: View {
             if let progress = content.progress {
                 ProgressRingView(
                     progress: progress,
-                    color: LaneColors.color(slot: LaneColors.myColorSlot),
+                    color: LaneColors.color(colorSlot: LaneColors.myColorSlot),
                     screen: screen
                 )
                 .opacity(content.phoneValuesAlpha)
@@ -297,7 +297,7 @@ private struct PlayerAvatarView: View {
     let player: PlayerCellContent
 
     var body: some View {
-        let lane = LaneColors.color(slot: player.colorSlot)
+        let lane = LaneColors.color(colorSlot: player.colorSlot)
         let avatarSize = RunDimensions.avatarSize
         let borderWidth = RunDimensions.comboBorderWidth
         ZStack(alignment: Alignment(horizontal: .center, vertical: .inkCenter)) {
@@ -314,7 +314,7 @@ private struct PlayerAvatarView: View {
             }
             if player.isCombo {
                 // 나와 상대의 레인 색을 섞어 누구와 붙었는지 알 수 있게 한다
-                let myLane = LaneColors.color(slot: LaneColors.myColorSlot)
+                let myLane = LaneColors.color(colorSlot: LaneColors.myColorSlot)
                 Circle()
                     .stroke(
                         LinearGradient(colors: [myLane, lane], startPoint: .topLeading, endPoint: .bottomTrailing),
