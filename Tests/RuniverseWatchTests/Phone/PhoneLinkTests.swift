@@ -1119,6 +1119,22 @@ struct PhoneLinkTests {
     }
 
     @Test
+    func `러닝을 접은 뒤 폰이 다시 켜면 SYNC로 새로 받는다`() throws {
+        // given -> 이어 받을 상태가 없어 폰이 보내는 상태를 버린다
+        let fixture = Fixture()
+        fixture.phoneLink.onScreenVisibilityChanged(true)
+        try fixture.connect(state(stateSequence: 1))
+        fixture.phoneLink.forgetRun()
+        fixture.sent.removeAll()
+
+        // when
+        fixture.phoneLink.onLaunchedByPhone()
+
+        // then
+        #expect(fixture.sent.contains { $0.sync != nil })
+    }
+
+    @Test
     func `폰이 버전을 거절했으면 폰이 켜도 기다리지 않는다`() {
         // given
         let fixture = Fixture()

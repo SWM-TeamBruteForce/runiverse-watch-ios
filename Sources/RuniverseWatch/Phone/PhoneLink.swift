@@ -128,6 +128,8 @@ final class PhoneLink {
         state.isAwaitingLaunchedRun = true
         // 3초 감시가 꺼져 있을 수 있고 폰은 켜짐 신호 전엔 화면이 꺼진 줄 알아, 화면이 켜질 때처럼 다시 건다
         if isScreenVisible { applyScreenVisibility() }
+        // 이어 받을 상태가 없으면 폰이 보내는 상태를 버려, SYNC로 새로 받는다
+        if state.phoneState == nil, !state.isSyncing { requestSync() }
     }
 
     /// 폰에 알리지 않고 번호 쌍만 기억한다. 끝난 러닝이 아니면 할 일이 없다.
