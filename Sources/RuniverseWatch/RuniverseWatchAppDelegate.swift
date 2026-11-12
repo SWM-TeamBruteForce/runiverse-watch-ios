@@ -5,7 +5,7 @@ import WatchKit
 /// 앱 타깃이 `@WKApplicationDelegateAdaptor`로 단다.
 public final class RuniverseWatchAppDelegate: NSObject, WKApplicationDelegate {
     public func handle(_ workoutConfiguration: HKWorkoutConfiguration) {
-        RuniverseWatchScene.phoneLink.onLaunchedByPhone()
+        RuniverseWatchScene.phoneLink.onRunExpected()
         RuniverseWatchScene.workoutSession.onLaunchedByPhone(workoutConfiguration)
     }
 

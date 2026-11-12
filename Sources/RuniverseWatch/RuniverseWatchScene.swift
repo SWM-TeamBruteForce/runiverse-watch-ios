@@ -65,7 +65,7 @@ private struct RootView: View {
         case .runSummary:
             // TODO: 결과 요약 — 결과 요약을 만들 때 교체한다
             Text(verbatim: "러닝 완료")
-        case .awaitingLaunchedRun:
+        case .awaitingRun:
             IdleView(content: nil)
         case .idle(let isPhoneReachable):
             IdleView(content: IdleContent(isPhoneReachable: isPhoneReachable))
