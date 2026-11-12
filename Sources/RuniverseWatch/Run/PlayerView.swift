@@ -330,15 +330,15 @@ private struct LabeledPaceView: View {
 }
 
 #Preview("파티원 장 가장 긴 값") {
-    PlayerView(run: RunSamples.partyEdges, player: RunSamples.partyEdges.players[0], isPhoneReachable: true)
+    PlayerView(run: RunSamples.playerEdges, player: RunSamples.playerEdges.players[0], isPhoneReachable: true)
 }
 
 #Preview("파티원 장 통지 전") {
-    PlayerView(run: RunSamples.partyEdges, player: RunSamples.partyEdges.players[1], isPhoneReachable: true)
+    PlayerView(run: RunSamples.playerEdges, player: RunSamples.playerEdges.players[1], isPhoneReachable: true)
 }
 
 #Preview("파티원 장 격차 0·소식 늦음") {
-    PlayerView(run: RunSamples.partyEdges, player: RunSamples.partyEdges.players[2], isPhoneReachable: true)
+    PlayerView(run: RunSamples.playerEdges, player: RunSamples.playerEdges.players[2], isPhoneReachable: true)
 }
 
 #Preview("파티원 장 서버 끊김") {

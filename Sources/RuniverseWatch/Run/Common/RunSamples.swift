@@ -25,7 +25,7 @@ enum RunSamples {
     static let serverLost = run(isServerConnected: false)
 
     /// 파티원 장 끝 경우다 — 값이 가장 넓은 사람, 통지 전인 사람, 격차 0에 소식이 늦은 사람이다.
-    static let partyEdges = run(players: [longestPlayer, notNotifiedPlayer, levelStalePlayer])
+    static let playerEdges = run(players: [longestPlayer, notNotifiedPlayer, levelStalePlayer])
 
     /// 폰 프로필 API 모양 그대로다. 만 나이로 심박 구간을 잰다.
     static let birthday = "1995-03-10"

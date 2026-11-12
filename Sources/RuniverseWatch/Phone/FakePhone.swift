@@ -108,7 +108,7 @@
         case playerStatuses
         case serverLost
         case phoneLost
-        case partyEdges
+        case playerEdges
 
         var run: RunState {
             switch self {
@@ -118,7 +118,7 @@
             case .paused: RunSamples.paused
             case .playerStatuses: RunSamples.playerStatuses
             case .serverLost: RunSamples.serverLost
-            case .partyEdges: RunSamples.partyEdges
+            case .playerEdges: RunSamples.playerEdges
             }
         }
     }
