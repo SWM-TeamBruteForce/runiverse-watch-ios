@@ -31,6 +31,16 @@
         }
       }
     },
+    "unit_bpm" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bpm"
+          }
+        }
+      }
+    },
     "update_cannot_connect" : {
       "localizations" : {
         "ko" : {

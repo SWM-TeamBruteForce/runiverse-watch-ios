@@ -7,4 +7,5 @@ enum RunDimensions {
     static let avatarSize: CGFloat = 24.5
     static let comboBorderWidth: CGFloat = 2
     static let avatarToBottomRowGap: CGFloat = 4
+    static let zoneBarHeight: CGFloat = 3
 }
