@@ -184,3 +184,19 @@ private struct BurstPlayerRow: View {
         frame: ComboBurstFrame(progress: 0.5)
     )
 }
+
+// 글자가 가장 크게 튀는 순간에 가장 넓은 세 자리 수와 가장 긴 이름을 둔다 — 원래 폭 숫자라 4·0이 가장 넓다
+#Preview("큰 순간 가장 긴 값 정점") {
+    let player = RunSamples.playerEdges.players[0]
+    ComboBurstFrameView(
+        content: ComboBurstContent(
+            burst: ComboBurst(
+                moment: ComboMoment(eventId: "e1", startedAt: Date()),
+                userId: player.userId,
+                comboCount: 400
+            ),
+            player: player
+        ),
+        frame: ComboBurstFrame(progress: 0.28)
+    )
+}
