@@ -120,6 +120,15 @@ struct ControlsViewTests {
     }
 
     @Test
+    func `종료를 보내면 3초가 지나기 전에도 바로 흐린다`() {
+        // when
+        let content = content(RunSamples.party, commandState: RunCommandState(isLocked: true, isFinishPending: true))
+
+        // then
+        #expect(content.buttonsAlpha == 0.4)
+    }
+
+    @Test
     func `폰이 끊기면 버튼을 흐린다`() {
         // when & then
         #expect(content(RunSamples.party, isPhoneReachable: false).buttonsAlpha == 0.4)
@@ -134,6 +143,13 @@ struct ControlsViewTests {
         // when & then
         #expect(hints(running) == Hints(first: "80%까지 약 579m", second: "못 채우면 20분 매칭 제한"))
         #expect(hints(paused) == Hints(first: "80%까지 약 579m", second: "끝내면 20분 매칭 제한"))
+    }
+
+    @Test
+    func `80퍼센트 지점에 닿으면 목표까지 남은 거리로 바뀐다`() {
+        // when & then -> 목표 5000m의 80%인 4000m가 경계다
+        #expect(hints(run(distanceMeters: 3999)) == Hints(first: "80%까지 약 1m", second: "못 채우면 20분 매칭 제한"))
+        #expect(hints(run(distanceMeters: 4000)) == Hints(first: "목표까지 약 1.0km", second: nil))
     }
 
     @Test
