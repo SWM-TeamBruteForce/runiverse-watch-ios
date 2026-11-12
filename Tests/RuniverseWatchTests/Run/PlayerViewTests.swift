@@ -168,26 +168,27 @@ struct PlayerViewTests {
     }
 
     @Test
-    func `페이스 칸은 나올 수 있는 가장 넓은 값을 담는다`() {
-        // given
+    func `나올 수 있는 모든 페이스가 페이스 칸에 들어간다`() {
+        // given -> 60분부터와 위치 없음은 모두 `--'--"`라 0초부터 59분 59초까지와 그 하나를 본다
         let sizes = WatchFontSizes(screenWidth: 208)
         let screen = WatchScreen(screenWidth: 208, screenHeight: 248, safeAreaTop: 53, safeAreaBottom: 212)
         let labelSize = WatchFontSizes.supporting
         let labelWidth = SUITFont.width(of: "상대", size: labelSize, weight: .medium) + PlayerSlots.labelToPaceGap
         let myLabelWidth = SUITFont.width(of: "나", size: labelSize, weight: .medium) + PlayerSlots.labelToPaceGap
+        let paces = (0..<3600).map { RunFormat.formatPace($0) } + [RunFormat.unknownPace]
 
         // when
         let slots = PlayerSlots(screen: screen, sizes: sizes)
 
         // then -> 상대는 원래 폭, 나는 같은 폭 숫자로 잰다
-        for pace in ["40'00\"", "50'00\"", "59'59\"", "10'05\""] {
-            let width = SUITFont.width(of: pace, size: sizes.value, weight: .semiBold)
-            #expect(labelWidth + width <= slots.playerPaceCellWidth + 0.001)
-        }
-        for pace in ["11'11\"", "88'88\"", "10'05\""] {
-            let width = SUITFont.width(of: pace, size: sizes.value, weight: .semiBold, monospacesDigits: true)
-            #expect(myLabelWidth + width <= slots.myPaceCellWidth + 0.001)
-        }
+        let widestPlayerPace = paces.map { SUITFont.width(of: $0, size: sizes.value, weight: .semiBold) }.max() ?? 0
+        let widestMyPace =
+            paces.map {
+                SUITFont.width(of: $0, size: sizes.value, weight: .semiBold, monospacesDigits: true)
+            }
+            .max() ?? 0
+        #expect(labelWidth + widestPlayerPace <= slots.playerPaceCellWidth + 0.001)
+        #expect(myLabelWidth + widestMyPace <= slots.myPaceCellWidth + 0.001)
     }
 
     private func content(_ player: Player, isPhoneReachable: Bool = true) -> PlayerContent {
