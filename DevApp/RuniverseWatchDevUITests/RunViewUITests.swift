@@ -57,7 +57,7 @@ final class RunViewUITests: XCTestCase {
     }
 
     @MainActor
-    func testSwipeUpMovesThroughPartyPagesAndSwipeDownReturns() {
+    func testSwipeUpMovesThroughPlayerPagesAndSwipeDownReturns() {
         // given -> 첫 화면 사진 칸의 첫 글자는 첫 화면에만 있다
         let app = launchRun("party")
         let overviewInitial = app.staticTexts["완"]
@@ -83,7 +83,7 @@ final class RunViewUITests: XCTestCase {
     }
 
     @MainActor
-    func testPartyPageDoesNotMoveSideways() {
+    func testPlayerPageDoesNotMoveSideways() {
         // given
         let app = launchRun("party")
         let cadenceUnit = app.staticTexts["spm"]

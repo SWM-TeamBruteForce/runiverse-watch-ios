@@ -1,17 +1,17 @@
 import SwiftUI
 
 /// 러닝 중 파티원 장이다. 위 줄 그 사람 거리·이름, 가운데 격차, 아래 상대·나 페이스와 콤보다.
-struct PartyView: View {
+struct PlayerView: View {
     let run: RunState
     let player: Player
     let isPhoneReachable: Bool
 
     var body: some View {
-        let content = PartyContent(run: run, player: player, isPhoneReachable: isPhoneReachable)
+        let content = PlayerContent(run: run, player: player, isPhoneReachable: isPhoneReachable)
         ScreenLayoutView { screen in
             let sizes = WatchFontSizes(screenWidth: screen.screenWidth)
             let pageSlots = RunPageSlots(screen: screen, sizes: sizes)
-            let slots = PartySlots(screen: screen, sizes: sizes)
+            let slots = PlayerSlots(screen: screen, sizes: sizes)
             if let progress = content.progress {
                 ProgressRingView(
                     progress: progress,
@@ -27,10 +27,10 @@ struct PartyView: View {
                 inkBottom: pageSlots.topRowBottom
             )
             .opacity(content.playerValuesAlpha)
-            PartyCenterView(center: content.center, sizes: sizes, pageSlots: pageSlots)
+            PlayerCenterView(center: content.center, sizes: sizes, pageSlots: pageSlots)
                 .opacity(content.playerValuesAlpha)
             PaceRows(content: content, sizes: sizes, slots: slots, top: pageSlots.belowRowTop)
-            switch content.bottomRow {
+            switch content.bottomLabel {
             case .combo(let text):
                 AlignedTextView(
                     text,
@@ -53,17 +53,17 @@ struct PartyView: View {
 }
 
 /// 파티원 장이 그릴 값이다.
-struct PartyContent: Equatable {
+struct PlayerContent: Equatable {
     /// 목표가 없으면 nil — 링을 그리지 않는다.
     let progress: Double?
     let colorSlot: Int
     let distanceText: String
     let nickname: String
-    let center: PartyCenter
+    let center: PlayerCenter
     /// 끊긴 동안은 오래된 상대 페이스를 숨긴다.
     let playerPaceText: String?
     let myPaceText: String
-    let bottomRow: PartyBottomRow
+    let bottomLabel: PlayerBottomLabel
     /// 폰·서버가 끊겼거나 그 사람 소식이 늦으면 그 사람 값을 흐린다.
     let playerValuesAlpha: Double
     /// 서버가 끊겨도 내 페이스는 폰이 계속 재는 값이라 폰이 끊길 때만 흐린다.
@@ -74,16 +74,16 @@ struct PartyContent: Equatable {
         colorSlot = player.colorSlot
         distanceText = RunFormat.formatRunDistanceKm(player.distanceMeters)
         nickname = player.nickname
-        center = PartyCenter(player)
+        center = PlayerCenter(player)
         let notice = RunTexts.connectionNotice(run: run, isPhoneReachable: isPhoneReachable)
         playerPaceText = notice == nil ? RunFormat.formatPace(player.shownPaceSecondsPerKm) : nil
         myPaceText = RunFormat.formatPace(run.shownMyPaceSecondsPerKm)
         if let notice {
-            bottomRow = .notice(notice)
+            bottomLabel = .notice(notice)
         } else if player.comboCount > 0 {
-            bottomRow = .combo(String(localized: "run_combo_current \(player.comboCount)", bundle: .module))
+            bottomLabel = .combo(String(localized: "run_combo_current \(player.comboCount)", bundle: .module))
         } else {
-            bottomRow = .combo(String(localized: "run_combo_max \(player.maxComboCount)", bundle: .module))
+            bottomLabel = .combo(String(localized: "run_combo_max \(player.maxComboCount)", bundle: .module))
         }
         let hasStaleValues = player.hasStaleValues(in: run, isPhoneReachable: isPhoneReachable)
         playerValuesAlpha = hasStaleValues ? RunDimensions.staleContentAlpha : 1
@@ -92,7 +92,7 @@ struct PartyContent: Equatable {
 }
 
 /// 파티원 장 가운데에 쓰는 것이다.
-enum PartyCenter: Equatable {
+enum PlayerCenter: Equatable {
     case status(String)
     /// 앞·뒤 글자는 나란히면 없다.
     case gap(directionWord: String?, distance: FormattedDistance)
@@ -119,13 +119,13 @@ enum PartyCenter: Equatable {
 }
 
 /// 파티원 장 맨 아래 줄이다. 끊긴 동안은 콤보 자리를 연결 안내가 대신한다.
-enum PartyBottomRow: Equatable {
+enum PlayerBottomLabel: Equatable {
     case combo(String)
     case notice(String)
 }
 
 /// 파티원 장 자리(화면 위 끝에서 pt)와 페이스 칸 폭이다. 칸은 값이 바뀌어도 안 움직이게 가장 넓은 값으로 잰다.
-struct PartySlots: Equatable {
+struct PlayerSlots: Equatable {
     let playerPaceCellWidth: CGFloat
     let myPaceCellWidth: CGFloat
     /// 가장 넓은 두 페이스가 한 줄에 들어간다. 값이 아니라 화면으로 정해 달리는 중 모양이 안 바뀐다.
@@ -140,13 +140,13 @@ struct PartySlots: Equatable {
     init(screen: WatchScreen, sizes: WatchFontSizes) {
         let pageSlots = RunPageSlots(screen: screen, sizes: sizes)
         playerPaceCellWidth = Self.labeledPaceWidth(
-            label: PartyTexts.playerPaceLabel,
+            label: PlayerTexts.playerPaceLabel,
             pace: Self.widestPlayerPace,
             paceSize: sizes.value,
             monospacesDigits: false
         )
         myPaceCellWidth = Self.labeledPaceWidth(
-            label: PartyTexts.myPaceLabel,
+            label: PlayerTexts.myPaceLabel,
             pace: Self.widestMyPace,
             paceSize: sizes.value,
             monospacesDigits: true
@@ -187,14 +187,14 @@ struct PartySlots: Equatable {
     private static let widestMyPace = "11'11\""
 }
 
-private enum PartyTexts {
+private enum PlayerTexts {
     static let playerPaceLabel = String(localized: "run_pace_player", bundle: .module)
     static let myPaceLabel = String(localized: "run_pace_me", bundle: .module)
 }
 
 // 거리와 이름은 글자 종류·크기가 달라 기준선 대신 보이는 글자의 세로 가운데를 맞춘다
 private struct DistanceNameRow: View {
-    let content: PartyContent
+    let content: PlayerContent
     let sizes: WatchFontSizes
     let width: CGFloat
     let inkBottom: CGFloat
@@ -223,8 +223,8 @@ private struct DistanceNameRow: View {
     private static let minDistanceToNameGap: CGFloat = 8
 }
 
-private struct PartyCenterView: View {
-    let center: PartyCenter
+private struct PlayerCenterView: View {
+    let center: PlayerCenter
     let sizes: WatchFontSizes
     let pageSlots: RunPageSlots
 
@@ -259,15 +259,15 @@ private struct PartyCenterView: View {
 }
 
 private struct PaceRows: View {
-    let content: PartyContent
+    let content: PlayerContent
     let sizes: WatchFontSizes
-    let slots: PartySlots
+    let slots: PlayerSlots
     let top: CGFloat
 
     var body: some View {
         let firstBaseline = top + slots.paceRowAbove
         let myPace = LabeledPaceView(
-            label: PartyTexts.myPaceLabel,
+            label: PlayerTexts.myPaceLabel,
             pace: content.myPaceText,
             paceSize: sizes.value,
             monospacesDigits: true
@@ -275,7 +275,7 @@ private struct PaceRows: View {
         .opacity(content.phoneValuesAlpha)
         if let playerPaceText = content.playerPaceText {
             let playerPace = LabeledPaceView(
-                label: PartyTexts.playerPaceLabel,
+                label: PlayerTexts.playerPaceLabel,
                 pace: playerPaceText,
                 paceSize: sizes.value,
                 monospacesDigits: false
@@ -283,7 +283,7 @@ private struct PaceRows: View {
             .opacity(content.playerValuesAlpha)
             if slots.pacesFitOneLine {
                 // 상대 값이 바뀌어도 내 페이스가 안 움직이게 칸 폭을 가장 넓은 페이스로 잡는다
-                HStack(alignment: .firstTextBaseline, spacing: PartySlots.paceGap) {
+                HStack(alignment: .firstTextBaseline, spacing: PlayerSlots.paceGap) {
                     playerPace.frame(width: slots.playerPaceCellWidth, alignment: .trailing)
                     myPace.frame(width: slots.myPaceCellWidth, alignment: .leading)
                 }
@@ -310,7 +310,7 @@ private struct LabeledPaceView: View {
     let monospacesDigits: Bool
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: PartySlots.labelToPaceGap) {
+        HStack(alignment: .firstTextBaseline, spacing: PlayerSlots.labelToPaceGap) {
             AlignedTextView(label, size: WatchFontSizes.supporting, weight: .medium, color: RuniverseColors.supporting)
             AlignedTextView(pace, size: paceSize, monospacesDigits: monospacesDigits, color: RuniverseColors.value)
         }
@@ -318,37 +318,37 @@ private struct LabeledPaceView: View {
 }
 
 #Preview("파티원 장 앞") {
-    PartyView(run: RunSamples.party, player: RunSamples.party.players[0], isPhoneReachable: true)
+    PlayerView(run: RunSamples.party, player: RunSamples.party.players[0], isPhoneReachable: true)
 }
 
 #Preview("파티원 장 뒤·콤보") {
-    PartyView(run: RunSamples.party, player: RunSamples.party.players[1], isPhoneReachable: true)
+    PlayerView(run: RunSamples.party, player: RunSamples.party.players[1], isPhoneReachable: true)
 }
 
 #Preview("파티원 장 멈춤") {
-    PartyView(run: RunSamples.party, player: RunSamples.party.players[2], isPhoneReachable: true)
+    PlayerView(run: RunSamples.party, player: RunSamples.party.players[2], isPhoneReachable: true)
 }
 
 #Preview("파티원 장 가장 긴 값") {
-    PartyView(run: RunSamples.partyEdges, player: RunSamples.partyEdges.players[0], isPhoneReachable: true)
+    PlayerView(run: RunSamples.partyEdges, player: RunSamples.partyEdges.players[0], isPhoneReachable: true)
 }
 
 #Preview("파티원 장 통지 전") {
-    PartyView(run: RunSamples.partyEdges, player: RunSamples.partyEdges.players[1], isPhoneReachable: true)
+    PlayerView(run: RunSamples.partyEdges, player: RunSamples.partyEdges.players[1], isPhoneReachable: true)
 }
 
 #Preview("파티원 장 격차 0·소식 늦음") {
-    PartyView(run: RunSamples.partyEdges, player: RunSamples.partyEdges.players[2], isPhoneReachable: true)
+    PlayerView(run: RunSamples.partyEdges, player: RunSamples.partyEdges.players[2], isPhoneReachable: true)
 }
 
 #Preview("파티원 장 서버 끊김") {
-    PartyView(run: RunSamples.serverLost, player: RunSamples.serverLost.players[0], isPhoneReachable: true)
+    PlayerView(run: RunSamples.serverLost, player: RunSamples.serverLost.players[0], isPhoneReachable: true)
 }
 
 #Preview("파티원 장 폰 끊김") {
-    PartyView(run: RunSamples.party, player: RunSamples.party.players[0], isPhoneReachable: false)
+    PlayerView(run: RunSamples.party, player: RunSamples.party.players[0], isPhoneReachable: false)
 }
 
 #Preview("파티원 장 내가 멈춤") {
-    PartyView(run: RunSamples.paused, player: RunSamples.paused.players[0], isPhoneReachable: true)
+    PlayerView(run: RunSamples.paused, player: RunSamples.paused.players[0], isPhoneReachable: true)
 }

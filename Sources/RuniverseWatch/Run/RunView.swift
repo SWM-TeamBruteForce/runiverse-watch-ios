@@ -22,7 +22,7 @@ struct RunView: View {
                 )
                 .tag(RunVerticalPage.overview)
                 ForEach(run.players, id: \.userId) { player in
-                    PartyView(run: run, player: player, isPhoneReachable: isPhoneReachable)
+                    PlayerView(run: run, player: player, isPhoneReachable: isPhoneReachable)
                         .tag(RunVerticalPage.player(userId: player.userId))
                 }
             }

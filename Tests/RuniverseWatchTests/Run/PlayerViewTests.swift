@@ -2,7 +2,7 @@ import Testing
 
 @testable import RuniverseWatch
 
-struct PartyViewTests {
+struct PlayerViewTests {
 
     @Test
     func `파티원 이름과 거리, 그 사람 진행을 보인다`() {
@@ -76,7 +76,7 @@ struct PartyViewTests {
     @Test
     func `내가 멈추면 내 페이스를 비운다`() {
         // when
-        let content = PartyContent(
+        let content = PlayerContent(
             run: RunSamples.paused,
             player: RunSamples.paused.players[0],
             isPhoneReachable: true
@@ -89,8 +89,8 @@ struct PartyViewTests {
     @Test
     func `콤보 중이면 지금 콤보를, 아니면 최고 콤보를 쓴다`() {
         // when
-        let combo = content(player(gapMeters: 120, comboCount: 12)).bottomRow
-        let noCombo = content(player(gapMeters: 120, comboCount: 0)).bottomRow
+        let combo = content(player(gapMeters: 120, comboCount: 12)).bottomLabel
+        let noCombo = content(player(gapMeters: 120, comboCount: 0)).bottomLabel
 
         // then
         #expect(combo == .combo("12콤보"))
@@ -104,7 +104,7 @@ struct PartyViewTests {
 
         // then
         #expect(content.playerPaceText == nil)
-        #expect(content.bottomRow == .notice("폰 연결 확인 중"))
+        #expect(content.bottomLabel == .notice("폰 연결 확인 중"))
         #expect(content.playerValuesAlpha == 0.4)
         #expect(content.phoneValuesAlpha == 0.4)
     }
@@ -112,7 +112,7 @@ struct PartyViewTests {
     @Test
     func `서버만 끊기면 그 사람 값만 흐리고 서버 안내를 띄운다`() {
         // when
-        let content = PartyContent(
+        let content = PlayerContent(
             run: RunSamples.serverLost,
             player: RunSamples.serverLost.players[0],
             isPhoneReachable: true
@@ -120,7 +120,7 @@ struct PartyViewTests {
 
         // then
         #expect(content.playerPaceText == nil)
-        #expect(content.bottomRow == .notice("서버 연결 확인 중"))
+        #expect(content.bottomLabel == .notice("서버 연결 확인 중"))
         #expect(content.playerValuesAlpha == 0.4)
         #expect(content.phoneValuesAlpha == 1)
     }
@@ -132,7 +132,7 @@ struct PartyViewTests {
 
         // then
         #expect(content.playerPaceText == "5'18\"")
-        #expect(content.bottomRow == .combo("최고 20"))
+        #expect(content.bottomLabel == .combo("최고 20"))
         #expect(content.playerValuesAlpha == 0.4)
         #expect(content.phoneValuesAlpha == 1)
     }
@@ -144,7 +144,7 @@ struct PartyViewTests {
         let sizes = WatchFontSizes(screenWidth: screen.screenWidth)
 
         // when
-        let slots = PartySlots(screen: screen, sizes: sizes)
+        let slots = PlayerSlots(screen: screen, sizes: sizes)
 
         // then
         #expect(slots.pacesFitOneLine)
@@ -160,7 +160,7 @@ struct PartyViewTests {
         let sizes = WatchFontSizes(screenWidth: screen.screenWidth)
 
         // when
-        let slots = PartySlots(screen: screen, sizes: sizes)
+        let slots = PlayerSlots(screen: screen, sizes: sizes)
 
         // then -> 아래 줄 윗변 138.661·128.717에서 두 줄(17pt 숫자 12.274 + 라벨 꼬리 0.936씩)과 줄 간격 7 둘만큼 내려간다
         #expect(!slots.pacesFitOneLine)
@@ -173,11 +173,11 @@ struct PartyViewTests {
         let sizes = WatchFontSizes(screenWidth: 208)
         let screen = WatchScreen(screenWidth: 208, screenHeight: 248, safeAreaTop: 53, safeAreaBottom: 212)
         let labelSize = WatchFontSizes.supporting
-        let labelWidth = SUITFont.width(of: "상대", size: labelSize, weight: .medium) + PartySlots.labelToPaceGap
-        let myLabelWidth = SUITFont.width(of: "나", size: labelSize, weight: .medium) + PartySlots.labelToPaceGap
+        let labelWidth = SUITFont.width(of: "상대", size: labelSize, weight: .medium) + PlayerSlots.labelToPaceGap
+        let myLabelWidth = SUITFont.width(of: "나", size: labelSize, weight: .medium) + PlayerSlots.labelToPaceGap
 
         // when
-        let slots = PartySlots(screen: screen, sizes: sizes)
+        let slots = PlayerSlots(screen: screen, sizes: sizes)
 
         // then -> 상대는 원래 폭, 나는 같은 폭 숫자로 잰다
         for pace in ["40'00\"", "50'00\"", "59'59\"", "10'05\""] {
@@ -190,8 +190,8 @@ struct PartyViewTests {
         }
     }
 
-    private func content(_ player: Player, isPhoneReachable: Bool = true) -> PartyContent {
-        PartyContent(run: RunSamples.party, player: player, isPhoneReachable: isPhoneReachable)
+    private func content(_ player: Player, isPhoneReachable: Bool = true) -> PlayerContent {
+        PlayerContent(run: RunSamples.party, player: player, isPhoneReachable: isPhoneReachable)
     }
 
     private func player(
