@@ -9,14 +9,14 @@ struct RunView: View {
     let birthday: String?
     let commandState: RunCommandState
     let commands: RunCommands
+    /// 사람 번호마다 지금 띄우는 작은 순간이다.
+    var smallComboMoments: [String: ComboMoment] = [:]
 
     @State private var page = RunPage.overview
     @State private var verticalPage = RunVerticalPage.overview
     @State private var arePageDotsShown = true
 
-    // 서버 설정이 아니라 워치에만 저장한다
-    // TODO: 콤보 효과 — 콤보 효과를 만들 때 꺼져 있으면 큰 순간 터짐을 빼도록 잇는다
-    @AppStorage("comboEffectOn") private var isComboEffectOn = true
+    @AppStorage(ComboEffectSetting.key) private var isComboEffectOn = ComboEffectSetting.defaultIsOn
 
     var body: some View {
         TabView(selection: horizontalSelection) {
@@ -33,12 +33,18 @@ struct RunView: View {
                     run: run,
                     isPhoneReachable: isPhoneReachable,
                     heartRateBpm: heartRateBpm,
-                    birthday: birthday
+                    birthday: birthday,
+                    smallComboMoments: smallComboMoments
                 )
                 .tag(RunVerticalPage.overview)
                 ForEach(run.players, id: \.userId) { player in
-                    PlayerView(run: run, player: player, isPhoneReachable: isPhoneReachable)
-                        .tag(RunVerticalPage.player(userId: player.userId))
+                    PlayerView(
+                        run: run,
+                        player: player,
+                        isPhoneReachable: isPhoneReachable,
+                        smallComboMoment: smallComboMoments[player.userId]
+                    )
+                    .tag(RunVerticalPage.player(userId: player.userId))
                 }
             }
             // 기본 전환은 장이 끊겨 화면이 바뀌듯 넘어가, 갤럭시처럼 이어 넘긴다

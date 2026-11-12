@@ -6,6 +6,8 @@ struct RunOverviewView: View {
     let isPhoneReachable: Bool
     let heartRateBpm: Int?
     let birthday: String?
+    /// 사람 번호마다 지금 띄우는 작은 순간이다.
+    var smallComboMoments: [String: ComboMoment] = [:]
 
     var body: some View {
         ScreenLayoutView { screen in
@@ -49,7 +51,7 @@ struct RunOverviewView: View {
             } else {
                 HStack(spacing: 0) {
                     ForEach(content.players) { player in
-                        PlayerAvatarView(player: player)
+                        PlayerAvatarView(player: player, smallComboMoment: smallComboMoments[player.id])
                             .frame(width: slots.playerCellWidth)
                             .opacity(player.avatarAlpha)
                     }
@@ -280,6 +282,7 @@ private struct SoloHeartRateView: View {
 
 private struct PlayerAvatarView: View {
     let player: PlayerCellContent
+    let smallComboMoment: ComboMoment?
 
     var body: some View {
         let lane = LaneColors.color(colorSlot: player.colorSlot)
@@ -307,6 +310,14 @@ private struct PlayerAvatarView: View {
                         lineWidth: borderWidth
                     )
                     .frame(width: avatarSize + borderWidth, height: avatarSize + borderWidth)
+                // 작은 순간엔 페이스를 가리지 않게 고리만 잠깐 흰색으로 밝힌다
+                TimelineView(.animation(paused: smallComboMoment == nil)) { context in
+                    let progress = smallComboMoment?.progress(at: context.date, duration: ComboMoment.smallDuration)
+                    Circle()
+                        .stroke(Color.white, lineWidth: borderWidth)
+                        .frame(width: avatarSize + borderWidth, height: avatarSize + borderWidth)
+                        .opacity(ComboMoment.flashAlpha(progress: progress ?? 1))
+                }
             }
         }
         .frame(width: avatarSize + borderWidth * 2, height: avatarSize + borderWidth * 2)

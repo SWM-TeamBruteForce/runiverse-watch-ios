@@ -9,7 +9,7 @@ public struct RuniverseWatchScene: Scene {
 
     public var body: some Scene {
         WindowGroup {
-            RootView(phoneLink: Self.phoneLink, workoutSession: Self.workoutSession)
+            RootView(phoneLink: Self.phoneLink, workoutSession: Self.workoutSession, comboMoments: Self.comboMoments)
                 .task {
                     // 폰 상태를 받기 전에 운동 세션이 지켜보게 먼저 만든다
                     let workoutSession = Self.workoutSession
@@ -21,6 +21,8 @@ public struct RuniverseWatchScene: Scene {
         // 어두워진 화면(.inactive)에도 값이 떠 있어 .background일 때만 1초 전송을 멈춘다
         .onChange(of: scenePhase, initial: true) { _, phase in
             Self.phoneLink.onScreenVisibilityChanged(phase != .background)
+            // 손목을 내려 어두워진 화면은 보는 사람이 없어, 콤보 효과는 밝은 화면에서만 띄운다
+            Self.comboMoments.onScreenActiveChanged(phase == .active)
         }
     }
 
@@ -31,12 +33,16 @@ public struct RuniverseWatchScene: Scene {
     static let phoneLink: PhoneLink = {
         let link = openPhoneLink()
         // 화면이 꺼져 있어도 울리게 진동은 화면이 아니라 앱에서 받는다
-        link.onCombo = { runVibrator.onCombo($0, linkState: phoneLink.state) }
+        link.onCombo = { combo in
+            runVibrator.onCombo(combo, linkState: phoneLink.state)
+            comboMoments.onCombo(combo)
+        }
         link.onGoalPending = { runVibrator.vibrate(.goalPending) }
         return link
     }()
 
     static let runVibrator = RunVibrator(play: { WKInterfaceDevice.current().play($0) })
+    static let comboMoments = ComboMoments()
 
     private static func openPhoneLink() -> PhoneLink {
         #if DEBUG
@@ -61,6 +67,7 @@ public struct RuniverseWatchScene: Scene {
 private struct RootView: View {
     let phoneLink: PhoneLink
     let workoutSession: WorkoutSession
+    let comboMoments: ComboMoments
 
     var body: some View {
         switch RootScreen(phoneLink.state) {
@@ -82,7 +89,8 @@ private struct RootView: View {
                     pause: { _ = phoneLink.pause() },
                     resume: { _ = phoneLink.resume() },
                     finish: { _ = phoneLink.finish(forced: phoneLink.state.phoneState?.run?.isFinishForced ?? false) }
-                )
+                ),
+                smallComboMoments: comboMoments.smallMoments
             )
         case .updateRequired:
             UpdateRequiredView()
