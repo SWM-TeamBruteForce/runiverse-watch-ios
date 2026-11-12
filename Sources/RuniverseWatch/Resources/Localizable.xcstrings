@@ -91,6 +91,16 @@
         }
       }
     },
+    "unit_kcal" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kcal"
+          }
+        }
+      }
+    },
     "unit_km" : {
       "localizations" : {
         "ko" : {
@@ -117,6 +127,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "k"
+          }
+        }
+      }
+    },
+    "unit_spm" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "spm"
           }
         }
       }
