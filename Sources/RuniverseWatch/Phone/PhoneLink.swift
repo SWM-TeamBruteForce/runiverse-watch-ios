@@ -72,7 +72,7 @@ final class PhoneLink {
         }
     }
 
-    /// 콤보 순간을 받는 곳이다. 비어 있으면 버린다 — 지난 콤보를 뒤늦게 울리지 않는다.
+    /// 콤보 순간을 받는 곳이다. 비어 있으면 버린다 — 지난 콤보를 뒤늦게 띄우지 않는다.
     @ObservationIgnored var onCombo: ((WatchComboTriggered) -> Void)?
 
     /// 보류에 들어갈 때 부른다. 같은 보류가 1초마다 다시 와도 한 번만 부른다.
