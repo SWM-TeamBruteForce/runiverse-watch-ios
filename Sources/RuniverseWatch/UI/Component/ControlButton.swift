@@ -13,7 +13,7 @@ struct ControlButton: View {
         Button(action: action) {
             ControlButtonLabelView(label: label, icon: icon, fontSize: fontSize, width: width, background: background)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(UndimmedButtonStyle())
     }
 
     static let bottomPadding: CGFloat = 8
@@ -50,6 +50,13 @@ struct ControlButtonLabelView: View {
 
     private static let iconToFontRatio: CGFloat = 0.62
     private static let iconToLabelGap: CGFloat = 6
+}
+
+/// 겉모양을 바꾸지 않는다. 시스템 스타일은 잠기면 스스로 흐려, 흐림은 화면이 정한 값 하나로만 그린다.
+private struct UndimmedButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+    }
 }
 
 enum ControlIcon {
