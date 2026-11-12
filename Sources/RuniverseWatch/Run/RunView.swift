@@ -97,7 +97,7 @@ enum RunPage {
     case myRecord
 
     /// 첫 화면 칸에서 파티원 장을 볼 때만 좌우로 안 넘어간다.
-    /// 내 기록 장에선 화면 밖 세로 장이 어디 있든 첫 화면으로 돌아갈 수 있어야 한다.
+    /// 조작 장·내 기록 장에선 화면 밖 세로 장이 어디 있든 첫 화면으로 돌아갈 수 있어야 한다.
     func canMoveSideways(verticalPage: RunVerticalPage) -> Bool {
         self != .overview || verticalPage == .overview
     }

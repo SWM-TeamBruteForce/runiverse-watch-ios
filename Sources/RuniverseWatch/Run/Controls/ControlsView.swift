@@ -283,7 +283,7 @@ struct ControlsContent: Equatable {
     let pauseButton: ControlsButtonContent
     let finishStage: FinishButtonStage
     let finishButton: ControlsButtonContent
-    /// 폰이 끊겼거나 보낸 명령·SYNC의 답을 기다린다.
+    /// 폰이 끊겼거나 보낸 명령·SYNC의 답이나 폰의 종료 확정을 기다린다.
     let areButtonsLocked: Bool
     /// 답을 금방 받는 잠금까지 흐리면 누를 때마다 깜빡여, 오래 걸리는 잠금만 흐린다.
     let buttonsAlpha: Double
