@@ -1105,6 +1105,20 @@ struct PhoneLinkTests {
     }
 
     @Test
+    func `앱이 켜진 채 폰이 켜면 켜짐 신호를 다시 보낸다`() throws {
+        // given -> 새로 켜진 폰 앱은 켜짐 신호를 받기 전까지 워치 화면이 꺼진 줄 안다
+        let fixture = Fixture()
+        fixture.phoneLink.onScreenVisibilityChanged(true)
+        try fixture.connect(idleState(stateSequence: 1))
+
+        // when
+        fixture.phoneLink.onLaunchedByPhone()
+
+        // then
+        #expect(fixture.sent.contains { $0.isVisible == true })
+    }
+
+    @Test
     func `폰이 버전을 거절했으면 폰이 켜도 기다리지 않는다`() {
         // given
         let fixture = Fixture()

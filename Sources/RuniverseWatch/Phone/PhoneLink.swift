@@ -126,8 +126,8 @@ final class PhoneLink {
         // 폰이 이 버전을 거절해 이 러닝을 받을 수 없다
         guard !state.isUpdateRequired else { return }
         state.isAwaitingLaunchedRun = true
-        // 러닝이 없거나 결과를 받은 뒤엔 3초 감시가 꺼져 있어, 폰이 조용하면 그림만 남는다
-        if isScreenVisible, !state.isSyncing { awaitVisibleReply() }
+        // 3초 감시가 꺼져 있을 수 있고 폰은 켜짐 신호 전엔 화면이 꺼진 줄 알아, 화면이 켜질 때처럼 다시 건다
+        if isScreenVisible { applyScreenVisibility() }
     }
 
     /// 폰에 알리지 않고 번호 쌍만 기억한다. 끝난 러닝이 아니면 할 일이 없다.
