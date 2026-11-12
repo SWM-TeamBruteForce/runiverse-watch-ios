@@ -17,7 +17,7 @@ struct RunViewTests {
         // when
         let dots = VerticalPageDotsContent(players: players, verticalPage: .overview)
 
-        // then
+        // then -> 샘플 파티원 셋과 첫 화면 하나다
         #expect(dots?.count == 4)
         #expect(dots?.currentIndex == 0)
     }
@@ -38,5 +38,19 @@ struct RunViewTests {
 
         // then
         #expect(dots?.currentIndex == 0)
+    }
+
+    @Test
+    func `첫 화면 칸에서 파티원 장을 보면 좌우로 안 넘어간다`() {
+        // when & then
+        #expect(!RunPage.overview.canMoveSideways(verticalPage: .player(userId: players[0].userId)))
+        #expect(RunPage.overview.canMoveSideways(verticalPage: .overview))
+    }
+
+    @Test
+    func `내 기록 장에선 세로 장이 파티원 장이어도 첫 화면으로 돌아간다`() {
+        // when & then
+        #expect(RunPage.myRecord.canMoveSideways(verticalPage: .player(userId: players[0].userId)))
+        #expect(RunPage.myRecord.canMoveSideways(verticalPage: .overview))
     }
 }
