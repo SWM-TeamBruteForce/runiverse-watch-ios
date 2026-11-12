@@ -21,7 +21,7 @@ public struct RuniverseWatchScene: Scene {
         // 어두워진 화면(.inactive)에도 값이 떠 있어 .background일 때만 1초 전송을 멈춘다
         .onChange(of: scenePhase, initial: true) { _, phase in
             Self.phoneLink.onScreenVisibilityChanged(phase != .background)
-            // 손목을 내려 어두워진 화면은 보는 사람이 없어, 콤보 효과는 밝은 화면에서만 띄운다
+            // 어두워진 화면은 시스템이 그리기를 줄여 애니메이션이 안 보여, 콤보 효과는 밝은 화면에서만 띄운다
             Self.comboMoments.onScreenActiveChanged(phase == .active)
         }
     }
