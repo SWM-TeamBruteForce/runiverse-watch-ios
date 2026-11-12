@@ -55,7 +55,7 @@ struct ValueWithUnitView: View {
     }
 
     /// 덩어리 잉크가 기준선 위아래로 차지하는 높이(pt)다. 숫자와 단위 중 더 높은 윗변과 더 낮은 아랫변이다.
-    static func ink(value: String, unit: String?, valueSize: CGFloat) -> (above: CGFloat, below: CGFloat) {
+    nonisolated static func ink(value: String, unit: String?, valueSize: CGFloat) -> (above: CGFloat, below: CGFloat) {
         let valueInk = SUITFont.ink(for: value)
         let unitInk = unit.map(SUITFont.ink(for:))
         let unitSize = WatchFontSizes.supporting
