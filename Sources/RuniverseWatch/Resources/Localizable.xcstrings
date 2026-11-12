@@ -41,12 +41,52 @@
         }
       }
     },
+    "controls_finish_checking" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "종료 확인 중"
+          }
+        }
+      }
+    },
+    "controls_finishing" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "종료 중"
+          }
+        }
+      }
+    },
+    "controls_hold_longer" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "길게 눌러야 종료"
+          }
+        }
+      }
+    },
     "controls_hold_to_finish" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "길게 눌러 종료"
+          }
+        }
+      }
+    },
+    "controls_keep_pressing" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "계속 누르기"
           }
         }
       }

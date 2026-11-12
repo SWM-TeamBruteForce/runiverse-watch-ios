@@ -54,11 +54,23 @@ private struct RootView: View {
     var body: some View {
         switch RootScreen(phoneLink.state) {
         case .run(let run):
+            let linkState = phoneLink.state
             RunView(
                 run: run,
-                isPhoneReachable: phoneLink.state.isPhoneReachable,
+                isPhoneReachable: linkState.isPhoneReachable,
                 heartRateBpm: workoutSession.heartRateBpm,
-                birthday: phoneLink.state.birthday
+                birthday: linkState.birthday,
+                commandState: RunCommandState(
+                    isLocked: linkState.isLocked,
+                    isFinishPending: linkState.isFinishPending,
+                    isCommandOverdue: linkState.isCommandOverdue
+                ),
+                // 잠겨 있으면 PhoneLink가 보내지 않고 false를 돌려줘, 버튼은 결과를 따로 보지 않는다
+                commands: RunCommands(
+                    pause: { _ = phoneLink.pause() },
+                    resume: { _ = phoneLink.resume() },
+                    finish: { _ = phoneLink.finish(forced: $0) }
+                )
             )
         case .updateRequired:
             UpdateRequiredView()

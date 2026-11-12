@@ -7,6 +7,8 @@ struct RunView: View {
     let isPhoneReachable: Bool
     let heartRateBpm: Int?
     let birthday: String?
+    let commandState: RunCommandState
+    let commands: RunCommands
 
     @State private var page = RunPage.overview
     @State private var verticalPage = RunVerticalPage.overview
@@ -14,8 +16,14 @@ struct RunView: View {
 
     var body: some View {
         TabView(selection: horizontalSelection) {
-            ControlsView(run: run, isPhoneReachable: isPhoneReachable, isComboEffectOn: true)
-                .tag(RunPage.controls)
+            ControlsView(
+                run: run,
+                isPhoneReachable: isPhoneReachable,
+                commandState: commandState,
+                commands: commands,
+                isComboEffectOn: true
+            )
+            .tag(RunPage.controls)
             TabView(selection: $verticalPage) {
                 RunOverviewView(
                     run: run,
@@ -151,5 +159,12 @@ private struct VerticalPageDotsView: View {
 }
 
 #Preview("러닝 화면 파티") {
-    RunView(run: RunSamples.party, isPhoneReachable: true, heartRateBpm: 148, birthday: RunSamples.birthday)
+    RunView(
+        run: RunSamples.party,
+        isPhoneReachable: true,
+        heartRateBpm: 148,
+        birthday: RunSamples.birthday,
+        commandState: RunCommandState(),
+        commands: RunCommands(pause: {}, resume: {}, finish: { _ in })
+    )
 }

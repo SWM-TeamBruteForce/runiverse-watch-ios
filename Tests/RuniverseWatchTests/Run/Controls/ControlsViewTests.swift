@@ -19,7 +19,7 @@ struct ControlsViewTests {
     @Test
     func `달리는 중엔 일시정지와 길게 눌러 종료를 쓴다`() {
         // when
-        let content = ControlsContent(run: RunSamples.party, isPhoneReachable: true)
+        let content = ControlsContent(run: RunSamples.party, isPhoneReachable: true, commandState: RunCommandState())
 
         // then
         #expect(content.pauseButton == ControlsButtonContent(label: "일시정지", icon: .pause))
@@ -29,7 +29,7 @@ struct ControlsViewTests {
     @Test
     func `멈췄으면 계속 달리기와 한 번에 끝내는 종료를 쓴다`() {
         // when
-        let content = ControlsContent(run: RunSamples.paused, isPhoneReachable: true)
+        let content = ControlsContent(run: RunSamples.paused, isPhoneReachable: true, commandState: RunCommandState())
 
         // then
         #expect(content.pauseButton == ControlsButtonContent(label: "계속 달리기", icon: .play))
@@ -213,7 +213,7 @@ struct ControlsViewTests {
     }
 
     private func hints(_ run: RunState, isPhoneReachable: Bool = true) -> Hints {
-        let content = ControlsContent(run: run, isPhoneReachable: isPhoneReachable)
+        let content = ControlsContent(run: run, isPhoneReachable: isPhoneReachable, commandState: RunCommandState())
         return Hints(first: content.firstHint, second: content.secondHint)
     }
 
