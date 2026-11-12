@@ -30,8 +30,8 @@ struct RunView: View {
             // 시스템 세로 점은 화면 끝 진행 링 위에 그려져, 끄고 링 안쪽에 직접 그린다
             .scrollIndicators(.hidden)
             .overlay {
-                if !run.players.isEmpty {
-                    VerticalPageDotsView(count: run.players.count + 1, currentIndex: verticalPageIndex)
+                if let dots = VerticalPageDotsContent(players: run.players, verticalPage: verticalPage) {
+                    VerticalPageDotsView(content: dots)
                         .opacity(arePageDotsShown ? 1 : 0)
                 }
             }
@@ -73,13 +73,6 @@ struct RunView: View {
         )
     }
 
-    private var verticalPageIndex: Int {
-        guard case .player(let userId) = verticalPage,
-            let index = run.players.firstIndex(where: { $0.userId == userId })
-        else { return 0 }
-        return index + 1
-    }
-
     private static let pageDotsHideDelay = Duration.seconds(2)
 }
 
@@ -88,9 +81,30 @@ private enum RunPage {
     case myRecord
 }
 
-private enum RunVerticalPage: Hashable {
+/// 첫 화면 칸의 세로 장이다. 첫 화면 아래로 파티원마다 한 장이 있다.
+enum RunVerticalPage: Hashable {
     case overview
     case player(userId: String)
+}
+
+/// 세로 장 위치 점이 그릴 값이다.
+struct VerticalPageDotsContent: Equatable {
+    let count: Int
+    let currentIndex: Int
+
+    /// 파티원이 없으면 세로 장이 첫 화면 하나라 nil이다.
+    init?(players: [Player], verticalPage: RunVerticalPage) {
+        guard !players.isEmpty else { return nil }
+        count = players.count + 1
+        // 보던 파티원이 명단에서 빠진 사이엔 첫 화면으로 돌아가므로 첫 점을 가리킨다
+        if case .player(let userId) = verticalPage,
+            let index = players.firstIndex(where: { $0.userId == userId })
+        {
+            currentIndex = index + 1
+        } else {
+            currentIndex = 0
+        }
+    }
 }
 
 private struct PageDotsTrigger: Hashable {
@@ -101,15 +115,14 @@ private struct PageDotsTrigger: Hashable {
 
 /// 세로 장 위치 점이다. 링 안쪽 오른쪽 끝, 화면 세로 가운데에 둔다.
 private struct VerticalPageDotsView: View {
-    let count: Int
-    let currentIndex: Int
+    let content: VerticalPageDotsContent
 
     var body: some View {
         ScreenLayoutView { screen in
             VStack(spacing: Self.dotSpacing - Self.dotDiameter) {
-                ForEach(0..<count, id: \.self) { index in
+                ForEach(0..<content.count, id: \.self) { index in
                     Circle()
-                        .fill(Color.white.opacity(index == currentIndex ? 1 : Self.inactiveDotAlpha))
+                        .fill(Color.white.opacity(index == content.currentIndex ? 1 : Self.inactiveDotAlpha))
                         .frame(width: Self.dotDiameter, height: Self.dotDiameter)
                 }
             }
