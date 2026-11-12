@@ -143,6 +143,95 @@ final class RunViewUITests: XCTestCase {
     }
 
     @MainActor
+    func testPauseAndResumeFromControls() {
+        // given
+        let app = launchControls("party")
+
+        // when
+        app.buttons["일시정지"].tap()
+
+        // then -> 가짜 폰이 멈춤을 반영해 보낸다
+        XCTAssertTrue(waitUntilHittable(app.buttons["계속 달리기"]))
+
+        // when
+        app.buttons["계속 달리기"].tap()
+
+        // then
+        XCTAssertTrue(waitUntilHittable(app.buttons["일시정지"]))
+    }
+
+    @MainActor
+    func testHoldingFinishEndsRun() {
+        // given
+        let app = launchControls("party")
+
+        // when
+        app.buttons["길게 눌러 종료"].press(forDuration: 1.6)
+
+        // then
+        XCTAssertTrue(app.staticTexts["러닝 완료"].waitForExistence(timeout: 3))
+    }
+
+    @MainActor
+    func testShortPressOnFinishAsksToHoldLonger() {
+        // given
+        let app = launchControls("party")
+
+        // when
+        app.buttons["길게 눌러 종료"].tap()
+
+        // then -> 끝내지 않고 안내만 띄웠다가 되돌린다
+        XCTAssertTrue(app.buttons["길게 눌러야 종료"].waitForExistence(timeout: 1))
+        XCTAssertTrue(app.buttons["길게 눌러 종료"].waitForExistence(timeout: 3))
+        XCTAssertFalse(app.staticTexts["러닝 완료"].exists)
+    }
+
+    @MainActor
+    func testSwipeStartingOnFinishMovesPageWithoutFinishing() {
+        // given
+        let app = launchControls("party")
+        let finishButton = app.buttons["길게 눌러 종료"]
+
+        // when -> 종료 버튼을 누른 채 왼쪽으로 쓸어 첫 화면으로 넘긴다
+        finishButton.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.5))
+            .press(forDuration: 0.05, thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.05, dy: 0.5)))
+
+        // then -> 끝내지 않고, 돌아와도 길게 누르라는 안내가 없다
+        XCTAssertTrue(waitUntilHittable(app.staticTexts["5'32\""]))
+        app.swipeRight()
+        XCTAssertTrue(waitUntilHittable(finishButton))
+        XCTAssertFalse(app.buttons["길게 눌러야 종료"].exists)
+        XCTAssertFalse(app.staticTexts["러닝 완료"].exists)
+    }
+
+    @MainActor
+    func testPausedFinishEndsRunWithOneTap() {
+        // given
+        let app = launchControls("paused")
+
+        // when
+        app.buttons["종료"].tap()
+
+        // then
+        XCTAssertTrue(app.staticTexts["러닝 완료"].waitForExistence(timeout: 3))
+    }
+
+    @MainActor
+    func testPhoneLostLocksControls() {
+        // given -> 가짜 폰이 첫 답만 하고 조용해진다
+        let app = launchRun("phoneLost")
+        XCTAssertTrue(app.staticTexts["폰 연결 확인 중"].waitForExistence(timeout: 8))
+
+        // when
+        app.swipeRight()
+
+        // then
+        XCTAssertTrue(app.staticTexts["연결 후 조작 가능"].waitForExistence(timeout: 3))
+        XCTAssertFalse(app.buttons["일시정지"].isEnabled)
+        XCTAssertFalse(app.buttons["길게 눌러 종료"].isEnabled)
+    }
+
+    @MainActor
     func testSoloStaysOnOverviewWhenSwipedUp() {
         // given
         let app = launchRun("solo")
@@ -161,6 +250,19 @@ final class RunViewUITests: XCTestCase {
         app.launch()
         XCTAssertTrue(app.staticTexts["5'32\""].waitForExistence(timeout: 5))
         dismissHealthPermissionIfShown()
+        return app
+    }
+
+    // 멈춘 러닝은 첫 화면 페이스가 비어, 첫 화면 사진 칸의 첫 글자로 러닝 화면이 떴는지 본다
+    @MainActor
+    private func launchControls(_ fakeRun: String) -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = ["-fakeRun", fakeRun]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["완"].waitForExistence(timeout: 5))
+        dismissHealthPermissionIfShown()
+        app.swipeRight()
+        XCTAssertTrue(waitUntilHittable(app.buttons[fakeRun == "paused" ? "계속 달리기" : "일시정지"]))
         return app
     }
 

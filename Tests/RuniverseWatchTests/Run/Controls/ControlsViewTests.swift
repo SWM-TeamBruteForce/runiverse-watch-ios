@@ -17,23 +17,120 @@ struct ControlsViewTests {
     ]
 
     @Test
-    func `달리는 중엔 일시정지와 길게 눌러 종료를 쓴다`() {
+    func `달리는 중엔 일시정지와 길게 눌러야 끝나는 종료를 쓴다`() {
         // when
-        let content = ControlsContent(run: RunSamples.party, isPhoneReachable: true, commandState: RunCommandState())
+        let content = content(RunSamples.party)
 
         // then
         #expect(content.pauseButton == ControlsButtonContent(label: "일시정지", icon: .pause))
+        #expect(content.finishStage == .hold)
         #expect(content.finishButton == ControlsButtonContent(label: "길게 눌러 종료", icon: .stop))
     }
 
     @Test
-    func `멈췄으면 계속 달리기와 한 번에 끝내는 종료를 쓴다`() {
+    func `멈췄으면 계속 달리기와 한 번에 끝나는 종료를 쓴다`() {
         // when
-        let content = ControlsContent(run: RunSamples.paused, isPhoneReachable: true, commandState: RunCommandState())
+        let content = content(RunSamples.paused)
 
         // then
+        #expect(content.isPaused)
         #expect(content.pauseButton == ControlsButtonContent(label: "계속 달리기", icon: .play))
+        #expect(content.finishStage == .tap)
         #expect(content.finishButton == ControlsButtonContent(label: "종료", icon: .stop))
+    }
+
+    @Test
+    func `종료를 보내면 종료 중이고 3초 넘게 답이 없으면 종료 확인 중이다`() {
+        // given
+        let pending = RunCommandState(isLocked: true, isFinishPending: true)
+        let overdue = RunCommandState(isLocked: true, isFinishPending: true, isCommandOverdue: true)
+
+        // when
+        let finishing = content(RunSamples.party, commandState: pending)
+        let checking = content(RunSamples.party, commandState: overdue)
+
+        // then
+        #expect(finishing.finishStage == .finishing)
+        #expect(finishing.finishButton == ControlsButtonContent(label: "종료 중", icon: nil))
+        #expect(checking.finishStage == .checking)
+        #expect(checking.finishButton == ControlsButtonContent(label: "종료 확인 중", icon: nil))
+    }
+
+    @Test
+    func `멈춘 상태에서 종료를 보내도 종료 중으로 바뀐다`() {
+        // when
+        let content = content(RunSamples.paused, commandState: RunCommandState(isLocked: true, isFinishPending: true))
+
+        // then
+        #expect(content.finishStage == .finishing)
+    }
+
+    @Test
+    func `일시정지 답이 늦어도 종료 문구를 띄우지 않는다`() {
+        // when
+        let content = content(RunSamples.party, commandState: RunCommandState(isLocked: true, isCommandOverdue: true))
+
+        // then
+        #expect(content.finishStage == .hold)
+    }
+
+    @Test
+    func `폰이 서버 답을 기다리면 폰에서 누른 종료여도 종료 중으로 잠그고 흐린다`() {
+        // given
+        let phoneFinishing = FinishProgress(stage: .finishing, remainingMeters: nil)
+
+        // when
+        let content = content(run(distanceMeters: 3421, finish: phoneFinishing))
+
+        // then
+        #expect(content.finishStage == .finishing)
+        #expect(content.areButtonsLocked)
+        #expect(content.buttonsAlpha == 0.4)
+    }
+
+    @Test
+    func `서버 보류 중엔 다시 끝낼 수 있게 버튼이 돌아온다`() {
+        // when
+        let content = content(
+            run(status: .paused, distanceMeters: 5000, finish: FinishProgress(stage: .goalPending, remainingMeters: 40))
+        )
+
+        // then
+        #expect(content.finishStage == .tap)
+        #expect(!content.areButtonsLocked)
+    }
+
+    @Test
+    func `폰이 끊기거나 명령 답을 기다리면 잠근다`() {
+        // when & then
+        #expect(content(RunSamples.party, isPhoneReachable: false).areButtonsLocked)
+        #expect(content(RunSamples.party, commandState: RunCommandState(isLocked: true)).areButtonsLocked)
+        #expect(!content(RunSamples.party).areButtonsLocked)
+    }
+
+    @Test
+    func `일시정지 답을 기다리는 동안은 잠그되 흐리지 않고, 3초가 넘으면 흐린다`() {
+        // when
+        let waiting = content(RunSamples.party, commandState: RunCommandState(isLocked: true))
+        let overdue = content(RunSamples.party, commandState: RunCommandState(isLocked: true, isCommandOverdue: true))
+
+        // then
+        #expect(waiting.buttonsAlpha == 1)
+        #expect(overdue.buttonsAlpha == 0.4)
+    }
+
+    @Test
+    func `폰이 끊기면 버튼을 흐린다`() {
+        // when & then
+        #expect(content(RunSamples.party, isPhoneReachable: false).buttonsAlpha == 0.4)
+    }
+
+    @Test
+    func `화면 거리가 목표에 못 미칠 때만 일찍 끝내는 종료다`() {
+        // when & then
+        #expect(content(run(distanceMeters: 4999)).isFinishForced)
+        #expect(!content(run(distanceMeters: 5000)).isFinishForced)
+        #expect(!content(RunSamples.solo).isFinishForced)
     }
 
     @Test
@@ -212,8 +309,16 @@ struct ControlsViewTests {
         #expect(widestSecond <= screen.usableWidth(atY: slots.hintTop + slots.hintLineAdvance, margin: margin))
     }
 
+    private func content(
+        _ run: RunState,
+        isPhoneReachable: Bool = true,
+        commandState: RunCommandState = RunCommandState()
+    ) -> ControlsContent {
+        ControlsContent(run: run, isPhoneReachable: isPhoneReachable, commandState: commandState)
+    }
+
     private func hints(_ run: RunState, isPhoneReachable: Bool = true) -> Hints {
-        let content = ControlsContent(run: run, isPhoneReachable: isPhoneReachable, commandState: RunCommandState())
+        let content = content(run, isPhoneReachable: isPhoneReachable)
         return Hints(first: content.firstHint, second: content.secondHint)
     }
 
