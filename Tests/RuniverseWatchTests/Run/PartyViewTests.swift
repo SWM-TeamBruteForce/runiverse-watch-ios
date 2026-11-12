@@ -152,23 +152,19 @@ struct PartyViewTests {
     }
 
     @Test(arguments: [
-        WatchScreen(screenWidth: 176, screenHeight: 215, safeAreaTop: 46, safeAreaBottom: 189),
-        WatchScreen(screenWidth: 162, screenHeight: 197, safeAreaTop: 40, safeAreaBottom: 178),
+        (WatchScreen(screenWidth: 176, screenHeight: 215, safeAreaTop: 46, safeAreaBottom: 189), 179.081),
+        (WatchScreen(screenWidth: 162, screenHeight: 197, safeAreaTop: 40, safeAreaBottom: 178), 169.137),
     ])
-    func `41·40mm는 페이스를 두 줄로 쓰고 콤보를 그 아래 줄 간격만큼 내린다`(screen: WatchScreen) {
+    func `41·40mm는 페이스를 두 줄로 쓰고 콤보를 그 아래 줄 간격만큼 내린다`(screen: WatchScreen, comboRowTop: Double) {
         // given
         let sizes = WatchFontSizes(screenWidth: screen.screenWidth)
-        let pageSlots = RunPageSlots(screen: screen, sizes: sizes)
 
         // when
         let slots = PartySlots(screen: screen, sizes: sizes)
 
-        // then -> 두 줄 잉크 높이와 줄 간격 둘이 사진 줄보다 길어 맨 아래 줄 자리보다 내려간다
-        let lineGap = RunDimensions.lineGap
-        let paceRowsBottom = pageSlots.belowRowTop + (slots.paceRowAbove + slots.paceRowBelow) * 2 + lineGap
+        // then -> 아래 줄 윗변 138.661·128.717에서 두 줄(17pt 숫자 12.274 + 라벨 꼬리 0.936씩)과 줄 간격 7 둘만큼 내려간다
         #expect(!slots.pacesFitOneLine)
-        #expect(abs(slots.comboRowTop - (paceRowsBottom + lineGap)) < 0.001)
-        #expect(slots.comboRowTop > pageSlots.bottomRowTop)
+        #expect(abs(slots.comboRowTop - comboRowTop) < 0.001)
     }
 
     @Test
