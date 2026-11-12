@@ -11,6 +11,8 @@ xcodebuild test -scheme RuniverseWatch \
 swift format lint --strict --recursive Package.swift Sources Tests DevApp                    # lint
 xcodebuild build -project DevApp/RuniverseWatchDev.xcodeproj -scheme RuniverseWatchDev \
   -destination 'platform=watchOS Simulator,name=Apple Watch Series 12 (46mm)'                # 개발용 앱 빌드
+xcodebuild test -project DevApp/RuniverseWatchDev.xcodeproj -scheme RuniverseWatchDev -parallel-testing-enabled NO \
+  -destination 'platform=watchOS Simulator,name=Apple Watch Series 12 (46mm)'                # UI 테스트
 ```
 
 ## 문서 인덱스 — 구현 전 해당 문서를 읽을 것
@@ -25,6 +27,9 @@ xcodebuild build -project DevApp/RuniverseWatchDev.xcodeproj -scheme RuniverseWa
   ```
   RuniverseWatchScene         앱 타깃이 띄우는 화면 전체
   RuniverseWatchAppDelegate   폰이 켠 운동·앱이 죽기 전 남은 운동을 받는다. 밖에 공개하는 타입은 이 둘뿐이다
+  RootScreen                  폰 상태로 띄울 화면을 고른다
+  IdleView                    러닝이 없을 때 화면
+  UpdateRequiredView          폰이 워치 버전을 거절했을 때 화면
   Phone/          폰과 메시지 주고받기·연결 상태
   Workout/        러닝 중 앱을 살려 두는 운동 세션·심박 측정
   Run/            러닝 화면·장·결과 요약
@@ -33,7 +38,7 @@ xcodebuild build -project DevApp/RuniverseWatchDev.xcodeproj -scheme RuniverseWa
   Run/Component/  화면·장이 같이 쓰는 UI 부품·치수
   UI/Theme/       여러 기능이 같이 쓰는 색·글자
   UI/Component/   두 기능 이상이 쓰는 부품
-  Resources/      문구·글꼴
+  Resources/      문구·글꼴·그림
   ```
 - `Run/`에는 화면 파일만 둔다. 장 전용 파일이 둘 이상이면 `Controls/`처럼 장 폴더를 만들고, 참조는 `Run/ → Controls/ → Common/ → Component/` 한 방향으로만 한다.
 - 단위 테스트는 `Tests/RuniverseWatchTests/`에 Sources와 같은 폴더로, UI 테스트는 개발용 앱 프로젝트의 UI 테스트 타깃에 둔다.

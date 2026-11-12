@@ -1052,6 +1052,101 @@ struct PhoneLinkTests {
         #expect(fixture.phoneLink.state.isPhoneReachable)
         #expect(!fixture.sent.contains { $0.sync != nil })
     }
+
+    @Test
+    func `폰이 워치 앱을 켜면 SYNCED를 받을 때까지 폰이 켠 러닝을 기다린다`() throws {
+        // given -> 앱 delegate가 첫 화면보다 먼저 불린 경우다
+        let fixture = Fixture()
+        fixture.phoneLink.onLaunchedByPhone()
+
+        // when
+        fixture.phoneLink.start()
+
+        // then
+        #expect(fixture.phoneLink.state.isAwaitingLaunchedRun)
+        let sync = try #require(fixture.sent.first?.sync)
+
+        // when -> 폰이 답한다
+        fixture.phoneLink.onReceived(synced(sync.syncId, state(stateSequence: 1)))
+
+        // then
+        #expect(!fixture.phoneLink.state.isAwaitingLaunchedRun)
+    }
+
+    @Test
+    func `앱이 살아 있을 때 폰이 켜면 이어 받은 상태로 기다림이 풀린다`() throws {
+        // given
+        let fixture = Fixture()
+        try fixture.connect(idleState(stateSequence: 1))
+        fixture.phoneLink.onLaunchedByPhone()
+
+        // when -> 출발 직후라 방 번호가 아직 없어 SYNC 없이 이어 받는다
+        fixture.phoneLink.onReceived(stateUpdated(state(stateSequence: 2, runningRoomId: nil)))
+
+        // then
+        let linkState = fixture.phoneLink.state
+        #expect(!linkState.isAwaitingLaunchedRun)
+        #expect(linkState.isRunActive)
+    }
+
+    @Test
+    func `앱이 켜진 채 폰이 켜고 아무것도 보내지 않으면 3초 뒤 끊긴 것으로 본다`() throws {
+        // given -> 러닝이 없는 상태를 받아 3초 감시가 꺼져 있다
+        let fixture = Fixture()
+        fixture.phoneLink.onScreenVisibilityChanged(true)
+        try fixture.connect(idleState(stateSequence: 1))
+
+        // when
+        fixture.phoneLink.onLaunchedByPhone()
+        fixture.timer.advance(by: .milliseconds(3_001))
+
+        // then
+        #expect(!fixture.phoneLink.state.isPhoneReachable)
+    }
+
+    @Test
+    func `앱이 켜진 채 폰이 켜면 켜짐 신호를 다시 보낸다`() throws {
+        // given -> 새로 켜진 폰 앱은 켜짐 신호를 받기 전까지 워치 화면이 꺼진 줄 안다
+        let fixture = Fixture()
+        fixture.phoneLink.onScreenVisibilityChanged(true)
+        try fixture.connect(idleState(stateSequence: 1))
+
+        // when
+        fixture.phoneLink.onLaunchedByPhone()
+
+        // then
+        #expect(fixture.sent.contains { $0.isVisible == true })
+    }
+
+    @Test
+    func `러닝을 접은 뒤 폰이 다시 켜면 SYNC로 새로 받는다`() throws {
+        // given -> 이어 받을 상태가 없어 폰이 보내는 상태를 버린다
+        let fixture = Fixture()
+        fixture.phoneLink.onScreenVisibilityChanged(true)
+        try fixture.connect(state(stateSequence: 1))
+        fixture.phoneLink.forgetRun()
+        fixture.sent.removeAll()
+
+        // when
+        fixture.phoneLink.onLaunchedByPhone()
+
+        // then
+        #expect(fixture.sent.contains { $0.sync != nil })
+    }
+
+    @Test
+    func `폰이 버전을 거절했으면 폰이 켜도 기다리지 않는다`() {
+        // given
+        let fixture = Fixture()
+        fixture.phoneLink.start()
+        fixture.phoneLink.onReceived(updateRequired(requestId: nil))
+
+        // when
+        fixture.phoneLink.onLaunchedByPhone()
+
+        // then
+        #expect(!fixture.phoneLink.state.isAwaitingLaunchedRun)
+    }
 }
 
 @MainActor
