@@ -6,6 +6,9 @@ struct WatchFontSizes: Equatable {
     let value: CGFloat
     let reading: CGFloat
 
+    /// 단위·보조 글자는 화면 단계와 상관없이 같다.
+    static let supporting: CGFloat = 12
+
     init(screenWidth: CGFloat) {
         if screenWidth >= Self.smallScreenBelow {
             self = Self.largeScreen

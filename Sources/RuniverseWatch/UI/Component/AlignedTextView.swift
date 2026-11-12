@@ -53,10 +53,15 @@ enum InkPlacement: Equatable {
 
     /// 그 변이 그 높이에 오게 하는 기준선 높이다.
     func baseline(ink: InkExtent, size: CGFloat) -> CGFloat {
+        baseline(inkAbove: ink.aboveBaselineEm * size, inkBelow: ink.belowBaselineEm * size)
+    }
+
+    /// 크기가 다른 글자를 한 줄로 묶을 때 쓴다. 잉크 높이는 기준선 위아래 pt다.
+    func baseline(inkAbove: CGFloat, inkBelow: CGFloat) -> CGFloat {
         switch self {
-        case .top(let y): y + ink.aboveBaselineEm * size
-        case .center(let y): y + (ink.aboveBaselineEm - ink.belowBaselineEm) * size / 2
-        case .bottom(let y): y - ink.belowBaselineEm * size
+        case .top(let y): y + inkAbove
+        case .center(let y): y + (inkAbove - inkBelow) / 2
+        case .bottom(let y): y - inkBelow
         }
     }
 }
