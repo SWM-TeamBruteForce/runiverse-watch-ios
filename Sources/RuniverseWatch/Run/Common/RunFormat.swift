@@ -15,7 +15,7 @@ enum RunFormat {
     /// 파티원과의 격차다. 1000m 미만은 m, 10km 미만은 소수 한 자리 km, 그 위는 정수 km로 버린다.
     /// `abbreviateUnits`면 m는 숫자만, km는 `k`로 줄인다 — 단위를 다 빼면 42m와 42km가 같아 보인다.
     static func formatGapDistance(_ gapMeters: Int, abbreviateUnits: Bool) -> FormattedDistance {
-        let meters = abs(gapMeters)
+        let meters = Int(clamping: gapMeters.magnitude)
         if meters < metersPerKm {
             return FormattedDistance(value: "\(meters)", unit: abbreviateUnits ? nil : .meter)
         }

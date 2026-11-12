@@ -40,6 +40,15 @@ struct RunFormatTests {
     }
 
     @Test
+    func `격차가 Int의 가장 작은 값이어도 죽지 않고 km로 쓴다`() {
+        // when
+        let gap = gap(Int.min)
+
+        // then -> 절댓값이 Int를 넘어 가장 큰 값으로 잘린다
+        #expect(gap.unit == .kilometer)
+    }
+
+    @Test
     func `단위를 줄이면 격차의 m는 숫자만, km는 k로 쓴다`() {
         // when & then
         #expect(RunFormat.formatGapDistance(999, abbreviateUnits: true) == FormattedDistance(value: "999", unit: nil))
