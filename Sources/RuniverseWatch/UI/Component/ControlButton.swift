@@ -53,7 +53,7 @@ struct ControlButtonLabelView: View {
 }
 
 /// 눌린 동안만 옅게 덮는다. 시스템 스타일은 잠기면 스스로 흐려, 흐림은 화면이 정한 값 하나로만 그린다.
-private struct UndimmedButtonStyle: ButtonStyle {
+struct UndimmedButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .overlay {

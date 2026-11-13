@@ -577,7 +577,7 @@ private struct ComboEffectToggleStyle: ToggleStyle {
             .overlay(Capsule().strokeBorder(Self.outlineColor, lineWidth: Self.outlineWidth))
             .contentShape(Capsule())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(UndimmedButtonStyle())
     }
 
     private static let outlineColor = Color(white: 0x33 / 255)
