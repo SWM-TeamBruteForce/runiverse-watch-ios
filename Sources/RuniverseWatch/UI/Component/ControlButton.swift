@@ -52,11 +52,20 @@ struct ControlButtonLabelView: View {
     private static let iconToLabelGap: CGFloat = 6
 }
 
-/// 겉모양을 바꾸지 않는다. 시스템 스타일은 잠기면 스스로 흐려, 흐림은 화면이 정한 값 하나로만 그린다.
+/// 눌린 동안만 옅게 덮는다. 시스템 스타일은 잠기면 스스로 흐려, 흐림은 화면이 정한 값 하나로만 그린다.
 private struct UndimmedButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
+            .overlay {
+                Capsule()
+                    .fill(.white.opacity(configuration.isPressed ? Self.pressedOverlayAlpha : 0))
+                    .animation(.easeOut(duration: Self.pressedFadeSeconds), value: configuration.isPressed)
+            }
     }
+
+    // 갤럭시 버튼 물결이 눌린 동안 덮는 진하기다
+    private static let pressedOverlayAlpha = 0.10
+    private static let pressedFadeSeconds = 0.15
 }
 
 enum ControlIcon {
