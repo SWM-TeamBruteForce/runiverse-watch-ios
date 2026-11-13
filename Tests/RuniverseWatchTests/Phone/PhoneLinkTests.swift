@@ -884,6 +884,42 @@ struct PhoneLinkTests {
     }
 
     @Test
+    func `SYNCED에 실린 사진은 상태가 이어 와도 그대로 둔다`() throws {
+        // given
+        let fixture = Fixture()
+        fixture.phoneLink.start()
+        let sync = try #require(fixture.sent.last?.sync)
+        let photos = [PlayerPhoto(userId: "u2", jpegBase64: "/9j/")]
+
+        // when
+        fixture.phoneLink.onReceived(
+            .synced(WatchSynced(syncId: sync.syncId, state: state(stateSequence: 1), birthday: nil, photos: photos))
+        )
+        fixture.phoneLink.onReceived(stateUpdated(state(stateSequence: 2)))
+
+        // then
+        #expect(fixture.phoneLink.state.photos == photos)
+    }
+
+    @Test
+    func `러닝을 접으면 사진도 지운다`() throws {
+        // given
+        let fixture = Fixture()
+        fixture.phoneLink.start()
+        let sync = try #require(fixture.sent.last?.sync)
+        let photos = [PlayerPhoto(userId: "u2", jpegBase64: "/9j/")]
+        fixture.phoneLink.onReceived(
+            .synced(WatchSynced(syncId: sync.syncId, state: state(stateSequence: 1), birthday: nil, photos: photos))
+        )
+
+        // when
+        fixture.phoneLink.forgetRun()
+
+        // then
+        #expect(fixture.phoneLink.state.photos.isEmpty)
+    }
+
+    @Test
     func `러닝을 접기 전에 보낸 SYNC의 답이 늦게 와도 받지 않는다`() throws {
         // given
         let fixture = Fixture()
