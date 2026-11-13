@@ -125,9 +125,11 @@ private struct RootView: View {
             )
         case .updateRequired:
             UpdateRequiredView()
-        case .runSummary:
-            // TODO: 결과 요약 — 결과 요약을 만들 때 교체한다
-            Text(verbatim: "러닝 완료")
+        case .runSummary(let run):
+            RunSummaryView(
+                content: RunSummaryContent(result: run.result, isPhoneReachable: phoneLink.state.isPhoneReachable),
+                onClose: { phoneLink.dismissResult() }
+            )
         case .awaitingPhone:
             IdleView(content: nil)
         case .idle(let isPhoneReachable):

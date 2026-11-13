@@ -16,7 +16,7 @@ struct ControlButton: View {
         .buttonStyle(UndimmedButtonStyle())
     }
 
-    static let bottomPadding: CGFloat = 8
+    nonisolated static let bottomPadding: CGFloat = 8
     nonisolated static let pillHeight: CGFloat = 48
 
     // 화면 맨 아래에 하나만 두는 버튼 폭이다
