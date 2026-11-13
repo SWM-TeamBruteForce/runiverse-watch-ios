@@ -344,6 +344,76 @@ struct ControlsViewTests {
         #expect(widestSecond <= screen.usableWidth(atY: slots.hintTop + slots.hintLineAdvance, margin: margin))
     }
 
+    @Test
+    func `스크롤 전엔 막대가 위 끝에 붙고 위 트랙은 비어 있다`() {
+        // when -> 보이는 몫이 절반이다
+        let slots = ControlsScrollBarSlots(scrollOffset: 0, contentHeight: 400, viewportHeight: 200)
+
+        // then -> 전체 58을 반씩 나누고, 조각 끝마다 간격 절반 1.5를 비운다
+        #expect(slots.topTrack == ControlsScrollBarPiece(top: 0, length: 0, width: 0, alpha: 0))
+        #expect(slots.thumb == ControlsScrollBarPiece(top: 1.5, length: 26, width: 5, alpha: 1))
+        #expect(slots.bottomTrack == ControlsScrollBarPiece(top: 30.5, length: 26, width: 5, alpha: 1))
+    }
+
+    @Test
+    func `끝까지 내리면 막대가 아래 끝에 붙는다`() {
+        // when
+        let slots = ControlsScrollBarSlots(scrollOffset: 200, contentHeight: 400, viewportHeight: 200)
+
+        // then
+        #expect(slots.topTrack == ControlsScrollBarPiece(top: 1.5, length: 26, width: 5, alpha: 1))
+        #expect(slots.thumb == ControlsScrollBarPiece(top: 30.5, length: 26, width: 5, alpha: 1))
+        #expect(slots.bottomTrack == ControlsScrollBarPiece(top: 58, length: 0, width: 0, alpha: 0))
+    }
+
+    @Test
+    func `당겨 넘쳐도 막대는 양 끝에서 멈춘다`() {
+        // given
+        let atTop = ControlsScrollBarSlots(scrollOffset: 0, contentHeight: 400, viewportHeight: 200)
+        let atBottom = ControlsScrollBarSlots(scrollOffset: 200, contentHeight: 400, viewportHeight: 200)
+
+        // when -> 튕기는 동안 내린 거리는 0보다 작거나 끝보다 크다
+        let pulledDown = ControlsScrollBarSlots(scrollOffset: -40, contentHeight: 400, viewportHeight: 200)
+        let pulledUp = ControlsScrollBarSlots(scrollOffset: 260, contentHeight: 400, viewportHeight: 200)
+
+        // then
+        #expect(pulledDown == atTop)
+        #expect(pulledUp == atBottom)
+    }
+
+    @Test
+    func `막대 길이는 보이는 몫이되 30에서 70퍼센트로 묶는다`() {
+        // when
+        let longContent = ControlsScrollBarSlots(scrollOffset: 0, contentHeight: 1000, viewportHeight: 200)
+        let shortContent = ControlsScrollBarSlots(scrollOffset: 0, contentHeight: 210, viewportHeight: 200)
+
+        // then -> 전체 58의 30%·70%에서 간격 3을 뺀다
+        #expect(abs(longContent.thumb.length - 14.4) < 0.001)
+        #expect(abs(shortContent.thumb.length - 37.6) < 0.001)
+    }
+
+    @Test
+    func `내릴 게 없으면 가장 긴 막대를 위 끝에 붙인다`() {
+        // when
+        let slots = ControlsScrollBarSlots(scrollOffset: 0, contentHeight: 200, viewportHeight: 215)
+
+        // then
+        #expect(slots.thumb.top == 1.5)
+        #expect(abs(slots.thumb.length - 37.6) < 0.001)
+    }
+
+    @Test
+    func `막대 폭보다 짧아진 조각은 점으로 줄며 흐려진다`() {
+        // when -> 막대가 70%에 묶여 10을 내리면 위 트랙이 3 남는다
+        let slots = ControlsScrollBarSlots(scrollOffset: 10, contentHeight: 258, viewportHeight: 200)
+
+        // then -> 막대 폭과 간격을 더한 8 중 3이라 지름·진하기가 0.375배다
+        #expect(abs(slots.topTrack.width - 1.875) < 0.001)
+        #expect(abs(slots.topTrack.length - 1.875) < 0.001)
+        #expect(abs(slots.topTrack.alpha - 0.375) < 0.001)
+        #expect(abs(slots.topTrack.top - 0.5625) < 0.001)
+    }
+
     private func content(
         _ run: RunState,
         isPhoneReachable: Bool = true,
