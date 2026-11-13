@@ -5,7 +5,7 @@ import OSLog
 
 /// 폰이 보낸 파티원 사진을 화면에 그릴 수 있게 푼다.
 enum PlayerPhotos {
-    /// 사람 번호마다 그릴 사진이다. 못 푼 사진은 빼서 그 사람은 첫 글자로 그린다.
+    /// 사람 번호마다 그릴 사진이다. 못 푼 사진은 빼서 그 사람은 레인 색 원으로 그린다.
     static func decode(_ photos: [PlayerPhoto]) -> [String: CGImage] {
         var images: [String: CGImage] = [:]
         for photo in photos {

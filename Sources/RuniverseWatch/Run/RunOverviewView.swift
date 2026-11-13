@@ -150,7 +150,7 @@ struct PlayerCellContent: Equatable, Identifiable {
     /// 사진에 덮개와 함께 얹을 상태다. 달리는 중이면 없다.
     let statusIcon: RunStatus?
     let isCombo: Bool
-    /// 사진이 덮은 레인 색을 선으로 남긴다. 콤보 중엔 고리가 그 색을 보여 뺀다.
+    /// 사진엔 레인 색 원이 없어 그 색을 선으로 남긴다. 콤보 중엔 고리가 그 색을 보여 뺀다.
     let isPhotoBorderShown: Bool
     let avatarAlpha: Double
     let gapLabel: GapLabel?

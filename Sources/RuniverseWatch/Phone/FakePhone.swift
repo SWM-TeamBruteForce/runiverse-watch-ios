@@ -243,7 +243,7 @@
             }
         }
 
-        // 사진을 그린 채 고리·큰 순간까지 보려고 사진도 콤보가 오른다
+        // 사진을 그린 채 고리·큰 순간까지 보려고 사진 경우도 콤보를 올린다
         var ticksCombo: Bool { self == .combo || self == .photos }
         var sendsPhotos: Bool { self == .photos }
     }
