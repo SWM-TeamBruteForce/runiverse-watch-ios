@@ -13,7 +13,7 @@ struct RunPageSlotsTests {
         // when
         let slots = RunPageSlots(screen: screen, sizes: sizes)
 
-        // then -> 위로 큰 숫자 반 19.133 + 묶음 간격 18 + 위 줄 12.996, 아래로 19.133 + 18 + 사진 줄 30.5 + 격차 10.108
+        // then -> 위로 큰 숫자 반 19.133 + 묶음 간격 13 + 위 줄 12.996, 아래로 19.133 + 13 + 사진 줄 30.5 + 격차 10.108
         #expect(abs(slots.center - 118.694) < 0.001)
     }
 
@@ -26,7 +26,7 @@ struct RunPageSlotsTests {
         // when
         let slots = RunPageSlots(screen: screen, sizes: sizes)
 
-        // then -> 위로 큰 숫자 반 15.523 + 18 + 12.274, 아래로 15.523 + 18 + 30.5 + 9.386
+        // then -> 위로 큰 숫자 반 15.523 + 13 + 12.274, 아래로 15.523 + 13 + 30.5 + 9.386
         #expect(abs(slots.center - 95.194) < 0.001)
     }
 
@@ -39,11 +39,11 @@ struct RunPageSlotsTests {
         // when
         let slots = RunPageSlots(screen: screen, sizes: sizes)
 
-        // then -> 가운데 118.694에서 큰 숫자 반 19.133·묶음 간격 18·사진 줄 30.5를 더하고 뺀다
-        #expect(abs(slots.topRowBottom - 81.561) < 0.001)
+        // then -> 가운데 118.694에서 큰 숫자 반 19.133·묶음 간격 13·사진 줄 30.5를 더하고 뺀다
+        #expect(abs(slots.topRowBottom - 86.561) < 0.001)
         #expect(abs(slots.bigNumberBaseline - 137.827) < 0.001)
-        #expect(abs(slots.belowRowTop - 155.827) < 0.001)
-        #expect(abs(slots.bottomRowTop - 186.327) < 0.001)
+        #expect(abs(slots.belowRowTop - 150.827) < 0.001)
+        #expect(abs(slots.bottomRowTop - 181.327) < 0.001)
     }
 
     @Test(arguments: [208.0, 176, 162])
