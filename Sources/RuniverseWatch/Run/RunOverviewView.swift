@@ -6,6 +6,8 @@ struct RunOverviewView: View {
     let isPhoneReachable: Bool
     let heartRateBpm: Int?
     let birthday: String?
+    /// 사람 번호마다 그릴 사진이다.
+    var playerPhotos: [String: CGImage] = [:]
     /// 사람 번호마다 지금 띄우는 작은 순간이다.
     var smallComboMoments: [String: ComboMoment] = [:]
 
@@ -19,6 +21,7 @@ struct RunOverviewView: View {
                 isPhoneReachable: isPhoneReachable,
                 heartRateBpm: heartRateBpm,
                 birthday: birthday,
+                playerPhotos: playerPhotos,
                 today: HeartRateZone.today(),
                 abbreviateGapUnits: slots.abbreviateGapUnits
             )
@@ -103,6 +106,7 @@ struct RunOverviewContent: Equatable {
         isPhoneReachable: Bool,
         heartRateBpm: Int?,
         birthday: String?,
+        playerPhotos: [String: CGImage],
         today: DateComponents,
         abbreviateGapUnits: Bool
     ) {
@@ -115,7 +119,13 @@ struct RunOverviewContent: Equatable {
         phoneValuesAlpha = isPhoneReachable ? 1 : RunDimensions.staleContentAlpha
         notice = RunTexts.connectionNotice(run: run, isPhoneReachable: isPhoneReachable)
         players = run.players.map {
-            PlayerCellContent($0, run: run, isPhoneReachable: isPhoneReachable, abbreviateGapUnits: abbreviateGapUnits)
+            PlayerCellContent(
+                $0,
+                photo: playerPhotos[$0.userId],
+                run: run,
+                isPhoneReachable: isPhoneReachable,
+                abbreviateGapUnits: abbreviateGapUnits
+            )
         }
         isGapRowShown = notice == nil
         heartRateText = heartRateBpm.map(String.init) ?? RunTexts.valueUnknown
@@ -131,22 +141,31 @@ struct RunOverviewContent: Equatable {
 struct PlayerCellContent: Equatable, Identifiable {
     let id: String
     let colorSlot: Int
-    /// 사진 대신 원 안에 쓰는 첫 글자다. 상태 아이콘이 가운데를 차지하면 없다.
+    /// 폰이 보낸 사진이다. 없으면 레인 색 원을 그린다.
+    let photo: CGImage?
+    /// 사진을 읽어 줄 이름이다.
+    let nickname: String
+    /// 사진이 없을 때 원 안에 쓰는 첫 글자다. 상태 아이콘이 가운데를 차지하면 없다.
     let initial: String?
     /// 사진에 덮개와 함께 얹을 상태다. 달리는 중이면 없다.
     let statusIcon: RunStatus?
     let isCombo: Bool
+    /// 사진엔 레인 색 원이 없어 그 색을 선으로 남긴다. 콤보 중엔 고리가 그 색을 보여 뺀다.
+    let isPhotoBorderShown: Bool
     let avatarAlpha: Double
     let gapLabel: GapLabel?
     let gapAlpha: Double
 
-    init(_ player: Player, run: RunState, isPhoneReachable: Bool, abbreviateGapUnits: Bool) {
+    init(_ player: Player, photo: CGImage?, run: RunState, isPhoneReachable: Bool, abbreviateGapUnits: Bool) {
         id = player.userId
         colorSlot = player.colorSlot
-        initial = player.status == .running ? String(player.nickname.prefix(1)) : nil
+        self.photo = photo
+        nickname = player.nickname
+        initial = photo == nil && player.status == .running ? String(player.nickname.prefix(1)) : nil
         statusIcon = player.status == .running ? nil : player.status
         // 폰이 콤보 없음과 막 붙음을 둘 다 0으로 보내 1 이상일 때만 고리를 두른다
         isCombo = player.comboCount > 0
+        isPhotoBorderShown = photo != nil && !isCombo
         let hasStaleValues = player.hasStaleValues(in: run, isPhoneReachable: isPhoneReachable)
         avatarAlpha = hasStaleValues ? RunDimensions.staleContentAlpha : 1
         if let statusWord = RunTexts.statusWord(player.status) {
@@ -289,8 +308,15 @@ private struct PlayerAvatarView: View {
         let avatarSize = RunDimensions.avatarSize
         let borderWidth = RunDimensions.comboBorderWidth
         ZStack(alignment: Alignment(horizontal: .center, vertical: .inkCenter)) {
-            Circle().fill(lane).frame(width: avatarSize, height: avatarSize)
-            // TODO: 파티원 사진 — 사진을 만들 때 폰이 보낸 사진을 그린다
+            if let photo = player.photo {
+                Image(photo, scale: 1, label: Text(verbatim: player.nickname))
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: avatarSize, height: avatarSize)
+                    .clipShape(Circle())
+            } else {
+                Circle().fill(lane).frame(width: avatarSize, height: avatarSize)
+            }
             if let initial = player.initial {
                 AlignedTextView(initial, size: WatchFontSizes.supporting, weight: .bold, color: .white)
             }
@@ -300,6 +326,11 @@ private struct PlayerAvatarView: View {
                     .frame(width: avatarSize, height: avatarSize)
                 StatusIconView(status: statusIcon)
                     .frame(width: avatarSize * Self.statusIconFraction, height: avatarSize * Self.statusIconFraction)
+            }
+            if player.isPhotoBorderShown {
+                Circle()
+                    .strokeBorder(lane, lineWidth: Self.photoBorderWidth)
+                    .frame(width: avatarSize, height: avatarSize)
             }
             if player.isCombo {
                 // 나와 상대의 레인 색을 섞어 누구와 붙었는지 알 수 있게 한다
@@ -325,6 +356,7 @@ private struct PlayerAvatarView: View {
 
     private static let statusOverlayAlpha = 0.6
     private static let statusIconFraction: CGFloat = 0.42
+    private static let photoBorderWidth: CGFloat = 1
 }
 
 private struct StatusIconView: View {
@@ -479,6 +511,26 @@ private struct GapDirectionShape: Shape {
         isPhoneReachable: true,
         heartRateBpm: 148,
         birthday: RunSamples.birthday
+    )
+}
+
+#Preview("첫 화면 파티원 사진") {
+    RunOverviewView(
+        run: RunSamples.party,
+        isPhoneReachable: true,
+        heartRateBpm: 148,
+        birthday: RunSamples.birthday,
+        playerPhotos: RunSamples.brightPhotos
+    )
+}
+
+#Preview("첫 화면 파티원 사진 상태") {
+    RunOverviewView(
+        run: RunSamples.playerStatuses,
+        isPhoneReachable: true,
+        heartRateBpm: 148,
+        birthday: RunSamples.birthday,
+        playerPhotos: RunSamples.brightPhotos
     )
 }
 

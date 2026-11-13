@@ -884,6 +884,64 @@ struct PhoneLinkTests {
     }
 
     @Test
+    func `SYNCED에 실린 사진은 상태가 이어 와도 그대로 둔다`() throws {
+        // given
+        let fixture = Fixture()
+        fixture.phoneLink.start()
+        let sync = try #require(fixture.sent.last?.sync)
+        let photos = [PlayerPhoto(userId: "u2", jpegBase64: "/9j/")]
+
+        // when
+        fixture.phoneLink.onReceived(
+            .synced(WatchSynced(syncId: sync.syncId, state: state(stateSequence: 1), birthday: nil, photos: photos))
+        )
+        fixture.phoneLink.onReceived(stateUpdated(state(stateSequence: 2)))
+
+        // then
+        #expect(fixture.phoneLink.state.photos == photos)
+    }
+
+    @Test
+    func `러닝을 접으면 사진도 지운다`() throws {
+        // given
+        let fixture = Fixture()
+        fixture.phoneLink.start()
+        let sync = try #require(fixture.sent.last?.sync)
+        let photos = [PlayerPhoto(userId: "u2", jpegBase64: "/9j/")]
+        fixture.phoneLink.onReceived(
+            .synced(WatchSynced(syncId: sync.syncId, state: state(stateSequence: 1), birthday: nil, photos: photos))
+        )
+
+        // when
+        fixture.phoneLink.forgetRun()
+
+        // then
+        #expect(fixture.phoneLink.state.photos.isEmpty)
+    }
+
+    @Test
+    func `다음 SYNCED는 사진을 거기 실린 것으로 바꾼다`() throws {
+        // given -> 사진이 실린 첫 SYNCED를 받고, 화면이 꺼진 채 SYNC를 다시 보낸다
+        let fixture = Fixture()
+        fixture.phoneLink.start()
+        let firstSync = try #require(fixture.sent.last?.sync)
+        let photos = [PlayerPhoto(userId: "u2", jpegBase64: "/9j/")]
+        fixture.phoneLink.onReceived(
+            .synced(
+                WatchSynced(syncId: firstSync.syncId, state: state(stateSequence: 1), birthday: nil, photos: photos)
+            )
+        )
+        fixture.phoneLink.probeWhileScreenOff()
+        let secondSync = try #require(fixture.sent.last?.sync)
+
+        // when -> 두 번째 SYNCED엔 사진이 없다
+        fixture.phoneLink.onReceived(synced(secondSync.syncId, state(stateSequence: 2)))
+
+        // then
+        #expect(fixture.phoneLink.state.photos.isEmpty)
+    }
+
+    @Test
     func `러닝을 접기 전에 보낸 SYNC의 답이 늦게 와도 받지 않는다`() throws {
         // given
         let fixture = Fixture()

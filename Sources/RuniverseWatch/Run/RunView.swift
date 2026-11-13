@@ -9,6 +9,8 @@ struct RunView: View {
     let birthday: String?
     let commandState: RunCommandState
     let commands: RunCommands
+    /// 사람 번호마다 그릴 사진이다. 없는 사람은 레인 색 원으로 그린다.
+    var playerPhotos: [String: CGImage] = [:]
     /// 사람 번호마다 지금 띄우는 작은 순간이다.
     var smallComboMoments: [String: ComboMoment] = [:]
     /// 지금 화면을 덮는 큰 순간이다.
@@ -38,6 +40,7 @@ struct RunView: View {
                     isPhoneReachable: isPhoneReachable,
                     heartRateBpm: heartRateBpm,
                     birthday: birthday,
+                    playerPhotos: playerPhotos,
                     smallComboMoments: smallComboMoments
                 )
                 .tag(RunVerticalPage.overview)
@@ -74,7 +77,7 @@ struct RunView: View {
         .tabViewStyle(.page(indexDisplayMode: .never))
         .overlay {
             if let comboBurst, let player = run.players.first(where: { $0.userId == comboBurst.userId }) {
-                ComboBurstView(burst: comboBurst, player: player)
+                ComboBurstView(burst: comboBurst, player: player, photo: playerPhotos[player.userId])
             }
         }
         .onChange(of: page, initial: true) { _, page in

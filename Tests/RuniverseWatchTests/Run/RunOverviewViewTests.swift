@@ -1,3 +1,4 @@
+import CoreGraphics
 import Foundation
 import Testing
 
@@ -125,6 +126,47 @@ struct RunOverviewViewTests {
     }
 
     @Test
+    func `사진이 있는 파티원은 첫 글자 대신 사진을 그린다`() throws {
+        // given
+        let photo = try #require(RunSamples.brightPhotos["u1"])
+
+        // when
+        let players = content(RunSamples.party, playerPhotos: ["u1": photo]).players
+
+        // then
+        #expect(players[0].photo == photo)
+        #expect(players[0].initial == nil)
+        #expect(players[1].photo == nil)
+        #expect(players[1].initial == "콩")
+    }
+
+    @Test
+    func `멈춘 파티원도 사진을 그리고 그 위에 상태 아이콘을 얹는다`() throws {
+        // given -> 샘플 세 번째 사람은 멈춰 있다
+        let photo = try #require(RunSamples.brightPhotos["u3"])
+
+        // when
+        let paused = content(RunSamples.party, playerPhotos: ["u3": photo]).players[2]
+
+        // then
+        #expect(paused.photo == photo)
+        #expect(paused.statusIcon == .paused)
+        #expect(paused.initial == nil)
+    }
+
+    @Test
+    func `사진 테두리는 사진이 있고 콤보가 아닐 때만 두른다`() {
+        // given -> 두 번째 사람은 12콤보, 세 번째 사람은 사진이 없다
+        let photos = RunSamples.brightPhotos.filter { $0.key != "u3" }
+
+        // when
+        let players = content(RunSamples.party, playerPhotos: photos).players
+
+        // then
+        #expect(players.map(\.isPhotoBorderShown) == [true, false, false])
+    }
+
+    @Test
     func `혼자면 심박을 쓰고, 심박이 없으면 --, 생일이 없으면 막대를 숨긴다`() {
         // when
         let measured = content(RunSamples.solo, heartRateBpm: 148)
@@ -182,6 +224,7 @@ struct RunOverviewViewTests {
         isPhoneReachable: Bool = true,
         heartRateBpm: Int? = 148,
         birthday: String? = RunSamples.birthday,
+        playerPhotos: [String: CGImage] = [:],
         abbreviateGapUnits: Bool = false
     ) -> RunOverviewContent {
         RunOverviewContent(
@@ -189,6 +232,7 @@ struct RunOverviewViewTests {
             isPhoneReachable: isPhoneReachable,
             heartRateBpm: heartRateBpm,
             birthday: birthday,
+            playerPhotos: playerPhotos,
             today: today,
             abbreviateGapUnits: abbreviateGapUnits
         )

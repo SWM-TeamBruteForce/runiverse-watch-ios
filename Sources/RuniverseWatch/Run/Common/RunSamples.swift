@@ -1,3 +1,5 @@
+import CoreGraphics
+
 /// 미리보기와 가짜 폰이 쓰는 러닝 상태다.
 enum RunSamples {
     static let party = run()
@@ -29,6 +31,13 @@ enum RunSamples {
 
     /// 폰 프로필 API 모양 그대로다. 만 나이로 심박 구간을 잰다.
     static let birthday = "1995-03-10"
+
+    /// 사람 번호마다 밝은 단색 사진이다.
+    static let brightPhotos: [String: CGImage] = [
+        "u1": solidPhoto(red: 0xFF, green: 0xFF, blue: 0xFF),
+        "u2": solidPhoto(red: 0xCF, green: 0xE8, blue: 0xFF),
+        "u3": solidPhoto(red: 0xFF, green: 0xF3, blue: 0xC4),
+    ].compactMapValues { $0 }
 
     private static let me = MyRecord(
         distanceMeters: 3421,
@@ -130,6 +139,21 @@ enum RunSamples {
         )
     }
 
+    private static func solidPhoto(red: CGFloat, green: CGFloat, blue: CGFloat) -> CGImage? {
+        let context = CGContext(
+            data: nil,
+            width: photoSide,
+            height: photoSide,
+            bitsPerComponent: 8,
+            bytesPerRow: 0,
+            space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue
+        )
+        context?.setFillColor(CGColor(red: red / 255, green: green / 255, blue: blue / 255, alpha: 1))
+        context?.fill(CGRect(x: 0, y: 0, width: photoSide, height: photoSide))
+        return context?.makeImage()
+    }
+
     private static func player(_ base: Player, gapMeters: Int? = nil, status: RunStatus? = nil) -> Player {
         let gapMeters = gapMeters ?? base.gapMeters
         return Player(
@@ -145,4 +169,7 @@ enum RunSamples {
             isStale: base.isStale
         )
     }
+
+    // 폰이 보내는 사진 크기다
+    private static let photoSide = 64
 }
