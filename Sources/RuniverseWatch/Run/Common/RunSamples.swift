@@ -26,6 +26,27 @@ enum RunSamples {
 
     static let serverLost = run(isServerConnected: false)
 
+    static let finished = run(status: .finished, result: result)
+
+    static let finishedLongValues = run(status: .finished, result: longResult)
+
+    /// 서버 기록을 받는 중이다.
+    static let finishedPending = run(status: .finished)
+
+    static let result = RunResult(
+        isServerConfirmed: true,
+        totalDistanceMeters: 5020,
+        averagePaceSecondsPerKm: 343,
+        elapsedSeconds: 1721
+    )
+
+    static let longResult = RunResult(
+        isServerConfirmed: true,
+        totalDistanceMeters: longValues.me.distanceMeters,
+        averagePaceSecondsPerKm: longValues.me.currentPaceSecondsPerKm,
+        elapsedSeconds: longValues.me.elapsedSeconds
+    )
+
     /// 파티원 장 끝 경우다 — 값이 가장 넓은 사람, 통지 전인 사람, 격차 0에 소식이 늦은 사람이다.
     static let playerEdges = run(players: [longestPlayer, notNotifiedPlayer, levelStalePlayer])
 
@@ -101,7 +122,8 @@ enum RunSamples {
         isServerConnected: Bool = true,
         isPenaltyApplicable: Bool = true,
         me: MyRecord = me,
-        players: [Player] = players
+        players: [Player] = players,
+        result: RunResult? = nil
     ) -> RunState {
         RunState(
             runningRoomId: 812,
@@ -113,7 +135,7 @@ enum RunSamples {
             me: me,
             players: players,
             finish: nil,
-            result: nil
+            result: result
         )
     }
 

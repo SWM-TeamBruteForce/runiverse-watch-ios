@@ -43,8 +43,8 @@
         }
 
         private func answerSync(_ sync: WatchSync) {
-            // 폰 끊김은 첫 답 뒤로 조용하다 — 워치가 3초 뒤 `폰 연결 확인 중`을 띄운다
-            if fakeRun == .phoneLost, hasAnswered { return }
+            // 폰 끊김은 첫 답 뒤로 조용하다 — 워치가 기한이 지나면 `폰 연결 확인 중`을 띄운다
+            if fakeRun.goesSilent, hasAnswered { return }
             hasAnswered = true
             let synced = WatchSynced(
                 syncId: sync.syncId,
@@ -53,13 +53,13 @@
                 photos: fakeRun.sendsPhotos ? Self.samplePhotos : []
             )
             reply { [weak self] in self?.onReceived?(.synced(synced)) }
-            if fakeRun != .phoneLost { startTicking() }
+            if !fakeRun.goesSilent { startTicking() }
             if fakeRun.ticksCombo { startComboTicking() }
         }
 
         // 폰처럼 명령을 반영하면 1초를 기다리지 않고 바로 보낸다
         private func applyCommand(requestId: String, status: RunStatus) {
-            if fakeRun == .phoneLost { return }
+            if fakeRun.goesSilent { return }
             statusVersion += 1
             lastRequestId = requestId
             let result =
@@ -230,6 +230,10 @@
         case playerEdges
         case combo
         case photos
+        case summary
+        case summaryLongValues
+        case summaryPending
+        case summaryPhoneLost
 
         var run: RunState {
             switch self {
@@ -240,11 +244,15 @@
             case .playerStatuses: RunSamples.playerStatuses
             case .serverLost: RunSamples.serverLost
             case .playerEdges: RunSamples.playerEdges
+            case .summary: RunSamples.finished
+            case .summaryLongValues: RunSamples.finishedLongValues
+            case .summaryPending, .summaryPhoneLost: RunSamples.finishedPending
             }
         }
 
         // 사진을 그린 채 고리·큰 순간까지 보려고 사진 경우도 콤보를 올린다
         var ticksCombo: Bool { self == .combo || self == .photos }
         var sendsPhotos: Bool { self == .photos }
+        var goesSilent: Bool { self == .phoneLost || self == .summaryPhoneLost }
     }
 #endif

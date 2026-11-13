@@ -16,7 +16,7 @@ struct ControlButton: View {
         .buttonStyle(UndimmedButtonStyle())
     }
 
-    static let bottomPadding: CGFloat = 8
+    nonisolated static let bottomPadding: CGFloat = 8
     nonisolated static let pillHeight: CGFloat = 48
 
     // 화면 맨 아래에 하나만 두는 버튼 폭이다
@@ -72,6 +72,7 @@ enum ControlIcon {
     case pause
     case play
     case stop
+    case check
     case upArrow
 }
 
@@ -84,7 +85,7 @@ private struct ControlIconView: View {
     var body: some View {
         let shape = ControlIconShape(icon: icon)
         Group {
-            if icon == .upArrow {
+            if icon == .check || icon == .upArrow {
                 shape.stroke(color, style: Self.lineIconStroke)
             } else {
                 shape.fill(color)
@@ -116,6 +117,11 @@ private struct ControlIconShape: Shape {
             path.closeSubpath()
         case .stop:
             path.addRect(rect)
+        case .check:
+            let arm = rect.height * Self.checkArmFraction
+            path.move(to: CGPoint(x: rect.minX, y: rect.midY))
+            path.addLine(to: CGPoint(x: rect.minX + rect.width * Self.checkTurnFraction, y: rect.midY + arm))
+            path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY - arm))
         case .upArrow:
             let head = rect.width * Self.upArrowHeadFraction
             path.move(to: CGPoint(x: rect.midX, y: rect.minY + rect.height * Self.upArrowShaftEndFraction))
@@ -132,6 +138,8 @@ private struct ControlIconShape: Shape {
     private static let pauseBarFraction: CGFloat = 0.28
     private static let pauseLeftBarFraction: CGFloat = 0.1
     private static let pauseRightBarFraction: CGFloat = 0.62
+    private static let checkTurnFraction: CGFloat = 0.38
+    private static let checkArmFraction: CGFloat = 0.35
     private static let upArrowShaftEndFraction: CGFloat = 0.72
     private static let upArrowHeadFraction: CGFloat = 0.32
 }
