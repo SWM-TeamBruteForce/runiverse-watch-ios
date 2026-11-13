@@ -178,7 +178,7 @@ private struct ControlsScrollBarView: View {
     private static let trailingPadding: CGFloat = 2
 }
 
-/// 스크롤 막대 세 조각(위 트랙·막대·아래 트랙)의 자리다. 위 트랙 위 끝에서 잰 pt다.
+/// 스크롤 막대 세 조각(위 트랙·막대·아래 트랙)의 자리다. 세 조각이 나눠 쓰는 길이의 위 끝에서 잰 pt다.
 struct ControlsScrollBarSlots: Equatable {
     let topTrack: ControlsScrollBarPiece
     let thumb: ControlsScrollBarPiece
