@@ -34,7 +34,7 @@ struct ControlsView: View {
                         scrollOffset = $0
                     }
                 }
-                // 시스템 막대는 크라운을 돌릴 때만 떠, 늘 보이는 막대를 직접 그린다
+                // 시스템 막대는 스크롤할 때만 떠, 늘 보이는 막대를 직접 그린다
                 .scrollIndicators(.hidden)
                 ClockFadeView(screen: screen)
             }
@@ -142,7 +142,7 @@ private struct ControlsScrollBarView: View {
             pieceView(slots.bottomTrack, color: Self.trackColor)
         }
         .frame(width: ControlsScrollBarSlots.barWidth, height: ControlsScrollBarSlots.spanLength, alignment: .top)
-        .padding(.trailing, Self.edgeMargin)
+        .padding(.trailing, Self.trailingPadding)
         .allowsHitTesting(false)
         .accessibilityHidden(true)
     }
@@ -155,10 +155,10 @@ private struct ControlsScrollBarView: View {
     }
 
     private static let trackColor = Color.white.opacity(RunDimensions.inactivePositionAlpha)
-    private static let edgeMargin: CGFloat = 2
+    private static let trailingPadding: CGFloat = 2
 }
 
-/// 스크롤 막대 세 조각(위 트랙·막대·아래 트랙)의 자리다. 막대 위 끝에서 잰 pt다.
+/// 스크롤 막대 세 조각(위 트랙·막대·아래 트랙)의 자리다. 위 트랙 위 끝에서 잰 pt다.
 struct ControlsScrollBarSlots: Equatable {
     let topTrack: ControlsScrollBarPiece
     let thumb: ControlsScrollBarPiece
@@ -203,7 +203,7 @@ struct ControlsScrollBarSlots: Equatable {
 
     static let barWidth: CGFloat = 5
     static let segmentGap: CGFloat = 3
-    // 갤럭시처럼 막대 길이 50에 조각 사이 간격과 막대 폭을 더해 나눈다
+    // 갤럭시처럼 세 조각이 나눠 쓰는 길이는 50에 조각 사이 간격과 막대 폭을 더한 값이다
     static let spanLength: CGFloat = 50 + barWidth + segmentGap
     private static let minThumbFraction: CGFloat = 0.3
     private static let maxThumbFraction: CGFloat = 0.7

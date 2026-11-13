@@ -59,13 +59,13 @@ private struct UndimmedButtonStyle: ButtonStyle {
             .overlay {
                 Capsule()
                     .fill(.white.opacity(configuration.isPressed ? Self.pressedOverlayAlpha : 0))
-                    .animation(.easeOut(duration: Self.pressedFadeSeconds), value: configuration.isPressed)
+                    .animation(.easeOut(duration: Double(Self.pressedFadeMs) / 1000), value: configuration.isPressed)
             }
     }
 
     // 갤럭시 버튼 물결이 눌린 동안 덮는 진하기다
     private static let pressedOverlayAlpha = 0.10
-    private static let pressedFadeSeconds = 0.15
+    private static let pressedFadeMs = 150
 }
 
 enum ControlIcon {
