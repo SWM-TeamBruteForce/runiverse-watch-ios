@@ -272,6 +272,16 @@ final class RunViewUITests: XCTestCase {
     }
 
     @MainActor
+    func testPlayerPhotosShowInsteadOfInitials() {
+        // when -> 가짜 폰이 파티원 셋의 사진을 보낸다
+        let app = launchRun("photos")
+
+        // then -> 사진은 이름으로 읽히고 첫 글자는 없다
+        XCTAssertTrue(app.images["완두콩"].waitForExistence(timeout: 3))
+        XCTAssertFalse(app.staticTexts["완"].exists)
+    }
+
+    @MainActor
     func testComboBurstCoversScreenAndCloses() {
         // given -> 가짜 폰은 3초마다 콤보를 올리고 1·3·5·10에서 큰 순간을 보낸다
         let app = launchRun("combo", extraArguments: Self.comboEffectOnArguments)
