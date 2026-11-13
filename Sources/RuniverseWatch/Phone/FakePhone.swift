@@ -137,6 +137,8 @@
                 kind: kind
             )
             onReceived?(.comboTriggered(combo))
+            // 폰처럼 콤보를 알린 뒤 오른 숫자가 든 상태도 바로 보낸다
+            onReceived?(.stateUpdated(WatchStateUpdated(state: nextState())))
         }
 
         // 받는 쪽이 보내는 도중에 답이 끼어들지 않게 다음 차례로 미룬다
