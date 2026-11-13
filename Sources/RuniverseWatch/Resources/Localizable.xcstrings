@@ -1,0 +1,456 @@
+{
+  "sourceLanguage" : "ko",
+  "strings" : {
+    "controls_after_reconnect" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "연결 후 조작 가능"
+          }
+        }
+      }
+    },
+    "controls_combo_effect" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "콤보 효과"
+          }
+        }
+      }
+    },
+    "controls_distance_checking" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "거리 확인 중"
+          }
+        }
+      }
+    },
+    "controls_finish" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "종료"
+          }
+        }
+      }
+    },
+    "controls_finish_checking" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "종료 확인 중"
+          }
+        }
+      }
+    },
+    "controls_finishing" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "종료 중"
+          }
+        }
+      }
+    },
+    "controls_hold_longer" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "길게 눌러야 종료"
+          }
+        }
+      }
+    },
+    "controls_hold_to_finish" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "길게 눌러 종료"
+          }
+        }
+      }
+    },
+    "controls_keep_pressing" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "계속 누르기"
+          }
+        }
+      }
+    },
+    "controls_keep_running_if_short" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모자라면 계속 달리기"
+          }
+        }
+      }
+    },
+    "controls_may_not_complete" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "끝내면 미완주 가능"
+          }
+        }
+      }
+    },
+    "controls_pause" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "일시정지"
+          }
+        }
+      }
+    },
+    "controls_penalty_if_finished" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "끝내면 20분 매칭 제한"
+          }
+        }
+      }
+    },
+    "controls_penalty_if_short" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "못 채우면 20분 매칭 제한"
+          }
+        }
+      }
+    },
+    "controls_resume" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "계속 달리기"
+          }
+        }
+      }
+    },
+    "controls_run_recording" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "러닝 기록 중"
+          }
+        }
+      }
+    },
+    "controls_to_goal %@" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "목표까지 약 %@"
+          }
+        }
+      }
+    },
+    "controls_to_penalty_line %@" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "80%%까지 약 %@"
+          }
+        }
+      }
+    },
+    "idle_run_screen_shown_automatically" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "러닝 화면 자동 표시"
+          }
+        }
+      }
+    },
+    "idle_start_on_phone" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "폰에서 러닝 시작"
+          }
+        }
+      }
+    },
+    "run_combo_burst_description %lld %@" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld COMBO %2$@"
+          }
+        }
+      }
+    },
+    "run_combo_burst_word" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "COMBO"
+          }
+        }
+      }
+    },
+    "run_combo_current %lld" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld콤보"
+          }
+        }
+      }
+    },
+    "run_combo_max %lld" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최고 %lld"
+          }
+        }
+      }
+    },
+    "run_gap_ahead" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "앞"
+          }
+        }
+      }
+    },
+    "run_gap_behind" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "뒤"
+          }
+        }
+      }
+    },
+    "run_pace_me" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "나"
+          }
+        }
+      }
+    },
+    "run_pace_player" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상대"
+          }
+        }
+      }
+    },
+    "run_phone_checking" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "폰 연결 확인 중"
+          }
+        }
+      }
+    },
+    "run_server_checking" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서버 연결 확인 중"
+          }
+        }
+      }
+    },
+    "run_status_disconnected" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "끊김"
+          }
+        }
+      }
+    },
+    "run_status_finished" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마침"
+          }
+        }
+      }
+    },
+    "run_status_paused" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "멈춤"
+          }
+        }
+      }
+    },
+    "run_summary_close" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "닫기"
+          }
+        }
+      }
+    },
+    "run_summary_completed" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "러닝 완료"
+          }
+        }
+      }
+    },
+    "run_value_unknown" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "--"
+          }
+        }
+      }
+    },
+    "unit_bpm" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "bpm"
+          }
+        }
+      }
+    },
+    "unit_kcal" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "kcal"
+          }
+        }
+      }
+    },
+    "unit_km" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "km"
+          }
+        }
+      }
+    },
+    "unit_m" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "m"
+          }
+        }
+      }
+    },
+    "unit_short_km" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "k"
+          }
+        }
+      }
+    },
+    "unit_spm" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "spm"
+          }
+        }
+      }
+    },
+    "update_cannot_connect" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "폰 연결 불가"
+          }
+        }
+      }
+    },
+    "update_open_store" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "업데이트"
+          }
+        }
+      }
+    },
+    "update_required" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "워치 앱 업데이트 필요"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
