@@ -12,6 +12,8 @@
         private var hasAnswered = false
         private var onReceived: (@MainActor (PhoneMessage) -> Void)?
         private var ticker: Task<Void, Never>?
+        private var comboTicker: Task<Void, Never>?
+        private var comboEventCount = 0
 
         /// 경우 이름이 없거나 모르는 이름이면 nil이다.
         init?(fakeRunName: String?) {
@@ -50,6 +52,7 @@
             )
             reply { [weak self] in self?.onReceived?(.synced(synced)) }
             if fakeRun != .phoneLost { startTicking() }
+            if fakeRun == .combo { startComboTicking() }
         }
 
         // 폰처럼 명령을 반영하면 1초를 기다리지 않고 바로 보낸다
@@ -66,7 +69,7 @@
                     elapsedSeconds: run.me.elapsedSeconds
                 )
                 : nil
-            run = copy(run, status: status, me: run.me, result: result)
+            run = copy(run, status: status, me: run.me, players: run.players, result: result)
             let stateUpdated = WatchStateUpdated(state: nextState())
             reply { [weak self] in self?.onReceived?(.stateUpdated(stateUpdated)) }
         }
@@ -82,6 +85,56 @@
                     onReceived?(.stateUpdated(WatchStateUpdated(state: nextState())))
                 }
             }
+        }
+
+        // 콤보가 오르다 끊기길 되풀이해 작은 순간·큰 순간·끊김을 차례로 본다
+        private func startComboTicking() {
+            guard comboTicker == nil else { return }
+            comboTicker = Task { [weak self] in
+                while !Task.isCancelled {
+                    try? await Task.sleep(for: Self.comboInterval)
+                    guard let self else { return }
+                    advanceCombo()
+                }
+            }
+        }
+
+        private func advanceCombo() {
+            guard run.status == .running,
+                let index = run.players.firstIndex(where: { $0.userId == Self.comboUserId })
+            else { return }
+            let player = run.players[index]
+            let comboCount = player.comboCount >= Self.breakingComboCount ? 0 : player.comboCount + 1
+            let kind: ComboKind =
+                if comboCount == 0 {
+                    .break
+                } else if Self.milestoneComboCounts.contains(comboCount) {
+                    .milestone
+                } else {
+                    .tick
+                }
+            var players = run.players
+            players[index] = Player(
+                userId: player.userId,
+                nickname: player.nickname,
+                colorSlot: player.colorSlot,
+                distanceMeters: player.distanceMeters,
+                currentPaceSecondsPerKm: player.currentPaceSecondsPerKm,
+                status: player.status,
+                gapMeters: player.gapMeters,
+                comboCount: comboCount,
+                maxComboCount: max(player.maxComboCount, comboCount),
+                isStale: player.isStale
+            )
+            run = copy(run, status: run.status, me: run.me, players: players, result: run.result)
+            comboEventCount += 1
+            let combo = WatchComboTriggered(
+                eventId: "fake-combo-\(comboEventCount)",
+                userId: player.userId,
+                comboCount: comboCount,
+                kind: kind
+            )
+            onReceived?(.comboTriggered(combo))
         }
 
         // 받는 쪽이 보내는 도중에 답이 끼어들지 않게 다음 차례로 미룬다
@@ -113,10 +166,16 @@
                 caloriesKcal: me.caloriesKcal,
                 cadenceSpm: me.cadenceSpm
             )
-            run = copy(run, status: run.status, me: advancedMe, result: run.result)
+            run = copy(run, status: run.status, me: advancedMe, players: run.players, result: run.result)
         }
 
-        private func copy(_ run: RunState, status: RunStatus, me: MyRecord, result: RunResult?) -> RunState {
+        private func copy(
+            _ run: RunState,
+            status: RunStatus,
+            me: MyRecord,
+            players: [Player],
+            result: RunResult?
+        ) -> RunState {
             RunState(
                 runningRoomId: run.runningRoomId,
                 type: run.type,
@@ -125,13 +184,19 @@
                 isServerConnected: run.isServerConnected,
                 isPenaltyApplicable: run.isPenaltyApplicable,
                 me: me,
-                players: run.players,
+                players: players,
                 finish: run.finish,
                 result: result
             )
         }
 
         private static let metersPerTick = 3
+
+        // 큰 순간 1.2초가 끝나고 작은 순간이 따로 보이는 간격이다
+        private static let comboInterval = Duration.seconds(3)
+        private static let comboUserId = "u2"
+        private static let breakingComboCount = 12
+        private static let milestoneComboCounts: Set<Int> = [1, 3, 5, 10]
     }
 
     /// 가짜 폰이 보낼 러닝이다. 실행 인자에 이름 그대로 쓴다.
@@ -144,10 +209,11 @@
         case serverLost
         case phoneLost
         case playerEdges
+        case combo
 
         var run: RunState {
             switch self {
-            case .party, .phoneLost: RunSamples.party
+            case .party, .phoneLost, .combo: RunSamples.party
             case .solo: RunSamples.solo
             case .longValues: RunSamples.longValues
             case .paused: RunSamples.paused

@@ -9,14 +9,18 @@ struct RunView: View {
     let birthday: String?
     let commandState: RunCommandState
     let commands: RunCommands
+    /// 사람 번호마다 지금 띄우는 작은 순간이다.
+    var smallComboMoments: [String: ComboMoment] = [:]
+    /// 지금 화면을 덮는 큰 순간이다.
+    var comboBurst: ComboBurst?
+    /// 조작 장에선 큰 순간을 띄우지 않아, 조작 장이 보이는지 알린다.
+    var onControlsShownChanged: (Bool) -> Void = { _ in }
 
     @State private var page = RunPage.overview
     @State private var verticalPage = RunVerticalPage.overview
     @State private var arePageDotsShown = true
 
-    // 서버 설정이 아니라 워치에만 저장한다
-    // TODO: 콤보 효과 — 콤보 효과를 만들 때 꺼져 있으면 큰 순간 터짐을 빼도록 잇는다
-    @AppStorage("comboEffectOn") private var isComboEffectOn = true
+    @AppStorage(ComboEffectSetting.key) private var isComboEffectOn = ComboEffectSetting.defaultIsOn
 
     var body: some View {
         TabView(selection: horizontalSelection) {
@@ -33,12 +37,18 @@ struct RunView: View {
                     run: run,
                     isPhoneReachable: isPhoneReachable,
                     heartRateBpm: heartRateBpm,
-                    birthday: birthday
+                    birthday: birthday,
+                    smallComboMoments: smallComboMoments
                 )
                 .tag(RunVerticalPage.overview)
                 ForEach(run.players, id: \.userId) { player in
-                    PlayerView(run: run, player: player, isPhoneReachable: isPhoneReachable)
-                        .tag(RunVerticalPage.player(userId: player.userId))
+                    PlayerView(
+                        run: run,
+                        player: player,
+                        isPhoneReachable: isPhoneReachable,
+                        smallComboMoment: smallComboMoments[player.userId]
+                    )
+                    .tag(RunVerticalPage.player(userId: player.userId))
                 }
             }
             // 기본 전환은 장이 끊겨 화면이 바뀌듯 넘어가, 갤럭시처럼 이어 넘긴다
@@ -62,6 +72,14 @@ struct RunView: View {
         }
         // 갤럭시처럼 가로 장 표시 점은 두지 않는다
         .tabViewStyle(.page(indexDisplayMode: .never))
+        .overlay {
+            if let comboBurst, let player = run.players.first(where: { $0.userId == comboBurst.userId }) {
+                ComboBurstView(burst: comboBurst, player: player)
+            }
+        }
+        .onChange(of: page, initial: true) { _, page in
+            onControlsShownChanged(page == .controls)
+        }
         // 세로 점은 잠깐만 보인다 — 갤럭시는 넘기는 동안, 여기는 장이 뜨거나 바뀐 뒤다
         // 첫 화면으로 돌아오거나 파티원 장이 생길 때도 다시 보여야 해서 셋을 같이 본다
         .task(id: PageDotsTrigger(page: page, verticalPage: verticalPage, playerCount: run.players.count)) {

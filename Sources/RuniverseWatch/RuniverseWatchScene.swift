@@ -1,4 +1,5 @@
 import SwiftUI
+import WatchKit
 
 /// 워치 앱의 화면 전체를 담는다. 앱 타깃은 진입점에서 이것만 띄운다.
 public struct RuniverseWatchScene: Scene {
@@ -6,7 +7,7 @@ public struct RuniverseWatchScene: Scene {
 
     public var body: some Scene {
         WindowGroup {
-            RootView(phoneLink: Self.phoneLink, workoutSession: Self.workoutSession)
+            RootView(phoneLink: Self.phoneLink, workoutSession: Self.workoutSession, comboMoments: Self.comboMoments)
                 .task {
                     // 폰 상태를 받기 전에 운동 세션이 지켜보게 먼저 만든다
                     let workoutSession = Self.workoutSession
@@ -22,6 +23,17 @@ public struct RuniverseWatchScene: Scene {
 
     // 화면이 닫혀도 연결을 이어 가려고 화면이 아니라 앱에 하나 둔다
     static let phoneLink: PhoneLink = {
+        let link = openPhoneLink()
+        // 워치 진동엔 소리가 붙어 무음 모드가 아니면 콤보마다 울려, 콤보는 진동 없이 효과만 띄운다
+        link.onCombo = { comboMoments.onCombo($0, linkState: phoneLink.state) }
+        // 화면이 꺼져 있어도 울리게 보류 진동은 화면이 아니라 앱에서 받는다
+        link.onGoalPending = { WKInterfaceDevice.current().play(.notification) }
+        return link
+    }()
+
+    static let comboMoments = ComboMoments()
+
+    private static func openPhoneLink() -> PhoneLink {
         #if DEBUG
             // 실행 인자 `-fakeRun <경우>`는 UserDefaults 인자 영역으로 읽힌다
             if let fakePhone = FakePhone(fakeRunName: UserDefaults.standard.string(forKey: "fakeRun")) {
@@ -37,13 +49,14 @@ public struct RuniverseWatchScene: Scene {
         let link = PhoneLink(send: channel.send)
         channel.activate()
         return link
-    }()
+    }
 }
 
 /// 폰 상태는 여기서만 읽고, 아래 화면엔 값만 넘긴다.
 private struct RootView: View {
     let phoneLink: PhoneLink
     let workoutSession: WorkoutSession
+    let comboMoments: ComboMoments
 
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.isLuminanceReduced) private var isLuminanceReduced
@@ -57,6 +70,11 @@ private struct RootView: View {
                     guard !Task.isCancelled else { return }
                 }
                 phoneLink.onScreenVisibilityChanged(isScreenVisible)
+            }
+            // 어두워진 화면은 시스템이 그리기를 줄여 애니메이션이 안 보여, 콤보 효과는 밝은 화면에서만 띄운다
+            // 위 2초 대기와 따로 둬야 꺼지자마자 콤보를 버린다
+            .onChange(of: scenePhase, initial: true) { _, phase in
+                comboMoments.onScreenActiveChanged(phase == .active)
             }
     }
 
@@ -93,7 +111,10 @@ private struct RootView: View {
                     pause: { _ = phoneLink.pause() },
                     resume: { _ = phoneLink.resume() },
                     finish: { _ = phoneLink.finish(forced: phoneLink.state.phoneState?.run?.isFinishForced ?? false) }
-                )
+                ),
+                smallComboMoments: comboMoments.smallMoments,
+                comboBurst: comboMoments.burst,
+                onControlsShownChanged: { comboMoments.onControlsShownChanged($0) }
             )
         case .updateRequired:
             UpdateRequiredView()
