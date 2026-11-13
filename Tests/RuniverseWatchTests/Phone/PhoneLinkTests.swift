@@ -806,6 +806,29 @@ struct PhoneLinkTests {
     }
 
     @Test
+    func `보류에 들어갈 때 한 번만 알리고 풀렸다 다시 들어가면 또 알린다`() throws {
+        // given
+        let fixture = Fixture()
+        var goalPendingCount = 0
+        fixture.phoneLink.onGoalPending = { goalPendingCount += 1 }
+        try fixture.connect(state(stateSequence: 1))
+
+        // when -> 같은 보류가 1초마다 다시 온다
+        fixture.phoneLink.onReceived(stateUpdated(state(stateSequence: 2, finish: goalPending)))
+        fixture.phoneLink.onReceived(stateUpdated(state(stateSequence: 3, finish: goalPending)))
+
+        // then
+        #expect(goalPendingCount == 1)
+
+        // when -> 폰에서 계속 달리기를 골랐다가 다시 종료한다
+        fixture.phoneLink.onReceived(stateUpdated(state(stateSequence: 4)))
+        fixture.phoneLink.onReceived(stateUpdated(state(stateSequence: 5, finish: goalPending)))
+
+        // then
+        #expect(goalPendingCount == 2)
+    }
+
+    @Test
     func `일시정지·끊김은 진행 중인 러닝이고 끝났거나 러닝이 없으면 아니다`() {
         // when & then
         #expect(PhoneLinkState(phoneState: state(stateSequence: 1)).isRunActive)
@@ -1257,6 +1280,8 @@ private let confirmedResult = RunResult(
     elapsedSeconds: 1721
 )
 
+private let goalPending = FinishProgress(stage: .goalPending, remainingMeters: 420)
+
 private func synced(_ syncId: String, _ state: PhoneState) -> PhoneMessage {
     .synced(WatchSynced(syncId: syncId, state: state, birthday: nil, photos: []))
 }
@@ -1307,6 +1332,7 @@ private func state(
     lastRequestId: String? = nil,
     distanceMeters: Int = 1000,
     status: RunStatus = .running,
+    finish: FinishProgress? = nil,
     result: RunResult? = nil
 ) -> PhoneState {
     PhoneState(
@@ -1329,7 +1355,7 @@ private func state(
                 cadenceSpm: nil
             ),
             players: [],
-            finish: nil,
+            finish: finish,
             result: result
         )
     )

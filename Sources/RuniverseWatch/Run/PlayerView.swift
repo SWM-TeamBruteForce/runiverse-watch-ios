@@ -5,6 +5,8 @@ struct PlayerView: View {
     let run: RunState
     let player: Player
     let isPhoneReachable: Bool
+    /// 이 사람과 지금 띄우는 작은 순간이다.
+    var smallComboMoment: ComboMoment?
 
     var body: some View {
         let content = PlayerContent(run: run, player: player, isPhoneReachable: isPhoneReachable)
@@ -32,14 +34,8 @@ struct PlayerView: View {
             PaceRows(content: content, sizes: sizes, slots: slots, top: pageSlots.belowRowTop)
             switch content.bottomLabel {
             case .combo(let text):
-                AlignedTextView(
-                    text,
-                    size: WatchFontSizes.supporting,
-                    weight: .medium,
-                    color: RuniverseColors.supporting,
-                    placement: .top(slots.comboRowTop)
-                )
-                .opacity(content.playerValuesAlpha)
+                ComboLabelView(text: text, top: slots.comboRowTop, smallComboMoment: smallComboMoment)
+                    .opacity(content.playerValuesAlpha)
             case .notice(let notice):
                 AlignedTextView(
                     notice,
@@ -314,6 +310,30 @@ private struct LabeledPaceView: View {
             AlignedTextView(label, size: WatchFontSizes.supporting, weight: .medium, color: RuniverseColors.supporting)
             AlignedTextView(pace, size: paceSize, monospacesDigits: monospacesDigits, color: RuniverseColors.value)
         }
+    }
+}
+
+/// 맨 아래 콤보 줄이다. 작은 순간엔 한 번 튄다.
+private struct ComboLabelView: View {
+    let text: String
+    let top: CGFloat
+    let smallComboMoment: ComboMoment?
+
+    var body: some View {
+        let size = WatchFontSizes.supporting
+        let ink = SUITFont.ink(for: text)
+        let inkCenter = top + (ink.aboveBaselineEm + ink.belowBaselineEm) * size / 2
+        // 상자 가운데로 키우면 꼬리 글자가 아래로 치우쳐, 잉크 가운데를 크기 0인 판에 붙여 키운다
+        TimelineView(.animation(paused: smallComboMoment == nil)) { context in
+            let progress = smallComboMoment?.progress(at: context.date, duration: ComboMoment.smallDuration)
+            Color.clear
+                .frame(width: 0, height: 0)
+                .overlay(alignment: Alignment(horizontal: .center, vertical: .inkCenter)) {
+                    AlignedTextView(text, size: size, weight: .medium, color: RuniverseColors.supporting)
+                }
+                .scaleEffect(ComboMoment.bumpScale(progress: progress ?? 1))
+        }
+        .alignmentGuide(.top) { _ in -inkCenter }
     }
 }
 
