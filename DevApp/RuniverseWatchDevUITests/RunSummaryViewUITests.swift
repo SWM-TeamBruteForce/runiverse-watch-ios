@@ -29,6 +29,17 @@ final class RunSummaryViewUITests: XCTestCase {
     }
 
     @MainActor
+    func testPhoneLostWhileResultPendingShowsNotice() {
+        // given -> 가짜 폰이 결과 없는 끝난 상태로 첫 답만 하고 조용해진다
+        let app = launchSummary("summaryPhoneLost")
+
+        // when & then -> 결과를 기다린 지 13초가 넘으면 제목 자리에 안내를 띄우고 닫기는 남긴다
+        XCTAssertTrue(app.staticTexts["폰 연결 확인 중"].waitForExistence(timeout: 20))
+        XCTAssertFalse(app.staticTexts["러닝 완료"].exists)
+        XCTAssertTrue(app.buttons["닫기"].exists)
+    }
+
+    @MainActor
     private func launchSummary(_ fakeRun: String) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-fakeRun", fakeRun]

@@ -1094,6 +1094,56 @@ struct PhoneLinkTests {
         #expect(fixture.phoneLink.state.finishedRun?.result == confirmedResult)
     }
 
+    @Test(arguments: [confirmedResult, nil])
+    func `결과 요약이 떠 있을 때 run nil을 받으면 결과를 내린다`(result: RunResult?) throws {
+        // given
+        let fixture = Fixture()
+        try fixture.connect(finishedState(stateSequence: 1, statusVersion: 2, result: result))
+
+        // when
+        fixture.phoneLink.onReceived(stateUpdated(idleState(stateSequence: 2)))
+
+        // then
+        #expect(fixture.phoneLink.state.phoneState?.run == nil)
+        #expect(fixture.phoneLink.state.finishedRun == nil)
+    }
+
+    @Test
+    func `결과를 받는 중 끊긴 채 닫으면 폰이 돌아와 같은 결과를 보내도 띄우지 않는다`() throws {
+        // given
+        let fixture = Fixture()
+        fixture.phoneLink.onScreenVisibilityChanged(true)
+        try fixture.connect(finishedState(stateSequence: 1, statusVersion: 2, result: nil))
+        fixture.timer.advance(by: .milliseconds(13_100))
+
+        // when
+        fixture.phoneLink.dismissResult()
+        let sync = try #require(fixture.sent.last { $0.sync != nil }?.sync)
+        fixture.phoneLink.onReceived(synced(sync.syncId, finishedState(stateSequence: 2, statusVersion: 2)))
+
+        // then
+        #expect(fixture.phoneLink.state.isPhoneReachable)
+        #expect(fixture.phoneLink.state.finishedRun == nil)
+    }
+
+    @Test
+    func `결과를 받는 중 끊긴 뒤 SYNCED로 run nil을 받으면 결과를 내린다`() throws {
+        // given
+        let fixture = Fixture()
+        fixture.phoneLink.onScreenVisibilityChanged(true)
+        try fixture.connect(finishedState(stateSequence: 1, statusVersion: 2, result: nil))
+        fixture.timer.advance(by: .milliseconds(13_100))
+
+        // when
+        let sync = try #require(fixture.sent.last { $0.sync != nil }?.sync)
+        fixture.phoneLink.onReceived(synced(sync.syncId, idleState(stateSequence: 2)))
+
+        // then
+        #expect(fixture.phoneLink.state.isPhoneReachable)
+        #expect(fixture.phoneLink.state.phoneState?.run == nil)
+        #expect(fixture.phoneLink.state.finishedRun == nil)
+    }
+
     @Test
     func `결과를 받는 중 13초 넘게 소식이 없으면 끊긴 것으로 보고 SYNC를 보낸다`() throws {
         // given
