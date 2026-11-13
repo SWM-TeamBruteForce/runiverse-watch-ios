@@ -8,7 +8,7 @@ struct ControlsView: View {
     let commands: RunCommands
     @Binding var isComboEffectOn: Bool
 
-    @State private var isScrolled = false
+    @State private var scrollOffset: CGFloat = 0
 
     var body: some View {
         let content = ControlsContent(run: run, isPhoneReachable: isPhoneReachable, commandState: commandState)
@@ -23,18 +23,29 @@ struct ControlsView: View {
                         content: content,
                         commands: commands,
                         isComboEffectOn: $isComboEffectOn,
-                        isScrolled: isScrolled,
+                        isScrolled: scrollOffset > 0,
                         screen: screen,
                         sizes: sizes,
                         slots: slots
                     )
-                    .onGeometryChange(for: Bool.self) {
-                        $0.frame(in: .scrollView).minY < 0
+                    .onGeometryChange(for: CGFloat.self) {
+                        -$0.frame(in: .scrollView).minY
                     } action: {
-                        isScrolled = $0
+                        scrollOffset = $0
                     }
                 }
+                // 시스템 막대는 크라운을 돌릴 때만 떠, 늘 보이는 막대를 직접 그린다
+                .scrollIndicators(.hidden)
                 ClockFadeView(screen: screen)
+            }
+            .overlay(alignment: .trailing) {
+                ControlsScrollBarView(
+                    slots: ControlsScrollBarSlots(
+                        scrollOffset: scrollOffset,
+                        contentHeight: slots.contentHeight,
+                        viewportHeight: screen.screenHeight
+                    )
+                )
             }
             .ignoresSafeArea()
         }
@@ -118,6 +129,92 @@ private struct ClockFadeView: View {
     }
 
     private static let fadeHeight: CGFloat = 12
+}
+
+/// 조작 장 오른쪽 끝 세로 가운데에 늘 보이는 스크롤 막대다.
+private struct ControlsScrollBarView: View {
+    let slots: ControlsScrollBarSlots
+
+    var body: some View {
+        ZStack(alignment: .top) {
+            pieceView(slots.topTrack, color: Self.trackColor)
+            pieceView(slots.thumb, color: .white)
+            pieceView(slots.bottomTrack, color: Self.trackColor)
+        }
+        .frame(width: ControlsScrollBarSlots.barWidth, height: ControlsScrollBarSlots.spanLength, alignment: .top)
+        .padding(.trailing, Self.edgeMargin)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+
+    private func pieceView(_ piece: ControlsScrollBarPiece, color: Color) -> some View {
+        Capsule()
+            .fill(color.opacity(piece.alpha))
+            .frame(width: piece.width, height: piece.length)
+            .offset(y: piece.top)
+    }
+
+    private static let trackColor = Color.white.opacity(RunDimensions.inactivePositionAlpha)
+    private static let edgeMargin: CGFloat = 2
+}
+
+/// 스크롤 막대 세 조각(위 트랙·막대·아래 트랙)의 자리다. 막대 위 끝에서 잰 pt다.
+struct ControlsScrollBarSlots: Equatable {
+    let topTrack: ControlsScrollBarPiece
+    let thumb: ControlsScrollBarPiece
+    let bottomTrack: ControlsScrollBarPiece
+
+    // 갤럭시 스크롤바 규칙이다 — 막대 길이는 보이는 몫을 30~70%로 묶고, 위치는 내린 몫이다
+    init(scrollOffset: CGFloat, contentHeight: CGFloat, viewportHeight: CGFloat) {
+        let scrollableHeight = contentHeight - viewportHeight
+        let thumbFraction =
+            scrollableHeight > 0
+            ? min(max(viewportHeight / contentHeight, Self.minThumbFraction), Self.maxThumbFraction)
+            : Self.maxThumbFraction
+        let scrolledFraction = scrollableHeight > 0 ? min(max(scrollOffset / scrollableHeight, 0), 1) : 0
+        let thumbStart = Self.spanLength * (1 - thumbFraction) * scrolledFraction
+        let thumbEnd = thumbStart + Self.spanLength * thumbFraction
+        topTrack = Self.piece(from: 0, to: thumbStart)
+        thumb = Self.piece(from: thumbStart, to: thumbEnd)
+        bottomTrack = Self.piece(from: thumbEnd, to: Self.spanLength)
+    }
+
+    // 조각 끝마다 간격 절반을 비우고, 막대 폭보다 짧아지면 점으로 줄며 흐려진다
+    private static func piece(from start: CGFloat, to end: CGFloat) -> ControlsScrollBarPiece {
+        let span = max(end - start, 0)
+        let dotSpan = barWidth + segmentGap
+        guard span <= dotSpan else {
+            return ControlsScrollBarPiece(
+                top: start + segmentGap / 2,
+                length: span - segmentGap,
+                width: barWidth,
+                alpha: 1
+            )
+        }
+        let fraction = span / dotSpan
+        let diameter = barWidth * fraction
+        return ControlsScrollBarPiece(
+            top: (start + end - diameter) / 2,
+            length: diameter,
+            width: diameter,
+            alpha: fraction
+        )
+    }
+
+    static let barWidth: CGFloat = 5
+    static let segmentGap: CGFloat = 3
+    // 갤럭시처럼 막대 길이 50에 조각 사이 간격과 막대 폭을 더해 나눈다
+    static let spanLength: CGFloat = 50 + barWidth + segmentGap
+    private static let minThumbFraction: CGFloat = 0.3
+    private static let maxThumbFraction: CGFloat = 0.7
+}
+
+/// 스크롤 막대 한 조각이다. 점이면 폭과 길이가 지름이다.
+struct ControlsScrollBarPiece: Equatable {
+    let top: CGFloat
+    let length: CGFloat
+    let width: CGFloat
+    let alpha: Double
 }
 
 /// 종료 버튼이다. 달리는 중엔 길게 눌러야 하고, 멈췄으면 한 번 누르면 끝난다.
