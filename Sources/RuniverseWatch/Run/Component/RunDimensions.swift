@@ -16,4 +16,7 @@ enum RunDimensions {
 
     // 끊긴 동안 마지막 값에 멈춘 내용을 흐리게 그린다
     static let staleContentAlpha = 0.4
+
+    // 세로 점·스크롤 막대에서 지금 자리가 아닌 부분을 흐리게 그린다
+    static let inactivePositionAlpha = 0.35
 }

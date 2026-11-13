@@ -1,3 +1,4 @@
+import Observation
 import SwiftUI
 
 /// 러닝 조작 장이다. 안내 두 줄 아래 일시정지·종료가 있고, 스크롤하면 콤보 효과 칸이 나온다.
@@ -9,6 +10,7 @@ struct ControlsView: View {
     @Binding var isComboEffectOn: Bool
 
     @State private var isScrolled = false
+    @State private var scrollPosition = ControlsScrollPosition()
 
     var body: some View {
         let content = ControlsContent(run: run, isPhoneReachable: isPhoneReachable, commandState: commandState)
@@ -33,8 +35,23 @@ struct ControlsView: View {
                     } action: {
                         isScrolled = $0
                     }
+                    // 스크롤한 거리는 막대만 읽어, 스크롤하는 동안 나머지는 다시 그리지 않는다
+                    .onGeometryChange(for: CGFloat.self) {
+                        -$0.frame(in: .scrollView).minY
+                    } action: {
+                        scrollPosition.offset = $0
+                    }
                 }
+                // 시스템 막대는 스크롤할 때만 떠, 늘 보이는 막대를 직접 그린다
+                .scrollIndicators(.hidden)
                 ClockFadeView(screen: screen)
+            }
+            .overlay(alignment: .trailing) {
+                ControlsScrollBarView(
+                    scrollPosition: scrollPosition,
+                    contentHeight: slots.contentHeight,
+                    viewportHeight: screen.screenHeight
+                )
             }
             .ignoresSafeArea()
         }
@@ -98,6 +115,13 @@ private struct ControlsItemsView: View {
     }
 }
 
+/// 조작 장을 스크롤한 거리다.
+@MainActor
+@Observable
+private final class ControlsScrollPosition {
+    var offset: CGFloat = 0
+}
+
 /// 스크롤한 내용이 시계와 겹치지 않게 화면 위쪽을 가린다. 시계는 시스템이 이 위에 그린다.
 private struct ClockFadeView: View {
     let screen: WatchScreen
@@ -118,6 +142,99 @@ private struct ClockFadeView: View {
     }
 
     private static let fadeHeight: CGFloat = 12
+}
+
+/// 조작 장 오른쪽 끝 세로 가운데에 늘 보이는 스크롤 막대다.
+private struct ControlsScrollBarView: View {
+    let scrollPosition: ControlsScrollPosition
+    let contentHeight: CGFloat
+    let viewportHeight: CGFloat
+
+    var body: some View {
+        let slots = ControlsScrollBarSlots(
+            scrollOffset: scrollPosition.offset,
+            contentHeight: contentHeight,
+            viewportHeight: viewportHeight
+        )
+        ZStack(alignment: .top) {
+            pieceView(slots.topTrack, color: Self.trackColor)
+            pieceView(slots.thumb, color: .white)
+            pieceView(slots.bottomTrack, color: Self.trackColor)
+        }
+        .frame(width: ControlsScrollBarSlots.barWidth, height: ControlsScrollBarSlots.spanLength, alignment: .top)
+        .padding(.trailing, Self.trailingPadding)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+
+    private func pieceView(_ piece: ControlsScrollBarPiece, color: Color) -> some View {
+        Capsule()
+            .fill(color.opacity(piece.alpha))
+            .frame(width: piece.width, height: piece.length)
+            .offset(y: piece.top)
+    }
+
+    private static let trackColor = Color.white.opacity(RunDimensions.inactivePositionAlpha)
+    private static let trailingPadding: CGFloat = 2
+}
+
+/// 스크롤 막대 세 조각(위 트랙·막대·아래 트랙)의 자리다. 세 조각이 나눠 쓰는 길이의 위 끝에서 잰 pt다.
+struct ControlsScrollBarSlots: Equatable {
+    let topTrack: ControlsScrollBarPiece
+    let thumb: ControlsScrollBarPiece
+    let bottomTrack: ControlsScrollBarPiece
+
+    // 갤럭시 스크롤바 규칙이다 — 막대 길이는 보이는 몫을 30~70%로 묶고, 위치는 내린 몫이다
+    init(scrollOffset: CGFloat, contentHeight: CGFloat, viewportHeight: CGFloat) {
+        let scrollableHeight = contentHeight - viewportHeight
+        let thumbFraction =
+            scrollableHeight > 0
+            ? min(max(viewportHeight / contentHeight, Self.minThumbFraction), Self.maxThumbFraction)
+            : Self.maxThumbFraction
+        let scrolledFraction = scrollableHeight > 0 ? min(max(scrollOffset / scrollableHeight, 0), 1) : 0
+        let thumbStart = Self.spanLength * (1 - thumbFraction) * scrolledFraction
+        let thumbEnd = thumbStart + Self.spanLength * thumbFraction
+        topTrack = Self.piece(from: 0, to: thumbStart)
+        thumb = Self.piece(from: thumbStart, to: thumbEnd)
+        bottomTrack = Self.piece(from: thumbEnd, to: Self.spanLength)
+    }
+
+    // 조각 끝마다 간격 절반을 비우고, 막대 폭보다 짧아지면 점으로 줄며 흐려진다
+    private static func piece(from start: CGFloat, to end: CGFloat) -> ControlsScrollBarPiece {
+        let span = max(end - start, 0)
+        let dotSpan = barWidth + segmentGap
+        guard span <= dotSpan else {
+            return ControlsScrollBarPiece(
+                top: start + segmentGap / 2,
+                length: span - segmentGap,
+                width: barWidth,
+                alpha: 1
+            )
+        }
+        let fraction = span / dotSpan
+        let diameter = barWidth * fraction
+        return ControlsScrollBarPiece(
+            top: (start + end - diameter) / 2,
+            length: diameter,
+            width: diameter,
+            alpha: fraction
+        )
+    }
+
+    static let barWidth: CGFloat = 5
+    static let segmentGap: CGFloat = 3
+    // 갤럭시처럼 세 조각이 나눠 쓰는 길이는 50에 조각 사이 간격과 막대 폭을 더한 값이다
+    static let spanLength: CGFloat = 50 + barWidth + segmentGap
+    private static let minThumbFraction: CGFloat = 0.3
+    private static let maxThumbFraction: CGFloat = 0.7
+}
+
+/// 스크롤 막대 한 조각이다. 점이면 폭과 길이가 지름이다.
+struct ControlsScrollBarPiece: Equatable {
+    let top: CGFloat
+    let length: CGFloat
+    let width: CGFloat
+    let alpha: Double
 }
 
 /// 종료 버튼이다. 달리는 중엔 길게 눌러야 하고, 멈췄으면 한 번 누르면 끝난다.
@@ -179,6 +296,7 @@ private struct HoldToFinishButton: View {
             hasFinishedByHolding = false
         } label: {
             ZStack(alignment: .leading) {
+                // 바뀌는 글자가 겹쳐 번지며 밀려, 글자는 애니메이션 없이 바꾼다
                 ControlButtonLabelView(
                     label: shownLabel,
                     icon: shownIcon,
@@ -186,6 +304,7 @@ private struct HoldToFinishButton: View {
                     width: ControlsSlots.pillWidth,
                     background: background
                 )
+                .transaction { $0.animation = nil }
                 // 흰색이 왼쪽부터 차오르고, 찬 부분의 글자는 검게 보인다
                 ControlButtonLabelView(
                     label: shownLabel,
@@ -195,6 +314,7 @@ private struct HoldToFinishButton: View {
                     background: .white,
                     foreground: .black
                 )
+                .transaction { $0.animation = nil }
                 .mask(alignment: .leading) {
                     Rectangle().frame(width: ControlsSlots.pillWidth * filledFraction)
                 }
@@ -477,7 +597,7 @@ private struct ComboEffectToggleStyle: ToggleStyle {
             .overlay(Capsule().strokeBorder(Self.outlineColor, lineWidth: Self.outlineWidth))
             .contentShape(Capsule())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(UndimmedButtonStyle())
     }
 
     private static let outlineColor = Color(white: 0x33 / 255)
