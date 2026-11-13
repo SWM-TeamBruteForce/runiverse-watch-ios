@@ -26,4 +26,23 @@ struct ComboBurstViewTests {
         #expect(content.colorSlot == 2)
         #expect(content.accessibilityLabel == "10 COMBO 콩나물")
     }
+
+    @Test
+    func `큰 순간은 그 사람 사진이 있으면 첫 글자 대신 사진을 그린다`() throws {
+        // given
+        let player = RunSamples.party.players[1]
+        let photo = try #require(RunSamples.brightPhotos[player.userId])
+        let burst = ComboBurst(
+            moment: ComboMoment(eventId: "e1", startedAt: Date()),
+            userId: player.userId,
+            comboCount: 10
+        )
+
+        // when
+        let content = ComboBurstContent(burst: burst, player: player, photo: photo)
+
+        // then
+        #expect(content.photo == photo)
+        #expect(content.initial == nil)
+    }
 }
