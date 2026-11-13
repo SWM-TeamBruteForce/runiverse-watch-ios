@@ -179,6 +179,7 @@ private struct HoldToFinishButton: View {
             hasFinishedByHolding = false
         } label: {
             ZStack(alignment: .leading) {
+                // 바뀌는 글자가 겹쳐 번지며 밀려, 글자는 애니메이션 없이 바꾼다
                 ControlButtonLabelView(
                     label: shownLabel,
                     icon: shownIcon,
@@ -186,6 +187,7 @@ private struct HoldToFinishButton: View {
                     width: ControlsSlots.pillWidth,
                     background: background
                 )
+                .transaction { $0.animation = nil }
                 // 흰색이 왼쪽부터 차오르고, 찬 부분의 글자는 검게 보인다
                 ControlButtonLabelView(
                     label: shownLabel,
@@ -195,6 +197,7 @@ private struct HoldToFinishButton: View {
                     background: .white,
                     foreground: .black
                 )
+                .transaction { $0.animation = nil }
                 .mask(alignment: .leading) {
                     Rectangle().frame(width: ControlsSlots.pillWidth * filledFraction)
                 }
