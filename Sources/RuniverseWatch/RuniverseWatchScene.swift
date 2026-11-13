@@ -3,8 +3,6 @@ import WatchKit
 
 /// 워치 앱의 화면 전체를 담는다. 앱 타깃은 진입점에서 이것만 띄운다.
 public struct RuniverseWatchScene: Scene {
-    @Environment(\.scenePhase) private var scenePhase
-
     public init() {}
 
     public var body: some Scene {
@@ -17,12 +15,6 @@ public struct RuniverseWatchScene: Scene {
                     // 러닝 화면에서 물으면 권한 창이 러닝을 가려, 화면이 처음 뜰 때 묻는다
                     workoutSession.requestAuthorization()
                 }
-        }
-        // 어두워진 화면(.inactive)에도 값이 떠 있어 .background일 때만 1초 전송을 멈춘다
-        .onChange(of: scenePhase, initial: true) { _, phase in
-            Self.phoneLink.onScreenVisibilityChanged(phase != .background)
-            // 어두워진 화면은 시스템이 그리기를 줄여 애니메이션이 안 보여, 콤보 효과는 밝은 화면에서만 띄운다
-            Self.comboMoments.onScreenActiveChanged(phase == .active)
         }
     }
 
@@ -66,7 +58,39 @@ private struct RootView: View {
     let workoutSession: WorkoutSession
     let comboMoments: ComboMoments
 
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.isLuminanceReduced) private var isLuminanceReduced
+
     var body: some View {
+        screen
+            // 앱으로 돌아올 때도 .inactive를 잠깐 거쳐, .inactive로 꺼진 것은 이어질 때만 알린다
+            .task(id: ScreenVisibilityTrigger(scenePhase: scenePhase, isLuminanceReduced: isLuminanceReduced)) {
+                if !isScreenVisible, scenePhase == .inactive {
+                    try? await Task.sleep(for: Self.screenOffDelay)
+                    guard !Task.isCancelled else { return }
+                }
+                phoneLink.onScreenVisibilityChanged(isScreenVisible)
+            }
+            // 어두워진 화면은 시스템이 그리기를 줄여 애니메이션이 안 보여, 콤보 효과는 밝은 화면에서만 띄운다
+            .onChange(of: scenePhase, initial: true) { _, phase in
+                comboMoments.onScreenActiveChanged(phase == .active)
+            }
+    }
+
+    // 어두워진 화면과 꺼진 화면(항상 켬 꺼짐·저전력 모드)이 모두 .inactive라, 어두워진 화면에서만 켜지는 밝기 줄임으로 가른다
+    private var isScreenVisible: Bool {
+        switch scenePhase {
+        case .active: true
+        case .inactive: isLuminanceReduced
+        default: false
+        }
+    }
+
+    // 앱으로 돌아올 때 .inactive를 거치는 시간(실측 0.3~0.6초)보다 넉넉히 잡은 값이다
+    private static let screenOffDelay = Duration.seconds(2)
+
+    @ViewBuilder
+    private var screen: some View {
         switch RootScreen(phoneLink.state) {
         case .run(let run):
             let linkState = phoneLink.state
@@ -102,4 +126,9 @@ private struct RootView: View {
             IdleView(content: IdleContent(isPhoneReachable: isPhoneReachable))
         }
     }
+}
+
+private struct ScreenVisibilityTrigger: Hashable {
+    let scenePhase: ScenePhase
+    let isLuminanceReduced: Bool
 }

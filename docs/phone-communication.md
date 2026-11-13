@@ -12,7 +12,7 @@
 - 한 메시지는 65,536바이트까지 간다(시뮬레이터 실측). 넘으면 보내는 쪽에 `7009`(payload too large)가 오고 받는 쪽엔 가지 않는다 — 사진을 실은 `WATCH_SYNCED`가 가장 크다.
 - 폰은 짝지은 워치에 우리 앱이 깔려 있고 세션이 켜졌으면 보낸다. `isReachable`은 보지 않는다 — 닿지 못하면 보내기가 `7007`(not reachable)로 실패한다.
 - 폰은 러닝을 시작할 때 `HKHealthStore.startWatchApp`(달리기·실외)으로 워치 앱을 켠다. 워치 앱은 `WKBackgroundModes`에 `workout-processing`이 있어야 켜진다.
-- 화면이 켜져 있다는 건 `scenePhase`가 `.background`가 아니라는 뜻이다 — `.inactive`는 어두워졌든(항상 켬) 꺼졌든(저전력 모드) 켜진 것으로 본다.
+- 화면이 켜져 있다는 건 `scenePhase`가 `.active`이거나, `.inactive`이면서 밝기가 줄어 있다(`isLuminanceReduced`)는 뜻이다 — 어두워진 화면(항상 켬)은 켜진 것으로, 꺼진 화면(항상 켬 꺼짐·저전력 모드)은 꺼진 것으로 본다. 앱으로 돌아올 때도 `.inactive`를 잠깐 거쳐, `.inactive`로 꺼진 것은 2초 이어진 뒤에 알린다.
 - 모르는 `event`·필드는 무시한다. enum 값을 늘릴 땐 양쪽을 함께 바꾼다 — 모르는 값이 든 메시지는 통째로 버려진다.
 
 ## 메시지
