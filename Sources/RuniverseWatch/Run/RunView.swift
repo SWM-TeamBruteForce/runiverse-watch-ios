@@ -77,7 +77,7 @@ struct RunView: View {
         .tabViewStyle(.page(indexDisplayMode: .never))
         .overlay {
             if let comboBurst, let player = run.players.first(where: { $0.userId == comboBurst.userId }) {
-                ComboBurstView(burst: comboBurst, player: player)
+                ComboBurstView(burst: comboBurst, player: player, photo: playerPhotos[player.userId])
             }
         }
         .onChange(of: page, initial: true) { _, page in

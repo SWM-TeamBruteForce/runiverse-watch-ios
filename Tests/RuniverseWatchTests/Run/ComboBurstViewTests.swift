@@ -16,7 +16,7 @@ struct ComboBurstViewTests {
         )
 
         // when
-        let content = ComboBurstContent(burst: burst, player: player)
+        let content = ComboBurstContent(burst: burst, player: player, photo: nil)
 
         // then
         #expect(content.countText == "10")

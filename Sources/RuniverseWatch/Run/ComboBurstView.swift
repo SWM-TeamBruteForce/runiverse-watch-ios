@@ -4,9 +4,11 @@ import SwiftUI
 struct ComboBurstView: View {
     let burst: ComboBurst
     let player: Player
+    /// 그 사람 사진이다. 없으면 첫 글자로 그린다.
+    var photo: CGImage?
 
     var body: some View {
-        let content = ComboBurstContent(burst: burst, player: player)
+        let content = ComboBurstContent(burst: burst, player: player, photo: photo)
         ZStack {
             // 덮개가 검어 뒤 장이 안 보인다 — 터치를 받아 덮인 채 장이 넘어가지 않게 한다
             Color.clear
@@ -29,15 +31,19 @@ struct ComboBurstContent: Equatable {
     let countText: String
     let word: String
     let nickname: String
-    let initial: String
+    /// 폰이 보낸 사진이다. 없으면 레인 색 원을 그린다.
+    let photo: CGImage?
+    /// 사진이 없을 때 원 안에 쓰는 첫 글자다.
+    let initial: String?
     let colorSlot: Int
     let accessibilityLabel: String
 
-    init(burst: ComboBurst, player: Player) {
+    init(burst: ComboBurst, player: Player, photo: CGImage?) {
         countText = String(burst.comboCount)
         word = String(localized: "run_combo_burst_word", bundle: .module)
         nickname = player.nickname
-        initial = String(player.nickname.prefix(1))
+        self.photo = photo
+        initial = photo == nil ? String(player.nickname.prefix(1)) : nil
         colorSlot = player.colorSlot
         accessibilityLabel = String(
             localized: "run_combo_burst_description \(burst.comboCount) \(player.nickname)",
@@ -149,9 +155,18 @@ private struct BurstPlayerRow: View {
         )
         HStack(alignment: .inkCenter, spacing: Self.avatarToNameGap) {
             ZStack(alignment: Alignment(horizontal: .center, vertical: .inkCenter)) {
-                Circle().fill(lane).frame(width: avatarSize, height: avatarSize)
-                // TODO: 파티원 사진 — 사진을 만들 때 폰이 보낸 사진을 그린다
-                AlignedTextView(content.initial, size: WatchFontSizes.supporting, weight: .bold, color: .white)
+                if let photo = content.photo {
+                    Image(decorative: photo, scale: 1)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: avatarSize, height: avatarSize)
+                        .clipShape(Circle())
+                } else {
+                    Circle().fill(lane).frame(width: avatarSize, height: avatarSize)
+                }
+                if let initial = content.initial {
+                    AlignedTextView(initial, size: WatchFontSizes.supporting, weight: .bold, color: .white)
+                }
                 Circle()
                     .stroke(
                         LinearGradient(colors: [myLane, lane], startPoint: .topLeading, endPoint: .bottomTrailing),
@@ -179,7 +194,24 @@ private struct BurstPlayerRow: View {
                 userId: RunSamples.party.players[1].userId,
                 comboCount: 10
             ),
-            player: RunSamples.party.players[1]
+            player: RunSamples.party.players[1],
+            photo: nil
+        ),
+        frame: ComboBurstFrame(progress: 0.5)
+    )
+}
+
+#Preview("큰 순간 파티원 사진") {
+    let player = RunSamples.party.players[1]
+    ComboBurstFrameView(
+        content: ComboBurstContent(
+            burst: ComboBurst(
+                moment: ComboMoment(eventId: "e1", startedAt: Date()),
+                userId: player.userId,
+                comboCount: 10
+            ),
+            player: player,
+            photo: RunSamples.brightPhotos[player.userId]
         ),
         frame: ComboBurstFrame(progress: 0.5)
     )
@@ -195,7 +227,8 @@ private struct BurstPlayerRow: View {
                 userId: player.userId,
                 comboCount: 400
             ),
-            player: player
+            player: player,
+            photo: nil
         ),
         frame: ComboBurstFrame(progress: 0.28)
     )
