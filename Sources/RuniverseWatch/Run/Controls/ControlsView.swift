@@ -1,3 +1,4 @@
+import Observation
 import SwiftUI
 
 /// 러닝 조작 장이다. 안내 두 줄 아래 일시정지·종료가 있고, 스크롤하면 콤보 효과 칸이 나온다.
@@ -8,7 +9,8 @@ struct ControlsView: View {
     let commands: RunCommands
     @Binding var isComboEffectOn: Bool
 
-    @State private var scrollOffset: CGFloat = 0
+    @State private var isScrolled = false
+    @State private var scrollPosition = ControlsScrollPosition()
 
     var body: some View {
         let content = ControlsContent(run: run, isPhoneReachable: isPhoneReachable, commandState: commandState)
@@ -23,15 +25,21 @@ struct ControlsView: View {
                         content: content,
                         commands: commands,
                         isComboEffectOn: $isComboEffectOn,
-                        isScrolled: scrollOffset > 0,
+                        isScrolled: isScrolled,
                         screen: screen,
                         sizes: sizes,
                         slots: slots
                     )
+                    .onGeometryChange(for: Bool.self) {
+                        $0.frame(in: .scrollView).minY < 0
+                    } action: {
+                        isScrolled = $0
+                    }
+                    // 스크롤한 거리는 막대만 읽어, 스크롤하는 동안 나머지는 다시 그리지 않는다
                     .onGeometryChange(for: CGFloat.self) {
                         -$0.frame(in: .scrollView).minY
                     } action: {
-                        scrollOffset = $0
+                        scrollPosition.offset = $0
                     }
                 }
                 // 시스템 막대는 스크롤할 때만 떠, 늘 보이는 막대를 직접 그린다
@@ -40,11 +48,9 @@ struct ControlsView: View {
             }
             .overlay(alignment: .trailing) {
                 ControlsScrollBarView(
-                    slots: ControlsScrollBarSlots(
-                        scrollOffset: scrollOffset,
-                        contentHeight: slots.contentHeight,
-                        viewportHeight: screen.screenHeight
-                    )
+                    scrollPosition: scrollPosition,
+                    contentHeight: slots.contentHeight,
+                    viewportHeight: screen.screenHeight
                 )
             }
             .ignoresSafeArea()
@@ -109,6 +115,13 @@ private struct ControlsItemsView: View {
     }
 }
 
+/// 조작 장을 스크롤한 거리다.
+@MainActor
+@Observable
+private final class ControlsScrollPosition {
+    var offset: CGFloat = 0
+}
+
 /// 스크롤한 내용이 시계와 겹치지 않게 화면 위쪽을 가린다. 시계는 시스템이 이 위에 그린다.
 private struct ClockFadeView: View {
     let screen: WatchScreen
@@ -133,9 +146,16 @@ private struct ClockFadeView: View {
 
 /// 조작 장 오른쪽 끝 세로 가운데에 늘 보이는 스크롤 막대다.
 private struct ControlsScrollBarView: View {
-    let slots: ControlsScrollBarSlots
+    let scrollPosition: ControlsScrollPosition
+    let contentHeight: CGFloat
+    let viewportHeight: CGFloat
 
     var body: some View {
+        let slots = ControlsScrollBarSlots(
+            scrollOffset: scrollPosition.offset,
+            contentHeight: contentHeight,
+            viewportHeight: viewportHeight
+        )
         ZStack(alignment: .top) {
             pieceView(slots.topTrack, color: Self.trackColor)
             pieceView(slots.thumb, color: .white)
