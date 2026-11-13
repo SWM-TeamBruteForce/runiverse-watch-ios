@@ -12,7 +12,7 @@ enum PlayerPhotos {
             if let image = decodeImage(photo.jpegBase64) {
                 images[photo.userId] = image
             } else {
-                logger.warning("파티원 사진 풀기 실패 — \(photo.userId, privacy: .public)")
+                logger.warning("파티원 사진 풀기 실패 — \(photo.userId, privacy: .private(mask: .hash))")
             }
         }
         return images
