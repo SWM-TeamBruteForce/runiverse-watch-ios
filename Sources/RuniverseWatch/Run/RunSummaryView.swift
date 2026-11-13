@@ -35,7 +35,7 @@ struct RunSummaryView: View {
 
 /// 결과 요약이 그릴 값이다.
 struct RunSummaryContent: Equatable {
-    /// 결과를 받는 중에 폰이 끊겼다. 받은 결과는 더 안 바뀌어 끊겨도 멈춘 것으로 보지 않는다.
+    /// 결과를 받는 중에 폰이 끊겼다.
     let isResultStuck: Bool
     let title: String
     let distanceText: String
@@ -104,7 +104,7 @@ private struct TimePaceRow: View {
         .alignmentGuide(.top) { $0[.firstTextBaseline] - baseline }
     }
 
-    // 결과는 받은 뒤 안 바뀌어 가장 넓은 값이 아니라 받은 값으로 잰다
+    // 1초마다 바뀌는 값이 아니어서 가장 넓은 값이 아니라 받은 값으로 잰다
     private var width: CGFloat {
         let timeWidth = SUITFont.width(of: content.elapsedTimeText, size: sizes.value, weight: .semiBold)
         let paceWidth = SUITFont.width(of: content.averagePaceText, size: sizes.value, weight: .semiBold)
