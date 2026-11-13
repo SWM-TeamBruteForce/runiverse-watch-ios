@@ -72,6 +72,7 @@ private struct RootView: View {
                 phoneLink.onScreenVisibilityChanged(isScreenVisible)
             }
             // 어두워진 화면은 시스템이 그리기를 줄여 애니메이션이 안 보여, 콤보 효과는 밝은 화면에서만 띄운다
+            // 위 2초 대기와 따로 둬야 꺼지자마자 콤보를 버린다
             .onChange(of: scenePhase, initial: true) { _, phase in
                 comboMoments.onScreenActiveChanged(phase == .active)
             }
