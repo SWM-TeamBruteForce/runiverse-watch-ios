@@ -5,7 +5,7 @@ struct ComboBurstView: View {
     let burst: ComboBurst
     let player: Player
     /// 그 사람 사진이다. 없으면 첫 글자로 그린다.
-    var photo: CGImage?
+    let photo: CGImage?
 
     var body: some View {
         let content = ComboBurstContent(burst: burst, player: player, photo: photo)
