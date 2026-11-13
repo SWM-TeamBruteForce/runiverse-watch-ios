@@ -27,8 +27,7 @@ struct RunSummaryView: View {
             TimePaceRow(content: content, sizes: sizes, screenWidth: screen.screenWidth, inkTop: slots.timePaceRowTop)
                 .opacity(content.valuesAlpha)
             ControlButton(label: content.closeLabel, icon: .check, fontSize: sizes.reading, action: onClose)
-                .padding(.bottom, ControlButton.bottomPadding)
-                .frame(maxHeight: .infinity, alignment: .bottom)
+                .alignmentGuide(.top) { _ in -slots.closeButtonTop }
         }
     }
 }
