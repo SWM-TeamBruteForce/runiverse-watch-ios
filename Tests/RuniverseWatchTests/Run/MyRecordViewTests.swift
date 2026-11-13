@@ -79,8 +79,8 @@ struct MyRecordViewTests {
         let withoutBar = MyRecordSlots(screen: screen, sizes: sizes, showsZoneBar: false)
 
         // then -> 막대 사이 4 + 막대 3만큼 차이 난다
-        #expect(abs(withBar.recordRowsTop - (withBar.zoneBarTop + 3 + 18)) < 0.001)
-        #expect(abs(withoutBar.recordRowsTop - (withoutBar.heartRateBottom + 18)) < 0.001)
+        #expect(abs(withBar.recordRowsTop - (withBar.zoneBarTop + 3 + 13)) < 0.001)
+        #expect(abs(withoutBar.recordRowsTop - (withoutBar.heartRateBottom + 13)) < 0.001)
         #expect(abs(withBar.recordRowsTop - withoutBar.recordRowsTop - 7) < 0.001)
     }
 

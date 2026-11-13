@@ -23,11 +23,11 @@ struct RunSummaryViewTests {
         // when
         let slots = RunSummarySlots(screen: screen, sizes: sizes)
 
-        // then -> 버튼 윗변 248 − 8 − 48, 묶음은 제목 12.488 + 18 + 총거리 38.266 + 18 + 시간 12.996
+        // then -> 버튼 윗변 248 − 8 − 48, 묶음은 제목 12.488 + 13 + 총거리 38.266 + 13 + 시간 12.996
         #expect(slots.closeButtonTop == 192)
-        #expect(abs(slots.titleBottom - 85.113) < 0.001)
+        #expect(abs(slots.titleBottom - 90.113) < 0.001)
         #expect(abs(slots.bigNumberBaseline - 141.379) < 0.001)
-        #expect(abs(slots.timePaceRowTop - 159.379) < 0.001)
+        #expect(abs(slots.timePaceRowTop - 154.379) < 0.001)
     }
 
     @Test(arguments: appleScreens)
