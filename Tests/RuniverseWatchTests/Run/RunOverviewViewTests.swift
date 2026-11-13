@@ -1,3 +1,4 @@
+import CoreGraphics
 import Foundation
 import Testing
 
@@ -182,6 +183,7 @@ struct RunOverviewViewTests {
         isPhoneReachable: Bool = true,
         heartRateBpm: Int? = 148,
         birthday: String? = RunSamples.birthday,
+        playerPhotos: [String: CGImage] = [:],
         abbreviateGapUnits: Bool = false
     ) -> RunOverviewContent {
         RunOverviewContent(
@@ -189,6 +191,7 @@ struct RunOverviewViewTests {
             isPhoneReachable: isPhoneReachable,
             heartRateBpm: heartRateBpm,
             birthday: birthday,
+            playerPhotos: playerPhotos,
             today: today,
             abbreviateGapUnits: abbreviateGapUnits
         )

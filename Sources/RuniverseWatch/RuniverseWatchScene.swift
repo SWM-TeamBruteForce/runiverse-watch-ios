@@ -61,6 +61,8 @@ private struct RootView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.isLuminanceReduced) private var isLuminanceReduced
 
+    @State private var playerPhotos: [String: CGImage] = [:]
+
     var body: some View {
         screen
             // 앱으로 돌아올 때도 .inactive를 잠깐 거쳐, .inactive로 꺼진 것은 이어질 때만 알린다
@@ -75,6 +77,10 @@ private struct RootView: View {
             // 위 2초 대기와 따로 둬야 꺼지자마자 콤보를 버린다
             .onChange(of: scenePhase, initial: true) { _, phase in
                 comboMoments.onScreenActiveChanged(phase == .active)
+            }
+            // 1초마다 오는 상태로는 다시 풀지 않게 사진이 바뀔 때만 푼다
+            .onChange(of: phoneLink.state.photos, initial: true) { _, photos in
+                playerPhotos = PlayerPhotos.decode(photos)
             }
     }
 
@@ -112,6 +118,7 @@ private struct RootView: View {
                     resume: { _ = phoneLink.resume() },
                     finish: { _ = phoneLink.finish(forced: phoneLink.state.phoneState?.run?.isFinishForced ?? false) }
                 ),
+                playerPhotos: playerPhotos,
                 smallComboMoments: comboMoments.smallMoments,
                 comboBurst: comboMoments.burst,
                 onControlsShownChanged: { comboMoments.onControlsShownChanged($0) }
