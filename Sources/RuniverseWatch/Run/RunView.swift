@@ -9,7 +9,7 @@ struct RunView: View {
     let birthday: String?
     let commandState: RunCommandState
     let commands: RunCommands
-    /// 사람 번호마다 그릴 사진이다. 없는 사람은 첫 글자로 그린다.
+    /// 사람 번호마다 그릴 사진이다. 없는 사람은 레인 색 원으로 그린다.
     var playerPhotos: [String: CGImage] = [:]
     /// 사람 번호마다 지금 띄우는 작은 순간이다.
     var smallComboMoments: [String: ComboMoment] = [:]
