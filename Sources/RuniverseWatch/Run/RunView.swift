@@ -166,7 +166,9 @@ private struct VerticalPageDotsView: View {
             VStack(spacing: Self.dotSpacing - Self.dotDiameter) {
                 ForEach(0..<content.count, id: \.self) { index in
                     Circle()
-                        .fill(Color.white.opacity(index == content.currentIndex ? 1 : Self.inactiveDotAlpha))
+                        .fill(
+                            Color.white.opacity(index == content.currentIndex ? 1 : RunDimensions.inactivePositionAlpha)
+                        )
                         .frame(width: Self.dotDiameter, height: Self.dotDiameter)
                 }
             }
@@ -181,7 +183,6 @@ private struct VerticalPageDotsView: View {
 
     private static let dotDiameter: CGFloat = 3
     private static let dotSpacing: CGFloat = 6
-    private static let inactiveDotAlpha = 0.35
 }
 
 #Preview("러닝 화면 파티") {
