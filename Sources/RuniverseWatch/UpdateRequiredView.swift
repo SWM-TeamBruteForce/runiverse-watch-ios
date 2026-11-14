@@ -31,7 +31,6 @@ struct UpdateRequiredView: View {
     }
 
     // 워치 앱은 iOS 앱에 담겨 나가 iOS 앱의 스토어 주소를 연다
-    // TODO: 스토어 주소 — 실기기에서 워치에 무엇이 열리는지 보고 정한다
     private static let storeURL = URL(string: "https://apps.apple.com/app/id6823043744")!
 }
 
