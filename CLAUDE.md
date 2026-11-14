@@ -33,14 +33,13 @@ xcodebuild test -project DevApp/RuniverseWatchDev.xcodeproj -scheme RuniverseWat
   Phone/          폰과 메시지 주고받기·연결 상태
   Workout/        러닝 중 앱을 살려 두는 운동 세션·심박 측정
   Run/            러닝 화면·장·결과 요약
-  Run/Controls/   조작 장과 그 장만 쓰는 것
   Run/Common/     장 밖에 두는 규칙·값(표기·자리 계산·폰 명령 등)
   Run/Component/  화면·장이 같이 쓰는 UI 부품·치수
   UI/Theme/       여러 기능이 같이 쓰는 색·글자
   UI/Component/   두 기능 이상이 쓰는 부품
   Resources/      문구·글꼴·그림
   ```
-- `Run/`에는 화면 파일만 둔다. 장 전용 파일이 둘 이상이면 `Controls/`처럼 장 폴더를 만들고, 참조는 `Run/ → Controls/ → Common/ → Component/` 한 방향으로만 한다.
+- `Run/`에는 화면 파일만 둔다. 장 전용 파일이 둘 이상이면 장 폴더를 만들고, 참조는 `Run/ → Common/ → Component/` 한 방향으로만 한다.
 - 단위 테스트는 `Tests/RuniverseWatchTests/`에 Sources와 같은 폴더로, UI 테스트는 개발용 앱 프로젝트의 UI 테스트 타깃에 둔다.
 - 화면은 폰 상태로 `switch` 분기한다. 폰 상태는 맨 위 화면 한 곳에서만 읽고, 아래로는 값과 동작 함수만 넘긴다.
 - `DevApp/`은 워치만 시뮬레이터로 볼 때 쓰는 개발용 앱이다. 출시되는 앱 타깃은 폰 앱 레포 `ios/`에 있고, 진입점과 앱 타깃에만 둘 수 있는 것(권한·Info.plist·아이콘)만 둔다. 러닝 화면은 실행 인자 `-fakeRun <경우>`로 가짜 폰을 켜서 본다(`Phone/FakePhone.swift`, DEBUG 빌드만).
