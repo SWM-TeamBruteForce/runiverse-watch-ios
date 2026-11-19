@@ -1,5 +1,4 @@
 import SwiftUI
-import WatchKit
 
 /// 워치 앱의 화면 전체를 담는다. 앱 타깃은 진입점에서 이것만 띄운다.
 public struct RuniverseWatchScene: Scene {
@@ -26,8 +25,6 @@ public struct RuniverseWatchScene: Scene {
         let link = openPhoneLink()
         // 워치 진동엔 소리가 붙어 무음 모드가 아니면 콤보마다 울려, 콤보는 진동 없이 효과만 띄운다
         link.onCombo = { comboMoments.onCombo($0, linkState: phoneLink.state) }
-        // 화면이 꺼져 있어도 울리게 보류 진동은 화면이 아니라 앱에서 받는다
-        link.onGoalPending = { WKInterfaceDevice.current().play(.notification) }
         return link
     }()
 
